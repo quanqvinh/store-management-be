@@ -32,12 +32,12 @@ jobs:
         run: yarn build
 
       - name: Deploy
-        uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+        uses: akhileshns/heroku-deploy@v3.12.12 
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: 'thanos-dev-api' #Must be unique in Heroku
+          heroku_app_name: 'thanos-dev-api' 
           heroku_email: 'nguyenquanqvinh@gmail.com'
           procfile: 'web: yarn start:prod'
         env:
-          HD_PORT: 8080
-          HD_MONGODB_URL: mongodb+srv://dev-admin:dev-admin-password@testmongodb.avqly.mongodb.net/thanos-dev
+          HD_PORT: ${{ secrets.PORT }}
+          HD_MONGODB_URL: ${{ secrets.MONGODB_URL }}
