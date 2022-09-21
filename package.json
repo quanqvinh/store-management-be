@@ -24,7 +24,13 @@
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.0.0",
+    "@nestjs/mongoose": "^9.2.0",
     "@nestjs/platform-express": "^9.0.0",
+    "mongoose": "^6.6.1",
+    "mongoose-autopopulate": "^0.16.1",
+    "mongoose-delete": "^0.5.4",
+    "mongoose-lean-virtuals": "^0.9.1",
+    "mongoose-timezone": "^1.3.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0"
