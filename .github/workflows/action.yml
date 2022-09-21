@@ -1,0 +1,42 @@
+on:
+  push:
+    branches: ['develop']
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '16.x' # set this to the node version to use
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+
+      - name: Install package
+        run: yarn install
+
+      - name: Testing
+        run: yarn jest && yarn test:cov
+
+      - name: Build project
+        run: yarn build
+
+      - name: Deploy
+        uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: 'thanos-dev-api' #Must be unique in Heroku
+          heroku_email: 'nguyenquanqvinh@gmail.com'
+          procfile: 'web: yarn start:prod'
+        env:
+          HD_PORT: 8080
+          HD_MONGODB_URL: mongodb+srv://dev-admin:dev-admin-password@testmongodb.avqly.mongodb.net/thanos-dev
