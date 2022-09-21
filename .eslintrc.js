@@ -1,5 +1,5 @@
 const prettierConfig = require('./prettier.config')
-console.log(prettierConfig)
+
 module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
