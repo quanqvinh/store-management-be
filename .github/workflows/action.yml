@@ -11,8 +11,9 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
+    environment: Heroku
     steps:
       - uses: actions/checkout@v3
 
