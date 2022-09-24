@@ -29,33 +29,40 @@
 ## Installation
 
 ```bash
-$ npm install
+$ yarn install
 ```
+
+## Developing API
+- Deployed by **Heroku** (Github Actions) in:
+  - https://thanos-dev-api.herokuapp.com
+- Deployed by **Qovery** (Qovery Console & AWS) in:
+  - https://z2375e4ba-z4217c050-gtw.z764289c4.blockdev.sh
 
 ## Running the app
 
 ```bash
 # development
-$ npm run start
+$ yarn start
 
 # watch mode
-$ npm run start:dev
+$ yarn start:dev
 
 # production mode
-$ npm run start:prod
+$ yarn build
+$ yarn start:prod
 ```
 
 ## Test
 
 ```bash
 # unit tests
-$ npm run test
+$ yarn test
 
 # e2e tests
-$ npm run test:e2e
+$ yarn test:e2e
 
 # test coverage
-$ npm run test:cov
+$ yarn test:cov
 ```
 
 ## Support

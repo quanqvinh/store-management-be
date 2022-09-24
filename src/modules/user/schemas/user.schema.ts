@@ -1,5 +1,5 @@
 import { Document } from 'mongoose'
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose'
 
 export type UserDocument = User & Document
 
@@ -29,8 +29,13 @@ export class User {
 	@Prop({ type: String, unique: true })
 	username: string
 
-	@Prop({ type: String })
-	password: string
+	@Prop(
+		raw({
+			password: { type: String, require: true },
+			isVerified: { type: String, require: true, default: false },
+		})
+	)
+	auth: Record<string, any>
 
 	@Prop({ type: Date })
 	dob: Date
