@@ -9,13 +9,19 @@
 		"target": "es2017",
 		"sourceMap": true,
 		"outDir": "./dist",
-		"baseUrl": "./",
 		"incremental": true,
 		"skipLibCheck": true,
 		"strictNullChecks": false,
 		"noImplicitAny": false,
 		"strictBindCallApply": false,
 		"forceConsistentCasingInFileNames": false,
-		"noFallthroughCasesInSwitch": false
+		"noFallthroughCasesInSwitch": false,
+		"baseUrl": "./src",
+		"paths": {
+			"@modules/*": ["modules/*"],
+			"@common/*": ["common/*"],
+			"@public/*": ["public/*"],
+			"@types/*": ["types/*"]
+		}
 	}
 }
