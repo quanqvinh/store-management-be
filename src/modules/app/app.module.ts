@@ -17,7 +17,13 @@ import { envConfigValidate, envConfigLoad } from '@/config/env.config'
 			validationSchema: envConfigValidate,
 			cache: true,
 		}),
-		MongooseModule.forRoot(process.env.MONGO_URL),
+		(() => {
+			console.log(process.env.MONGO_URL)
+			console.log(process.env.MONGO_DATABASE)
+			console.log(process.env.MONGO_USERNAME)
+			console.log(process.env.MONGO_PASSWORD)
+			return MongooseModule.forRoot(process.env.MONGO_URL)
+		})(),
 		UserModule,
 		AuthModule,
 	],

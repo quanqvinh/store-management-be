@@ -33,9 +33,12 @@ jobs:
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: 'thanos-dev-api'
-          heroku_email: 'nguyenquanqvinh@gmail.com'
+          heroku_app_name: ${{ secrets.HEROKU_API_KEY }}
+          heroku_email: ${{ secrets.HEROKU_API_KEY }}
           procfile: 'web: yarn start:prod'
         env:
           HD_PORT: ${{ secrets.PORT }}
+          HD_MONGO_DATABASE: ${{ secrets.MONGO_DATABASE }}
+          HD_MONGO_USERNAME: ${{ secrets.MONGO_USERNAME }}
+          HD_MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
           HD_MONGO_URL: ${{ secrets.MONGO_URL }}
