@@ -9,7 +9,7 @@ import {
 import { Body, Param } from '@nestjs/common/decorators'
 import { User } from './schemas/user.schema'
 import { UserService } from './user.service'
-import { ObjectIdValidatePine, JoiValidatePine } from '@common/pipes'
+import { ObjectIdValidatePine, JoiValidatePine } from '@/common/pipes'
 import {
 	CreateUserDto,
 	CreateUserSchema,

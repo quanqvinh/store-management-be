@@ -1,4 +1,5 @@
 import * as Joi from 'joi'
+import Pattern from '@/common/validators'
 
 export class CreateUserDto {
 	email: string
@@ -13,15 +14,11 @@ export class CreateUserDto {
 export const CreateUserSchema = Joi.object({
 	email: Joi.string().email().required(),
 	avatar: Joi.string().uri(),
-	firstName: Joi.string()
-		.required()
-		.pattern(new RegExp(/[a-zA-Z]+/)),
-	lastName: Joi.string()
-		.required()
-		.pattern(new RegExp(/[a-zA-Z]+/)),
-	displayName: Joi.string().pattern(new RegExp(/[a-zA-Z]+/)),
-	mobile: Joi.string().pattern(new RegExp(/^\+?\d+$/)),
-	password: Joi.string(),
-}).options({
-	abortEarly: false,
+	firstName: Joi.string().required().pattern(Pattern.name),
+	lastName: Joi.string().required().pattern(Pattern.name),
+	displayName: Joi.string().pattern(Pattern.displayName),
+	mobile: Joi.string().pattern(Pattern.mobile),
+	password: Joi.string()
+		.pattern(Pattern.password.minCharacter(4))
+		.pattern(Pattern.password.maxCharacter(30)),
 })

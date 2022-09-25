@@ -1,3 +1,4 @@
+import Pattern from '@/common/validators'
 import * as Joi from 'joi'
 
 export class UpdateUserInfoDto {
@@ -17,14 +18,18 @@ export class UpdateUserInfoDto {
 }
 
 export const UpdateUserSchema = Joi.object({
-	email: Joi.string().email(),
+	email: Joi.string().email().required(),
 	avatar: Joi.string().uri(),
-	firstName: Joi.string(),
-	lastName: Joi.string(),
-	displayName: Joi.string(),
-	mobile: Joi.string(),
-	username: Joi.string(),
-	password: Joi.string(),
+	firstName: Joi.string().required().pattern(Pattern.name),
+	lastName: Joi.string().required().pattern(Pattern.name),
+	displayName: Joi.string().pattern(Pattern.displayName),
+	mobile: Joi.string().pattern(Pattern.mobile),
+	username: Joi.string()
+		.pattern(Pattern.username.normal)
+		.pattern(Pattern.username.normal),
+	password: Joi.string()
+		.pattern(Pattern.password.minCharacter(4))
+		.pattern(Pattern.password.maxCharacter(30)),
 	dob: Joi.string(),
 	bio: Joi.string(),
 	address: Joi.string(),

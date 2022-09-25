@@ -38,4 +38,4 @@ jobs:
           procfile: 'web: yarn start:prod'
         env:
           HD_PORT: ${{ secrets.PORT }}
-          HD_MONGODB_URL: ${{ secrets.MONGODB_URL }}
+          HD_MONGO_URL: ${{ secrets.MONGO_URL }}

@@ -4,7 +4,7 @@ import { Model } from 'mongoose'
 import { User, UserDocument } from './schemas/user.schema'
 import { CreateUserDto, UpdateUserInfoDto } from './dto'
 import { DeleteResult, UpdateResult } from 'mongodb'
-import { DuplicateKeyException } from '@common/exceptions/mongo.exception'
+import { DuplicateKeyException } from '@/common/exceptions/mongo.exception'
 
 @Injectable()
 export class UserService {
@@ -24,6 +24,10 @@ export class UserService {
 
 	async findByUsername(username: string): Promise<User> {
 		return await this.userModel.findOne({ username }).lean().exec()
+	}
+
+	async findByMobile(mobile: string): Promise<User> {
+		return await this.userModel.findOne({ mobile }).lean().exec()
 	}
 
 	async create(createUserDto: CreateUserDto): Promise<User> {
