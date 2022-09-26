@@ -10,9 +10,6 @@ export const envConfigLoad = () => ({
 	nodeEnv: process.env.NODE_ENV || 'development',
 	port: process.env.PORT || 8080,
 	mongo: {
-		username: process.env.MONGO_USERNAME,
-		password: process.env.MONGO_PASSWORD,
-		database: process.env.MONGO_DATABASE,
 		url: process.env.MONGO_URL,
 	},
 })
