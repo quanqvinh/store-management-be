@@ -15,7 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     environment: Heroku
     steps:
-      - uses: actions/checkout@v3
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -23,22 +26,22 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
 
-      - name: Install package
-        run: yarn install
-
-      - name: Build project
-        run: yarn build
-
-      - name: Deploy
-        uses: akhileshns/heroku-deploy@v3.12.12
-        with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: 'thanos-dev-api'
-          heroku_email: 'nguyenquanqvinh@gmail.com'
-          procfile: 'web: yarn start:prod'
+      - name: Heroku login credentials
+        run: |
+          cat > ~/.netrc <<EOF
+            machine api.heroku.com
+              login $HEROKU_EMAIL
+              password $HEROKU_API_KEY
+            machine git.heroku.com
+              login $HEROKU_EMAIL
+              password $HEROKU_API_KEY
+          EOF
         env:
-          HD_PORT: ${{ secrets.PORT }}
-          HD_MONGO_DATABASE: ${{ secrets.MONGO_DATABASE }}
-          HD_MONGO_USERNAME: ${{ secrets.MONGO_USERNAME }}
-          HD_MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
-          HD_MONGO_URL: ${{ secrets.MONGO_URL }}
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+      - name: Add Heroku remote
+        run: heroku git:remote --app $HEROKU_APP_NAME
+        env:
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+      - name: Push to Heroku
+        run: git push heroku main --force
