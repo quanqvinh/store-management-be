@@ -1,8 +1,9 @@
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from '@/modules/app/app.module'
-import { ConfigService } from '@nestjs/config'
+import { ConfigService, ConfigModule } from '@nestjs/config'
 
 async function bootstrap() {
+	await ConfigModule.envVariablesLoaded
 	const app = await NestFactory.create(AppModule)
 	const configService = app.get(ConfigService)
 	const port = configService.get<number>('port') || 8080

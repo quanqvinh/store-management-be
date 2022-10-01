@@ -6,8 +6,13 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { UserModule } from '@/modules/user/user.module'
 import { AuthModule } from './../auth/auth.module'
 import { APP_FILTER } from '@nestjs/core'
-import { HttpExceptionFilter, MongoExceptionFilter } from '@/common/filters'
+import {
+	HttpExceptionFilter,
+	MongoExceptionFilter,
+	JoiExceptionFilter,
+} from '@/common/filters'
 import { envConfigValidate, envConfigLoad } from '@/config/env.config'
+
 @Module({
 	imports: [
 		ConfigModule.forRoot({
@@ -17,7 +22,7 @@ import { envConfigValidate, envConfigLoad } from '@/config/env.config'
 			validationSchema: envConfigValidate,
 			cache: true,
 		}),
-		MongooseModule.forRoot(process.env.MONGO_URL),
+		MongooseModule.forRoot(envConfigLoad().mongo.url),
 		UserModule,
 		AuthModule,
 	],
@@ -31,6 +36,10 @@ import { envConfigValidate, envConfigLoad } from '@/config/env.config'
 		{
 			provide: APP_FILTER,
 			useClass: MongoExceptionFilter,
+		},
+		{
+			provide: APP_FILTER,
+			useClass: JoiExceptionFilter,
 		},
 	],
 })

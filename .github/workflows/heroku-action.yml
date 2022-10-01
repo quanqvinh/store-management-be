@@ -41,7 +41,8 @@ jobs:
           procfile: 'web: yarn start:prod'
         env:
           HD_PORT: ${{ secrets.PORT }}
-          HD_MONGO_DATABASE: ${{ secrets.MONGO_DATABASE }}
-          HD_MONGO_USERNAME: ${{ secrets.MONGO_USERNAME }}
-          HD_MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
           HD_MONGO_URL: ${{ secrets.MONGO_URL }}
+          HD_ACCESS_TOKEN_SECRET_KEY: ${{ secrets.ACCESS_TOKEN_SECRET_KEY }}
+          HD_ACCESS_TOKEN_EXPIRE: ${{ secrets.ACCESS_TOKEN_EXPIRE }}
+          HD_REFRESH_TOKEN_SECRET_KEY: ${{ secrets.REFRESH_TOKEN_SECRET_KEY }}
+          HD_REFRESH_TOKEN_EXPIRE: ${{ secrets.REFRESH_TOKEN_EXPIRE }}

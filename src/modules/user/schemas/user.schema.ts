@@ -5,14 +5,17 @@ export type UserDocument = User & Document
 
 @Schema({
 	versionKey: false,
-	id: false,
+	_id: false,
 })
 class Auth {
-	@Prop({ type: String, require: true })
+	@Prop({ type: String, required: true })
 	password: string
 
-	@Prop({ type: String, require: true, default: false })
+	@Prop({ type: String, required: true, default: false })
 	isVerified: boolean
+
+	@Prop({ type: Number, required: true, default: Date.now() })
+	validTokenTime: number
 }
 
 @Schema({
