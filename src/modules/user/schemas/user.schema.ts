@@ -1,7 +1,22 @@
 import { Document } from 'mongoose'
-import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 
 export type UserDocument = User & Document
+
+@Schema({
+	versionKey: false,
+	_id: false,
+})
+class Auth {
+	@Prop({ type: String, required: true })
+	password: string
+
+	@Prop({ type: String, required: true, default: false })
+	isVerified: boolean
+
+	@Prop({ type: Number, required: true, default: Date.now() })
+	validTokenTime: number
+}
 
 @Schema({
 	versionKey: false,
@@ -29,13 +44,8 @@ export class User {
 	@Prop({ type: String, unique: true })
 	username: string
 
-	@Prop(
-		raw({
-			password: { type: String, require: true },
-			isVerified: { type: String, require: true, default: false },
-		})
-	)
-	auth: Record<string, any>
+	@Prop({ type: Auth })
+	auth: Auth
 
 	@Prop({ type: Date })
 	dob: Date
@@ -52,5 +62,7 @@ export class User {
 	@Prop({ type: String })
 	country: string
 }
+
+export type UserInfo = Omit<User, 'auth'>
 
 export const UserSchema = SchemaFactory.createForClass(User)

@@ -1,5 +1,6 @@
 import * as Joi from 'joi'
-import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common'
+import { PipeTransform, Injectable } from '@nestjs/common'
+import { InvalidDataException } from '@/common/exceptions/http/bad-request.exception'
 
 @Injectable()
 export default class UsernameValidatePipe implements PipeTransform {
@@ -7,7 +8,7 @@ export default class UsernameValidatePipe implements PipeTransform {
 		const username = '' + value
 		const validator = Joi.string().required().pattern(/\w+/)
 		if (validator.validate(username).error)
-			throw new BadRequestException('Username is wrong')
+			throw new InvalidDataException('Username')
 		return username
 	}
 }

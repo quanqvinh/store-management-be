@@ -15,7 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     environment: Heroku
     steps:
-      - uses: actions/checkout@v3
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -33,9 +36,13 @@ jobs:
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: 'thanos-dev-api'
-          heroku_email: 'nguyenquanqvinh@gmail.com'
+          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+          heroku_email: ${{ secrets.HEROKU_API_KEY }}
           procfile: 'web: yarn start:prod'
         env:
           HD_PORT: ${{ secrets.PORT }}
-          HD_MONGODB_URL: ${{ secrets.MONGODB_URL }}
+          HD_MONGO_URL: ${{ secrets.MONGO_URL }}
+          HD_ACCESS_TOKEN_SECRET_KEY: ${{ secrets.ACCESS_TOKEN_SECRET_KEY }}
+          HD_ACCESS_TOKEN_EXPIRE: ${{ secrets.ACCESS_TOKEN_EXPIRE }}
+          HD_REFRESH_TOKEN_SECRET_KEY: ${{ secrets.REFRESH_TOKEN_SECRET_KEY }}
+          HD_REFRESH_TOKEN_EXPIRE: ${{ secrets.REFRESH_TOKEN_EXPIRE }}

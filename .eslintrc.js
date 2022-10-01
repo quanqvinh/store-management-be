@@ -1,4 +1,5 @@
-const prettierConfig = require('./prettier.config')
+const fs = require('fs')
+var prettierConfig = JSON.parse(fs.readFileSync('./.prettierrc', 'utf-8'))
 
 module.exports = {
 	parser: '@typescript-eslint/parser',

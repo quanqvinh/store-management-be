@@ -1,10 +1,13 @@
 {
-	"nuxt.isNuxtApp": false,
 	"cSpell.words": [
 		"akhileshns",
 		"autopopulate",
+		"Futura",
+		"popout",
 		"procfile",
 		"Qovery",
-		"thanos"
-	]
+		"thanos",
+		"zàáâãèéêìíòóôõùúăđĩũơưăạảấầẩẫậắằẳẵặẹẻẽềềểếễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵýỷỹ"
+	],
+	"nuxt.isNuxtApp": false
 }

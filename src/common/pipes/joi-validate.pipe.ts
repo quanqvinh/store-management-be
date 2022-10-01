@@ -7,8 +7,7 @@ export default class JoiValidatePine implements PipeTransform {
 
 	transform(value: any) {
 		const { error } = this.schema.validate(value)
-		if (error)
-			throw new BadRequestException(error.details.map(detail => detail.message))
+		if (error) throw error
 		return value
 	}
 }
