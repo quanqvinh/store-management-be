@@ -2,10 +2,16 @@ import { User, UserInfo } from '../user/schemas/user.schema'
 import { Injectable } from '@nestjs/common'
 import { UserService } from '../user/user.service'
 import { IdentityType } from '@/common/constants'
-
+import { JwtService } from '@nestjs/jwt'
+import { ConfigService } from '@nestjs/config'
+import { TokenSubject } from '@/common/constants'
 @Injectable()
 export class AuthService {
-	constructor(private userService: UserService) {}
+	constructor(
+		private userService: UserService,
+		private jwtService: JwtService,
+		private configService: ConfigService
+	) {}
 
 	async validateUser(
 		identity: string,
@@ -33,5 +39,23 @@ export class AuthService {
 			return result
 		}
 		return null
+	}
+
+	async generateTokens(
+		user: any
+	): Promise<{ access_token: string; refresh_token: string }> {
+		const payload = { aud: user._id || user.id }
+		return {
+			access_token: this.jwtService.sign(payload, {
+				secret: this.configService.get<string>('jwt.accessToken.secret'),
+				expiresIn: this.configService.get<string>('jwt.accessToken.expire'),
+				subject: TokenSubject.ACCESS,
+			}),
+			refresh_token: this.jwtService.sign(payload, {
+				secret: this.configService.get<string>('jwt.refreshToken.secret'),
+				expiresIn: this.configService.get<string>('jwt.refreshToken.expire'),
+				subject: TokenSubject.REFRESH,
+			}),
+		}
 	}
 }

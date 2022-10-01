@@ -18,21 +18,22 @@ export class UpdateUserInfoDto {
 }
 
 export const UpdateUserSchema = Joi.object({
-	email: Joi.string().email().required(),
-	avatar: Joi.string().uri(),
-	firstName: Joi.string().required().pattern(Pattern.name),
-	lastName: Joi.string().required().pattern(Pattern.name),
-	displayName: Joi.string().pattern(Pattern.displayName),
-	mobile: Joi.string().pattern(Pattern.mobile),
+	email: Joi.string().email().optional(),
+	avatar: Joi.string().uri().optional(),
+	firstName: Joi.string().pattern(Pattern.name).optional(),
+	lastName: Joi.string().pattern(Pattern.name).optional(),
+	displayName: Joi.string().pattern(Pattern.displayName).optional(),
+	mobile: Joi.string().pattern(Pattern.mobile).optional(),
 	username: Joi.string()
 		.pattern(Pattern.username.normal)
-		.pattern(Pattern.username.normal),
+		.pattern(Pattern.username.hasLetter)
+		.optional(),
 	password: Joi.string()
-		.pattern(Pattern.password.minCharacter(4))
-		.pattern(Pattern.password.maxCharacter(30)),
-	dob: Joi.string(),
-	bio: Joi.string(),
-	address: Joi.string(),
-	city: Joi.string(),
-	country: Joi.string(),
+		.pattern(Pattern.password.amountCharacter(4, 30))
+		.optional(),
+	dob: Joi.string().optional(),
+	bio: Joi.string().optional(),
+	address: Joi.string().optional(),
+	city: Joi.string().optional(),
+	country: Joi.string().optional(),
 })

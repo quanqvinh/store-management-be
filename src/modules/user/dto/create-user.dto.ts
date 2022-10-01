@@ -18,7 +18,5 @@ export const CreateUserSchema = Joi.object({
 	lastName: Joi.string().required().pattern(Pattern.name),
 	displayName: Joi.string().pattern(Pattern.displayName),
 	mobile: Joi.string().pattern(Pattern.mobile),
-	password: Joi.string()
-		.pattern(Pattern.password.minCharacter(4))
-		.pattern(Pattern.password.maxCharacter(30)),
+	password: Joi.string().pattern(Pattern.password.amountCharacter(4, 30)),
 })

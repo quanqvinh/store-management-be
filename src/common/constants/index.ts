@@ -3,3 +3,8 @@ export enum IdentityType {
 	USERNAME = 'Username',
 	MOBILE = 'Mobile',
 }
+
+export enum TokenSubject {
+	ACCESS = 'access',
+	REFRESH = 'refresh',
+}

@@ -1,4 +1,6 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { FailedLoginException } from './../../../common/exceptions/auth.exception'
+import { InvalidIdentityException } from '@/common/exceptions/auth.exception'
+import { Injectable } from '@nestjs/common'
 import { Strategy } from 'passport-local'
 import { PassportStrategy } from '@nestjs/passport'
 import { AuthService } from '../auth.service'
@@ -26,14 +28,13 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 				.validate(identity).error
 		)
 			identityType = IdentityType.USERNAME
-		else throw new UnauthorizedException('Identity is invalid')
+		else throw new InvalidIdentityException()
 		const user = await this.authService.validateUser(
 			identity,
 			identityType,
 			password
 		)
-		if (!user)
-			throw new UnauthorizedException(identityType + ' or password is wrong')
+		if (!user) throw new FailedLoginException(identityType)
 		return user
 	}
 }
