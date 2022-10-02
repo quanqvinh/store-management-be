@@ -8,6 +8,7 @@ async function bootstrap() {
 	const app = await NestFactory.create(AppModule)
 
 	// Security middlewares
+	app.enableCors()
 	app.use(helmet())
 
 	const configService = app.get(ConfigService)
