@@ -5,13 +5,15 @@ import { ConfigModule } from '@nestjs/config'
 import { MongooseModule } from '@nestjs/mongoose'
 import { UserModule } from '@/modules/user/user.module'
 import { AuthModule } from './../auth/auth.module'
-import { APP_FILTER } from '@nestjs/core'
+import { ThrottlerModule } from '@nestjs/throttler'
+import { APP_FILTER, APP_GUARD } from '@nestjs/core'
 import {
 	HttpExceptionFilter,
 	MongoExceptionFilter,
 	JoiExceptionFilter,
 } from '@/common/filters'
 import { envConfigValidate, envConfigLoad } from '@/config/env.config'
+import { ThrottlerGuard } from '@nestjs/throttler/dist/throttler.guard'
 
 @Module({
 	imports: [
@@ -25,6 +27,10 @@ import { envConfigValidate, envConfigLoad } from '@/config/env.config'
 		MongooseModule.forRoot(envConfigLoad().mongo.url),
 		UserModule,
 		AuthModule,
+		ThrottlerModule.forRoot({
+			ttl: 60,
+			limit: 10,
+		}),
 	],
 	controllers: [AppController],
 	providers: [
@@ -40,6 +46,10 @@ import { envConfigValidate, envConfigLoad } from '@/config/env.config'
 		{
 			provide: APP_FILTER,
 			useClass: JoiExceptionFilter,
+		},
+		{
+			provide: APP_GUARD,
+			useClass: ThrottlerGuard,
 		},
 	],
 })
