@@ -25,6 +25,7 @@
 		"@nestjs/passport": "^9.0.0",
 		"@nestjs/platform-express": "^9.0.0",
 		"bcrypt": "^5.0.1",
+		"helmet": "^6.0.0",
 		"joi": "^17.6.1",
 		"mongoose": "^6.6.1",
 		"mongoose-autopopulate": "^0.16.1",
