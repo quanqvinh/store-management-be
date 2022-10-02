@@ -1,13 +1,27 @@
 import * as Joi from 'joi'
 import Pattern from '@/common/validators'
+import { ApiProperty } from '@nestjs/swagger'
 
 export class CreateUserDto {
+	@ApiProperty()
 	email: string
+
+	@ApiProperty()
 	avatar: string
+
+	@ApiProperty()
 	firstName: string
+
+	@ApiProperty()
 	lastName: string
+
+	@ApiProperty()
 	displayName: string
+
+	@ApiProperty()
 	mobile: string
+
+	@ApiProperty()
 	password: string
 }
 

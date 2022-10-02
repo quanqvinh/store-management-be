@@ -8,3 +8,9 @@ export enum TokenSubject {
 	ACCESS = 'access',
 	REFRESH = 'refresh',
 }
+
+export enum Gender {
+	MALE = 'male',
+	FEMALE = 'female',
+	OTHER = 'other',
+}

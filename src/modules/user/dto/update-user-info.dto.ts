@@ -1,19 +1,45 @@
 import Pattern from '@/common/validators'
+import { ApiProperty } from '@nestjs/swagger'
 import * as Joi from 'joi'
 
 export class UpdateUserInfoDto {
+	@ApiProperty({ required: false })
 	email?: string
+
+	@ApiProperty({ required: false })
 	avatar?: string
+
+	@ApiProperty({ required: false })
 	firstName?: string
+
+	@ApiProperty({ required: false })
 	lastName?: string
+
+	@ApiProperty({ required: false })
 	displayName?: string
+
+	@ApiProperty({ required: false })
 	mobile?: string
+
+	@ApiProperty({ required: false })
 	username?: string
+
+	@ApiProperty({ required: false })
 	password?: string
+
+	@ApiProperty({ required: false })
 	dob?: Date
+
+	@ApiProperty({ required: false })
 	bio?: string
+
+	@ApiProperty({ required: false })
 	address?: string
+
+	@ApiProperty({ required: false })
 	city?: string
+
+	@ApiProperty({ required: false })
 	country?: string
 }
 

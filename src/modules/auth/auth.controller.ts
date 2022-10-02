@@ -5,7 +5,9 @@ import { Controller, UseGuards, Post } from '@nestjs/common'
 import { AuthService } from './services/auth.service'
 import { User } from '@/common/decorators/user.decorator'
 import { Get } from '@nestjs/common/decorators/http/request-mapping.decorator'
+import { ApiTagsAndBearer } from '@/common/decorators/api-tag-and-bearer.decorator'
 
+@ApiTagsAndBearer('auth')
 @Controller('auth')
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}

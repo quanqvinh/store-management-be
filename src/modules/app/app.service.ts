@@ -19,7 +19,7 @@ export class AppService {
 				}
 				.gif {
 					height: 60%;
-					background-image: url(https://cdn.dribbble.com/users/942913/screenshots/7090306/thanos_render_2.gif);
+					background-image: url(funny_thanos.gif);
 					background-size: contain;
 					background-position: bottom;
 					background-repeat: no-repeat;

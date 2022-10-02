@@ -1,7 +1,16 @@
 import { NotMatchedDataException } from '@/common/exceptions/http/not-found.exception'
 import { NotFoundDataException } from '@/common/exceptions/http'
-import { Controller, Post, Get, Patch, Delete, UseGuards } from '@nestjs/common'
+import {
+	Controller,
+	Post,
+	Get,
+	Patch,
+	Delete,
+	UseGuards,
+	UseInterceptors,
+} from '@nestjs/common'
 import { Body, Param } from '@nestjs/common/decorators'
+import { TransformInterceptor } from '@/common/interceptors/transform.interceptor'
 import { User } from './schemas/user.schema'
 import { UserService } from './user.service'
 import { ObjectIdValidatePine, JoiValidatePine } from '@/common/pipes'
@@ -13,13 +22,18 @@ import {
 } from './dto'
 import UsernameValidatePipe from './pipes/username-validate.pipe'
 import { JwtAccessGuard } from '@/common/guards/jwt-auth.guard'
+import { ApiTagsAndBearer } from '@/common/decorators/api-tag-and-bearer.decorator'
+import { ApiResponse } from '@nestjs/swagger'
 
+@ApiTagsAndBearer('user')
 @Controller('user')
 export class UserController {
 	constructor(private readonly userService: UserService) {}
 
+	@UseInterceptors(TransformInterceptor<User[]>)
 	@UseGuards(JwtAccessGuard)
 	@Get('list')
+	@ApiResponse({ status: 200, type: [User] })
 	async getAllUser(): Promise<User[]> {
 		return await this.userService.findAll()
 	}

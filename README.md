@@ -26,17 +26,18 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Development API
+<!-- - Deployed by **Qovery** (AWS-based) in: https://z2375e4ba-z4217c050-gtw.z764289c4.blockdev.sh  
+  <sub><b>More stable</b> - update when develop branch updated</sub>   -->
+
+Deployed by **Heroku** (Github Actions) in: https://thanos-dev-api.herokuapp.com  
+  <sub><b>Sometimes crashed</b> - update when develop branch updated or had new merge request</sub>
+
 ## Installation
 
 ```bash
 $ yarn install
 ```
-
-## Developing API
-- Deployed by **Qovery** (AWS-based) in: https://z2375e4ba-z4217c050-gtw.z764289c4.blockdev.sh  
-  ***More stable*** *- update when develop branch updated*
-- Deployed by **Heroku** (Github Actions) in: https://thanos-dev-api.herokuapp.com  
-  ***Sometimes crashed*** *- update when develop branch updated or had new merge request*
 
 ## Running the app
 
@@ -51,7 +52,7 @@ $ yarn start:dev
 $ yarn build
 $ yarn start:prod
 ```
-
+<!-- 
 ## Test
 
 ```bash
@@ -63,7 +64,7 @@ $ yarn test:e2e
 
 # test coverage
 $ yarn test:cov
-```
+``` -->
 
 ## Support
 
