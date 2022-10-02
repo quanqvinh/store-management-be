@@ -33,10 +33,10 @@ $ yarn install
 ```
 
 ## Developing API
-- Deployed by **Heroku** (Github Actions) in:
-  - https://thanos-dev-api.herokuapp.com
-- Deployed by **Qovery** (Qovery Console & AWS) in:
-  - https://z2375e4ba-z4217c050-gtw.z764289c4.blockdev.sh
+- Deployed by **Qovery** (AWS-based) in: https://z2375e4ba-z4217c050-gtw.z764289c4.blockdev.sh  
+  ***More stable*** *- update when develop branch updated*
+- Deployed by **Heroku** (Github Actions) in: https://thanos-dev-api.herokuapp.com  
+  ***Sometimes crashed*** *- update when develop branch updated or had new merge request*
 
 ## Running the app
 
