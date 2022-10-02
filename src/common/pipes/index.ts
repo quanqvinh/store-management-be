@@ -1,4 +1,2 @@
-import ObjectIdValidatePine from './object-id-validate.pipe'
-import JoiValidatePine from './joi-validate.pipe'
-
-export { ObjectIdValidatePine, JoiValidatePine }
+export * from './object-id-validate.pipe'
+export * from './joi-validate.pipe'

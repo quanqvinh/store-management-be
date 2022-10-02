@@ -1,5 +1,3 @@
-import HttpExceptionFilter from './http-exception.filter'
-import MongoExceptionFilter from './mongo-exception.filter'
-import JoiExceptionFilter from './joi-exception.filter'
-
-export { HttpExceptionFilter, MongoExceptionFilter, JoiExceptionFilter }
+export * from './http-exception.filter'
+export * from './mongo-exception.filter'
+export * from './joi-exception.filter'
