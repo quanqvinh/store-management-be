@@ -14,6 +14,7 @@ import {
 } from './schemas/refresh-token.schema'
 import { JwtAccessStrategy } from './passport/jwt-access.strategy'
 import { JwtRefreshStrategy } from './passport/jwt-refresh.strategy'
+import { HashService } from '@/common/providers/hash.service'
 
 @Module({
 	imports: [
@@ -37,6 +38,7 @@ import { JwtRefreshStrategy } from './passport/jwt-refresh.strategy'
 		LocalStrategy,
 		JwtAccessStrategy,
 		JwtRefreshStrategy,
+		HashService,
 	],
 })
 export class AuthModule {}

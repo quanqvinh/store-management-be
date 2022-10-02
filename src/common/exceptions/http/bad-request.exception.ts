@@ -1,8 +1,8 @@
 import { BadRequestException } from '@nestjs/common'
 
-export class InvalidIdentityException extends BadRequestException {
+export class InvalidIdentifierException extends BadRequestException {
 	constructor() {
-		super('Identity is invalid')
+		super('Identifier is invalid')
 	}
 }
 

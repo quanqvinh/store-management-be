@@ -1,5 +1,6 @@
-import { Injectable, PipeTransform, BadRequestException } from '@nestjs/common'
+import { Injectable, PipeTransform } from '@nestjs/common'
 import { Types } from 'mongoose'
+import { InvalidDataException } from '../exceptions/http'
 
 @Injectable()
 export default class ObjectIdValidatePine implements PipeTransform {
@@ -10,7 +11,7 @@ export default class ObjectIdValidatePine implements PipeTransform {
 			if (id === objectId.toString()) return id
 			else throw null
 		} catch {
-			throw new BadRequestException('Id is invalid')
+			throw new InvalidDataException('Id')
 		}
 	}
 }

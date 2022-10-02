@@ -5,10 +5,14 @@ import { User, UserDocument } from './schemas/user.schema'
 import { CreateUserDto, UpdateUserInfoDto } from './dto'
 import { DeleteResult, UpdateResult } from 'mongodb'
 import { DuplicateKeyException } from '@/common/exceptions/mongo.exception'
+import { HashService } from '@/common/providers/hash.service'
 
 @Injectable()
 export class UserService {
-	constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+	constructor(
+		@InjectModel(User.name) private userModel: Model<UserDocument>,
+		private hashService: HashService
+	) {}
 
 	async findAll(): Promise<User[]> {
 		return await this.userModel.find({}).lean().exec()
@@ -39,6 +43,7 @@ export class UserService {
 				throw new DuplicateKeyException('email')
 			throw new DuplicateKeyException('mobile')
 		}
+		createUserDto.password = this.hashService.hash(createUserDto.password)
 		return await this.userModel.create({
 			...createUserDto,
 			auth: { password: createUserDto.password },

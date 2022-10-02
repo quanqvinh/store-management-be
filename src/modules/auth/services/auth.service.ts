@@ -1,12 +1,13 @@
+import { HashService } from '@/common/providers/hash.service'
 import { NotSavedDataException } from '@/common/exceptions/http'
 import { RefreshService } from './refresh.service'
 import { User, UserInfo } from '@/modules/user/schemas/user.schema'
 import { Injectable } from '@nestjs/common'
 import { UserService } from '@/modules/user/user.service'
-import { IdentityType } from '@/common/constants'
+import { IdentifierType } from '@/constants'
 import { JwtService } from '@nestjs/jwt'
 import { ConfigService } from '@nestjs/config'
-import { TokenSubject } from '@/common/constants'
+import { TokenSubject } from '@/constants'
 
 @Injectable()
 export class AuthService {
@@ -14,30 +15,31 @@ export class AuthService {
 		private userService: UserService,
 		private jwtService: JwtService,
 		private configService: ConfigService,
-		private refreshService: RefreshService
+		private refreshService: RefreshService,
+		private hashService: HashService
 	) {}
 
 	async validateUser(
-		identity: string,
-		identityType: IdentityType,
+		identifier: string,
+		identifierType: IdentifierType,
 		password: string
 	): Promise<UserInfo> {
 		let user: User
-		switch (identityType) {
-			case IdentityType.EMAIL:
-				user = await this.userService.findByEmail(identity)
+		switch (identifierType) {
+			case IdentifierType.EMAIL:
+				user = await this.userService.findByEmail(identifier)
 				break
-			case IdentityType.USERNAME:
-				user = await this.userService.findByUsername(identity)
+			case IdentifierType.USERNAME:
+				user = await this.userService.findByUsername(identifier)
 				break
-			case IdentityType.MOBILE:
-				user = await this.userService.findByMobile(identity)
+			case IdentifierType.MOBILE:
+				user = await this.userService.findByMobile(identifier)
 				break
 			default:
 				user = null
 				break
 		}
-		if (user && user.auth.password === password) {
+		if (user && this.hashService.compare(password, user.auth.password)) {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { auth, ...result } = user
 			return result
