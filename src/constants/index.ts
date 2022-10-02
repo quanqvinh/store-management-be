@@ -1,4 +1,4 @@
-export enum IdentityType {
+export enum IdentifierType {
 	EMAIL = 'Email',
 	USERNAME = 'Username',
 	MOBILE = 'Mobile',
