@@ -3,7 +3,7 @@ import { Types } from 'mongoose'
 import { InvalidDataException } from '../exceptions/http'
 
 @Injectable()
-export default class ObjectIdValidatePine implements PipeTransform {
+export class ObjectIdValidatePine implements PipeTransform {
 	transform(value: any): string {
 		const id = '' + value
 		try {

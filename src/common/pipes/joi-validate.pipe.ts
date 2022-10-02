@@ -2,7 +2,7 @@ import { PipeTransform, Injectable } from '@nestjs/common'
 import { ObjectSchema } from 'joi'
 
 @Injectable()
-export default class JoiValidatePine implements PipeTransform {
+export class JoiValidatePine implements PipeTransform {
 	constructor(private schema: ObjectSchema) {}
 
 	transform(value: any) {

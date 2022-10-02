@@ -8,7 +8,7 @@ import {
 import { Response } from 'express'
 
 @Catch(MongoError)
-export default class MongoExceptionFilter implements ExceptionFilter {
+export class MongoExceptionFilter implements ExceptionFilter {
 	catch(exception: MongoError, host: ArgumentsHost) {
 		const ctx = host.switchToHttp()
 		const response = ctx.getResponse<Response>()

@@ -3,7 +3,7 @@ import { ValidationError } from 'joi'
 import { Response } from 'express'
 
 @Catch(ValidationError)
-export default class JoiExceptionFilter implements ExceptionFilter {
+export class JoiExceptionFilter implements ExceptionFilter {
 	catch(exception: ValidationError, host: ArgumentsHost) {
 		const ctx = host.switchToHttp()
 		const response = ctx.getResponse<Response>()
