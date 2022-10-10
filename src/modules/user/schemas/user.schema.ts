@@ -2,6 +2,8 @@ import { Document } from 'mongoose'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { ApiProperty } from '@nestjs/swagger'
 import { Gender } from '@/constants'
+import { Admin } from './admin.schema'
+import { Member } from './member.schema'
 
 export type UserDocument = User & Document
 
@@ -9,7 +11,7 @@ export type UserDocument = User & Document
 	versionKey: false,
 	_id: false,
 })
-class Auth {
+export class Auth {
 	@ApiProperty()
 	@Prop({ type: String, required: true })
 	password: string
@@ -29,6 +31,10 @@ class Auth {
 })
 export class User {
 	@ApiProperty()
+	@Prop({ type: String, unique: true })
+	username: string
+
+	@ApiProperty()
 	@Prop({ type: String, unique: true, required: true })
 	email: string
 
@@ -45,14 +51,6 @@ export class User {
 	lastName: string
 
 	@ApiProperty()
-	@Prop({ type: String, unique: true })
-	mobile: string
-
-	@ApiProperty()
-	@Prop({ type: String, unique: true })
-	username: string
-
-	@ApiProperty()
 	@Prop({ type: Auth })
 	auth: Auth
 
@@ -65,8 +63,11 @@ export class User {
 	dob: Date
 
 	@ApiProperty()
-	@Prop({ type: String })
-	address: string
+	@Prop({
+		type: String,
+		enum: [Admin.name, Member.name],
+	})
+	role: string
 }
 
 export type UserInfo = Omit<User, 'auth'>
