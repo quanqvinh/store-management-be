@@ -1,5 +1,5 @@
-import { RefreshService } from '../services/refresh.service'
-import { UserService } from '../../user/user.service'
+import { RefreshService } from '../../services/refresh.service'
+import { UserService } from '@/modules/user/user.service'
 import { PassportStrategy } from '@nestjs/passport'
 import { Strategy, ExtractJwt } from 'passport-jwt'
 import { Injectable } from '@nestjs/common'
@@ -11,6 +11,7 @@ import {
 	InvalidRefreshTokenException,
 	ReusedTokenException,
 } from '@/common/exceptions/http'
+import { JwtPayload } from '@/types'
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
@@ -30,10 +31,10 @@ export class JwtRefreshStrategy extends PassportStrategy(
 		})
 	}
 
-	async validate(payload: any) {
-		const { aud: uid, iat: issuedAt } = payload
+	async validate(payload: JwtPayload) {
+		const { aud: uid, iat: issuedAt, role } = payload
 		const [user, token] = await Promise.all([
-			this.userService.findById(uid),
+			this.userService.findById(uid, role),
 			this.refreshService.get(payload),
 		])
 		if (!user) throw new NotFoundDataException('User')
@@ -42,7 +43,7 @@ export class JwtRefreshStrategy extends PassportStrategy(
 		if (user.auth.validTokenTime > issuedAt * 1000)
 			throw new DetectedAbnormalLoginException()
 
-		if (await this.refreshService.check(token)) return { id: uid }
+		if (await this.refreshService.check(token)) return { id: uid, role }
 		else throw new ReusedTokenException()
 	}
 }

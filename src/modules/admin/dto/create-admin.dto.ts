@@ -2,12 +2,9 @@ import * as Joi from 'joi'
 import Pattern from '@/common/validators'
 import { ApiProperty } from '@nestjs/swagger'
 
-export class CreateUserDto {
+export class CreateAdminDto {
 	@ApiProperty()
 	email: string
-
-	@ApiProperty()
-	avatar: string
 
 	@ApiProperty()
 	firstName: string
@@ -16,21 +13,18 @@ export class CreateUserDto {
 	lastName: string
 
 	@ApiProperty()
-	displayName: string
-
-	@ApiProperty()
-	mobile: string
+	username: string
 
 	@ApiProperty()
 	password: string
 }
 
-export const CreateUserSchema = Joi.object({
+export const CreateAdminSchema = Joi.object({
 	email: Joi.string().email().required(),
-	avatar: Joi.string().uri(),
+	username: Joi.string().required().pattern(Pattern.username.hasLetter),
 	firstName: Joi.string().required().pattern(Pattern.name),
 	lastName: Joi.string().required().pattern(Pattern.name),
-	displayName: Joi.string().pattern(Pattern.displayName),
-	mobile: Joi.string().pattern(Pattern.mobile),
-	password: Joi.string().pattern(Pattern.password.amountCharacter(4, 30)),
+	password: Joi.string()
+		.required()
+		.pattern(Pattern.password.amountCharacter(4, 30)),
 })

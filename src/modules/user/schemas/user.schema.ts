@@ -1,9 +1,7 @@
 import { Document } from 'mongoose'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { ApiProperty } from '@nestjs/swagger'
-import { Gender } from '@/constants'
-import { Admin } from './admin.schema'
-import { Member } from './member.schema'
+import { Gender, UserRole } from '@/constants'
 
 export type UserDocument = User & Document
 
@@ -26,20 +24,17 @@ export class Auth {
 }
 
 @Schema({
+	discriminatorKey: 'role',
 	versionKey: false,
 	timestamps: true,
 })
 export class User {
 	@ApiProperty()
-	@Prop({ type: String, unique: true })
-	username: string
-
-	@ApiProperty()
 	@Prop({ type: String, unique: true, required: true })
 	email: string
 
 	@ApiProperty()
-	@Prop({ type: String, required: true })
+	@Prop({ type: String })
 	avatar: string
 
 	@ApiProperty()
@@ -65,11 +60,9 @@ export class User {
 	@ApiProperty()
 	@Prop({
 		type: String,
-		enum: [Admin.name, Member.name],
+		enum: Object.values(UserRole),
 	})
 	role: string
 }
-
-export type UserInfo = Omit<User, 'auth'>
 
 export const UserSchema = SchemaFactory.createForClass(User)

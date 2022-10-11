@@ -16,7 +16,7 @@ export enum Gender {
 }
 
 export enum UserRole {
-	ADMIN = 'admin',
-	MEMBER = 'member',
-	SALESPERSON = 'salesperson',
+	ADMIN = 'Admin',
+	MEMBER = 'Member',
+	SALESPERSON = 'Salesperson',
 }

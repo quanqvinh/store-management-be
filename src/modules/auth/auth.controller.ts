@@ -1,6 +1,10 @@
 import { JwtRefreshGuard } from '@/common/guards/jwt-auth.guard'
 import { JwtAccessGuard } from '@/common/guards/jwt-auth.guard'
-import { LocalAuthGuard } from '@/common/guards/local-auth.guard'
+import {
+	LocalAdminGuard,
+	LocalMemberGuard,
+	LocalSalespersonGuard,
+} from '@/common/guards/local-auth.guard'
 import { Controller, UseGuards, Post } from '@nestjs/common'
 import { AuthService } from './services/auth.service'
 import { User } from '@/common/decorators/user.decorator'
@@ -12,9 +16,22 @@ import { ApiTagsAndBearer } from '@/common/decorators/api-tag-and-bearer.decorat
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 
-	@UseGuards(LocalAuthGuard)
-	@Post('login')
-	async login(@User() user) {
+	@UseGuards(LocalAdminGuard)
+	@Post('admin/login')
+	async loginAdmin(@User() user) {
+		return this.authService.generateTokens(user)
+	}
+
+	@UseGuards(LocalMemberGuard)
+	@Post('member/login')
+	async loginMember(@User() user) {
+		console.log(user)
+		return this.authService.generateTokens(user)
+	}
+
+	@UseGuards(LocalSalespersonGuard)
+	@Post('member/login')
+	async loginSalesperson(@User() user) {
 		return this.authService.generateTokens(user)
 	}
 
