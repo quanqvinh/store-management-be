@@ -30,8 +30,11 @@
 <!-- - Deployed by **Qovery** (AWS-based) in: https://z2375e4ba-z4217c050-gtw.z764289c4.blockdev.sh  
   <sub><b>More stable</b> - update when develop branch updated</sub>   -->
 
-Deployed by **Heroku** (Github Actions) in: https://sm-dev-api.herokuapp.com  
-  <sub><b>Sometimes crashed</b> - update when develop branch updated or had new merge request</sub>
+Deployed by **Railway** in: https://sm-dev-api.up.railway.app  
+<sub>Redeploy on commit in **develop** branch</sub>  
+
+Deployed by **Heroku** in: https://sm-dev-api.herokuapp.com  
+<sub>Redeploy on commit or pull request in **develop** branch</sub>  
 
 ## Installation
 
