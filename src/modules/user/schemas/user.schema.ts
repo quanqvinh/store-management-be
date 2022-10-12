@@ -26,7 +26,7 @@ export class Auth {
 @Schema({
 	discriminatorKey: 'role',
 	versionKey: false,
-	timestamps: true,
+	timestamps: { createdAt: true },
 })
 export class User {
 	@ApiProperty()

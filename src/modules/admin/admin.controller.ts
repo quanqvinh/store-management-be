@@ -2,112 +2,128 @@ import {
 	NotFoundDataException,
 	NotMatchedDataException,
 } from '@/common/exceptions/http'
-import {
-	Controller,
-	Post,
-	Get,
-	Patch,
-	Delete,
-	UseGuards,
-	UseInterceptors,
-} from '@nestjs/common'
+import { Controller, Post, Get, Patch, Delete } from '@nestjs/common'
 import { Body, Param } from '@nestjs/common/decorators'
-import { TransformInterceptor } from '@/common/interceptors/transform.interceptor'
 import {
 	CreateAdminDto,
 	CreateAdminSchema,
 	UpdateAdminInfoDto,
 	UpdateAdminInfoSchema,
 } from './dto'
-import { JwtAccessGuard } from '@/common/guards/jwt-auth.guard'
-import { ApiTagsAndBearer } from '@/common/decorators/api-tag-and-bearer.decorator'
-import { ApiResponse } from '@nestjs/swagger'
-import { Admin } from './schemas/admin.schema'
+import { JwtAccessTokenGuard } from '@/common/decorators/bearer-token.decorator'
+import { ApiResponse, ApiTags } from '@nestjs/swagger'
+import { AdminInfoResponse } from './types'
 import {
 	ObjectIdValidatePine,
 	JoiValidatePine,
 	EmailValidatePipe,
-	MobileValidatePipe,
+	UsernameValidatePipe,
 } from '@/common/pipes'
-import { ResponseData } from '@/types'
+import { WriteResponse } from '@/types'
 import { AdminService } from './admin.service'
 
-@ApiTagsAndBearer('admin')
 @Controller('admin')
+@ApiTags('admin')
 export class AdminController {
 	constructor(private readonly adminService: AdminService) {}
 
-	@UseInterceptors(TransformInterceptor<Admin[]>)
-	@UseGuards(JwtAccessGuard)
-	@Get('list')
-	@ApiResponse({ status: 200, type: ResponseData<Admin[]> })
-	async getAllAdmin(): Promise<Admin[]> {
-		return await this.adminService.findAll()
+	@Get('all')
+	@JwtAccessTokenGuard()
+	@ApiResponse({ status: 200, type: [AdminInfoResponse] })
+	async getAllAdmin(): Promise<AdminInfoResponse[]> {
+		return (await this.adminService.findAll()).map(admin => {
+			const { auth, ...insensitiveData } = admin
+			return {
+				...insensitiveData,
+				isVerified: auth.isVerified,
+			}
+		})
 	}
 
-	@UseInterceptors(TransformInterceptor<Admin>)
-	@UseGuards(JwtAccessGuard)
 	@Get('id/:id')
-	@ApiResponse({ status: 200, type: ResponseData<Admin> })
+	@JwtAccessTokenGuard()
+	@ApiResponse({ status: 200, type: AdminInfoResponse })
 	async getAdminById(
 		@Param('id', ObjectIdValidatePine) id: string
-	): Promise<Admin> {
+	): Promise<AdminInfoResponse> {
 		const admin = await this.adminService.findById(id)
 		if (!admin) throw new NotFoundDataException('Admin')
-		return admin
+		const { auth, ...insensitiveData } = admin
+		return {
+			...insensitiveData,
+			isVerified: auth.isVerified,
+		}
 	}
 
-	@UseInterceptors(TransformInterceptor<Admin>)
-	@UseGuards(JwtAccessGuard)
 	@Get('email/:email')
-	@ApiResponse({ status: 200, type: ResponseData<Admin> })
-	async getAdminByUsername(@Param('email', EmailValidatePipe) email: string) {
+	@JwtAccessTokenGuard()
+	@ApiResponse({ status: 200, type: AdminInfoResponse })
+	async getAdminByUsername(
+		@Param('email', EmailValidatePipe) email: string
+	): Promise<AdminInfoResponse> {
 		const admin = await this.adminService.findByEmail(email)
 		if (!admin) throw new NotFoundDataException('Admin')
-		return admin
+		const { auth, ...insensitiveData } = admin
+		return {
+			...insensitiveData,
+			isVerified: auth.isVerified,
+		}
 	}
 
-	@UseInterceptors(TransformInterceptor<Admin>)
-	@UseGuards(JwtAccessGuard)
-	@Get('mobile/:mobile')
-	@ApiResponse({ status: 200, type: Admin })
-	async getAdminByMobile(@Param('mobile', MobileValidatePipe) mobile: string) {
-		const Admin = await this.adminService.findByEmail(mobile)
-		if (!Admin) throw new NotFoundDataException('Admin')
-		return Admin
+	@Get('username/:username')
+	@JwtAccessTokenGuard()
+	@ApiResponse({ status: 200, type: AdminInfoResponse })
+	async getAdminByMobile(
+		@Param('username', UsernameValidatePipe) username: string
+	): Promise<AdminInfoResponse> {
+		const admin = await this.adminService.findByUsername(username)
+		if (!admin) throw new NotFoundDataException('Admin')
+		const { auth, ...insensitiveData } = admin
+		return {
+			...insensitiveData,
+			isVerified: auth.isVerified,
+		}
 	}
 
-	@UseInterceptors(TransformInterceptor<Admin>)
-	// @UseGuards(JwtAccessGuard)
 	@Post()
-	@ApiResponse({ status: 201, type: Admin })
+	@JwtAccessTokenGuard()
+	@ApiResponse({ status: 201, type: AdminInfoResponse })
 	async create(
 		@Body(new JoiValidatePine(CreateAdminSchema)) dto: CreateAdminDto
-	): Promise<Admin> {
+	): Promise<AdminInfoResponse> {
 		try {
-			return await this.adminService.create(dto)
+			const admin = await this.adminService.create(dto)
+			const { auth, ...insensitiveData } = admin?._doc
+			return {
+				...insensitiveData,
+				isVerified: auth.isVerified,
+			}
 		} catch (error) {
 			throw error
 		}
 	}
 
-	@UseGuards(JwtAccessGuard)
 	@Patch(':id')
+	@JwtAccessTokenGuard()
+	@ApiResponse({ status: 200, type: WriteResponse })
 	async updateInfo(
 		@Param('id', ObjectIdValidatePine) id: string,
 		@Body(new JoiValidatePine(UpdateAdminInfoSchema)) dto: UpdateAdminInfoDto
-	): Promise<boolean> {
+	): Promise<WriteResponse> {
 		const updateResult = await this.adminService.updateInfo(id, dto)
 		if (updateResult.matchedCount === 0) throw new NotMatchedDataException()
-		return updateResult.modifiedCount === updateResult.matchedCount
+		return {
+			isSuccess: updateResult.modifiedCount === updateResult.matchedCount,
+		}
 	}
 
-	@UseGuards(JwtAccessGuard)
 	@Delete(':id')
+	@JwtAccessTokenGuard()
+	@ApiResponse({ status: 200, type: WriteResponse })
 	async delete(
 		@Param('id', ObjectIdValidatePine) id: string
-	): Promise<boolean> {
+	): Promise<WriteResponse> {
 		const deleteResult = await this.adminService.delete(id)
-		return deleteResult.deletedCount > 0
+		return { isSuccess: deleteResult.deletedCount > 0 }
 	}
 }

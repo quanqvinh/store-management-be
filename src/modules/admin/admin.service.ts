@@ -2,7 +2,11 @@ import { HashService } from '@/common/providers/hash.service'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import { Admin, AdminDocument } from './schemas/admin.schema'
+import {
+	Admin,
+	AdminDocument,
+	AdminInsensitiveData,
+} from './schemas/admin.schema'
 import { CreateAdminDto, UpdateAdminInfoDto } from './dto'
 import { DuplicateKeyException } from '@/common/exceptions/mongo.exception'
 import { UpdateResult, DeleteResult } from 'mongodb'
@@ -16,32 +20,39 @@ export class AdminService {
 		private hashService: HashService
 	) {}
 
-	async findAll(): Promise<Admin[]> {
-		return await this.adminModel.find({ role: UserRole.ADMIN }).lean().exec()
+	async findAll(): Promise<AdminInsensitiveData[]> {
+		return await this.adminModel
+			.find({ role: UserRole.ADMIN })
+			.select('-auth.password -auth.validTokenTime')
+			.lean()
+			.exec()
 	}
 
-	async findById(id: string): Promise<Admin> {
+	async findById(id: string): Promise<AdminInsensitiveData> {
 		return await this.adminModel
 			.findOne({ role: UserRole.ADMIN, _id: id })
+			.select('-auth.password -auth.validTokenTime')
 			.lean()
 			.exec()
 	}
 
-	async findByEmail(email: string): Promise<Admin> {
+	async findByEmail(email: string): Promise<AdminInsensitiveData> {
 		return await this.adminModel
 			.findOne({ role: UserRole.ADMIN, email })
+			.select(`-auth.validTokenTime`)
 			.lean()
 			.exec()
 	}
 
-	async findByUsername(username: string): Promise<Admin> {
+	async findByUsername(username: string, isLogin = false): Promise<Admin> {
 		return await this.adminModel
 			.findOne({ role: UserRole.ADMIN, username })
+			.select(`${isLogin ? '' : '-auth.password '}-auth.validTokenTime`)
 			.lean()
 			.exec()
 	}
 
-	async create(dto: CreateAdminDto): Promise<Admin> {
+	async create(dto: CreateAdminDto): Promise<any> {
 		const existedAdmin = await this.adminModel
 			.findOne({
 				role: UserRole.ADMIN,

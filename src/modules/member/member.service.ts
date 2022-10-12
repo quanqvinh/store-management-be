@@ -40,7 +40,7 @@ export class MemberService {
 			.exec()
 	}
 
-	async create(dto: CreateMemberDto): Promise<Member> {
+	async create(dto: CreateMemberDto): Promise<any> {
 		const existedMember = await this.memberModel
 			.findOne({
 				role: Member.name,

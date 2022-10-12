@@ -16,7 +16,7 @@ import Pattern from '@/common/validators'
 @Injectable()
 export class LocalSalespersonStrategy extends PassportStrategy(
 	Strategy,
-	'local-admin'
+	'local-salesperson'
 ) {
 	constructor(private authService: AuthService) {
 		super({ usernameField: 'identifier' })

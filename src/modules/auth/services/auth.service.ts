@@ -1,3 +1,4 @@
+import { TokenData } from './../types/index'
 import { UserRole } from '@/constants/index'
 import { UserService } from '@/modules/user/user.service'
 import { HashService } from '@/common/providers/hash.service'
@@ -39,14 +40,16 @@ export class AuthService {
 				break
 			case IdentifierType.MOBILE:
 				user = (await this.memberService.findByMobile(identifier)) as T
+				break
 			case IdentifierType.USERNAME:
-				user = ((await this.adminService.findByUsername(identifier)) ??
+				user = ((await this.adminService.findByUsername(identifier, true)) ??
 					(await this.salespersonService.findByUsername(identifier))) as T
 				break
 			default:
 				user = null
 				break
 		}
+
 		if (
 			user &&
 			this.hashService.compare(password, (user as User).auth.password)
@@ -58,9 +61,7 @@ export class AuthService {
 		return null
 	}
 
-	async generateTokens(
-		user: any
-	): Promise<{ access_token: string; refresh_token: string }> {
+	async generateTokens(user: any): Promise<TokenData> {
 		const payload = { aud: user._id?.toString() || user.id, role: user.role }
 		const tokens = {
 			access_token: this.jwtService.sign(payload, {

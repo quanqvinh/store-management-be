@@ -19,6 +19,7 @@ export class SalespersonService {
 	async findAll(): Promise<Salesperson[]> {
 		return await this.adminModel
 			.find({ role: UserRole.SALESPERSON })
+			.select('-auth.password -auth.validTokenTime')
 			.lean()
 			.exec()
 	}
@@ -26,6 +27,7 @@ export class SalespersonService {
 	async findById(id: string): Promise<Salesperson> {
 		return await this.adminModel
 			.findOne({ role: UserRole.SALESPERSON, _id: id })
+			.select('-auth.password -auth.validTokenTime')
 			.lean()
 			.exec()
 	}
@@ -33,13 +35,18 @@ export class SalespersonService {
 	async findByEmail(email: string): Promise<Salesperson> {
 		return await this.adminModel
 			.findOne({ role: UserRole.SALESPERSON, email })
+			.select('-auth.password -auth.validTokenTime')
 			.lean()
 			.exec()
 	}
 
-	async findByUsername(username: string): Promise<Salesperson> {
+	async findByUsername(
+		username: string,
+		isLogin = false
+	): Promise<Salesperson> {
 		return await this.adminModel
 			.findOne({ role: UserRole.SALESPERSON, username })
+			.select(`${isLogin ? '' : '-auth.password '}-auth.validTokenTime`)
 			.lean()
 			.exec()
 	}

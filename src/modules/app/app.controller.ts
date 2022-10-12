@@ -2,15 +2,15 @@ import { Cookie, SignedCookie } from '@/common/decorators'
 import { Controller, Get, UseInterceptors } from '@nestjs/common'
 import { AppService } from './app.service'
 import { LoggingInterceptor } from '@/common/interceptors/logging.interceptor'
-import { ApiTagsAndBearer } from '@/common/decorators/api-tag-and-bearer.decorator'
+import { ApiTags } from '@nestjs/swagger'
 
-@ApiTagsAndBearer('app')
+@ApiTags('app')
 @Controller()
 export class AppController {
 	constructor(private readonly appService: AppService) {}
 
-	@UseInterceptors(LoggingInterceptor)
 	@Get()
+	@UseInterceptors(LoggingInterceptor)
 	getHello(@Cookie() cookies, @SignedCookie() signedCookies): string {
 		console.log('Check cookies:', cookies)
 		console.log('Check signed cookies:', signedCookies)

@@ -30,7 +30,7 @@
 <!-- - Deployed by **Qovery** (AWS-based) in: https://z2375e4ba-z4217c050-gtw.z764289c4.blockdev.sh  
   <sub><b>More stable</b> - update when develop branch updated</sub>   -->
 
-Deployed by **Heroku** (Github Actions) in: https://thanos-dev-api.herokuapp.com  
+Deployed by **Heroku** (Github Actions) in: https://sm-dev-api.herokuapp.com  
   <sub><b>Sometimes crashed</b> - update when develop branch updated or had new merge request</sub>
 
 ## Installation

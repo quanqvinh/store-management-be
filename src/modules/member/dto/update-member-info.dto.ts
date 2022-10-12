@@ -4,25 +4,25 @@ import { Gender } from '@/constants'
 import * as Joi from 'joi'
 
 export class UpdateMemberInfoDto {
-	@ApiProperty()
+	@ApiProperty({ required: false })
 	email: string
 
-	@ApiProperty()
+	@ApiProperty({ required: false })
 	mobile: string
 
-	@ApiProperty()
+	@ApiProperty({ required: false })
 	avatar: string
 
-	@ApiProperty()
+	@ApiProperty({ required: false })
 	firstName: string
 
-	@ApiProperty()
+	@ApiProperty({ required: false })
 	lastName: string
 
-	@ApiProperty()
+	@ApiProperty({ required: false })
 	gender: Gender
 
-	@ApiProperty()
+	@ApiProperty({ required: false })
 	dob: Date
 }
 
