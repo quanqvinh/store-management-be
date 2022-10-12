@@ -6,7 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { UserModule } from '@/modules/user/user.module'
 import { AuthModule } from './../auth/auth.module'
 import { ThrottlerModule } from '@nestjs/throttler'
-import { APP_FILTER, APP_GUARD } from '@nestjs/core'
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core'
 import {
 	HttpExceptionFilter,
 	MongoExceptionFilter,
@@ -14,6 +14,7 @@ import {
 } from '@/common/filters'
 import { envConfigValidate, envConfigLoad } from '@/config/env.config'
 import { ThrottlerGuard } from '@nestjs/throttler/dist/throttler.guard'
+import { TransformInterceptor } from '@/common/interceptors/transform.interceptor'
 
 @Module({
 	imports: [
@@ -50,6 +51,10 @@ import { ThrottlerGuard } from '@nestjs/throttler/dist/throttler.guard'
 		{
 			provide: APP_GUARD,
 			useClass: ThrottlerGuard,
+		},
+		{
+			provide: APP_INTERCEPTOR,
+			useClass: TransformInterceptor,
 		},
 	],
 })

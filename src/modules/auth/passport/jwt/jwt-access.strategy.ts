@@ -28,11 +28,11 @@ export class JwtAccessStrategy extends PassportStrategy(
 	}
 
 	async validate(payload: JwtPayload) {
-		const { aud: uid, iat: issuedAt } = payload
-		const userAuth = (await this.userService.findById(uid))?.auth
+		const { aud: uid, iat: issuedAt, role } = payload
+		const userAuth = (await this.userService.findById(uid, role))?.auth
 		if (!userAuth) throw new NotFoundDataException('User')
 		if (userAuth.validTokenTime > issuedAt * 1000)
 			throw new DetectedAbnormalLoginException()
-		return { id: uid }
+		return { id: uid, role }
 	}
 }

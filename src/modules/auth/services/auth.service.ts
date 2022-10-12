@@ -1,56 +1,68 @@
+import { TokenData } from './../types/index'
+import { UserRole } from '@/constants/index'
+import { UserService } from '@/modules/user/user.service'
 import { HashService } from '@/common/providers/hash.service'
 import { NotSavedDataException } from '@/common/exceptions/http'
 import { RefreshService } from './refresh.service'
-import { User, UserInfo } from '@/modules/user/schemas/user.schema'
 import { Injectable } from '@nestjs/common'
-import { UserService } from '@/modules/user/user.service'
+import { AdminService } from '@/modules/admin/admin.service'
 import { IdentifierType } from '@/constants'
 import { JwtService } from '@nestjs/jwt'
 import { ConfigService } from '@nestjs/config'
 import { TokenSubject } from '@/constants'
+import { MemberService } from '@/modules/member/member.service'
+import { SalespersonService } from '@/modules/salesperson/salesperson.service'
+import { User } from '@/modules/user/schemas/user.schema'
 
 @Injectable()
 export class AuthService {
 	constructor(
 		private userService: UserService,
+		private adminService: AdminService,
+		private memberService: MemberService,
+		private salespersonService: SalespersonService,
 		private jwtService: JwtService,
 		private configService: ConfigService,
 		private refreshService: RefreshService,
 		private hashService: HashService
 	) {}
 
-	async validateUser(
+	async validateUser<T, U>(
 		identifier: string,
 		identifierType: IdentifierType,
-		password: string
-	): Promise<UserInfo> {
-		let user: User
+		password: string,
+		role: UserRole
+	): Promise<U> {
+		let user: T
 		switch (identifierType) {
 			case IdentifierType.EMAIL:
-				user = await this.userService.findByEmail(identifier)
-				break
-			case IdentifierType.USERNAME:
-				user = await this.userService.findByUsername(identifier)
+				user = await this.userService.findByEmail<T>(identifier, role)
 				break
 			case IdentifierType.MOBILE:
-				user = await this.userService.findByMobile(identifier)
+				user = (await this.memberService.findByMobile(identifier)) as T
+				break
+			case IdentifierType.USERNAME:
+				user = ((await this.adminService.findByUsername(identifier, true)) ??
+					(await this.salespersonService.findByUsername(identifier))) as T
 				break
 			default:
 				user = null
 				break
 		}
-		if (user && this.hashService.compare(password, user.auth.password)) {
+
+		if (
+			user &&
+			this.hashService.compare(password, (user as User).auth.password)
+		) {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { auth, ...result } = user
-			return result
+			const { auth, ...result } = user as User
+			return result as U
 		}
 		return null
 	}
 
-	async generateTokens(
-		user: any
-	): Promise<{ access_token: string; refresh_token: string }> {
-		const payload = { aud: user._id?.toString() || user.id }
+	async generateTokens(user: any): Promise<TokenData> {
+		const payload = { aud: user._id?.toString() || user.id, role: user.role }
 		const tokens = {
 			access_token: this.jwtService.sign(payload, {
 				secret: this.configService.get<string>('jwt.accessToken.secret'),
