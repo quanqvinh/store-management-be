@@ -29,18 +29,19 @@ async function bootstrap() {
 
 	// Swagger
 	const config = new DocumentBuilder()
-		.setTitle('Thanos OpenAPI')
-		.setDescription('Thanos HRM System OpenAPI')
+		.setTitle('Store Management OpenAPI')
+		.setDescription('SM System OpenAPI')
 		.setVersion('1.0')
-		.addBearerAuth()
 		.build()
 	const document = SwaggerModule.createDocument(app, config)
 	SwaggerModule.setup('api', app, document)
 
 	const port = configService.get<number>('port') || 8080
 	await app.listen(port, () => {
-		if (nodeEnv === 'development')
+		if (nodeEnv === 'development') {
 			console.log(`Server runs at http://localhost:${port}`)
+			console.log(`OpenAPI viewed at http://localhost:${port}/api`)
+		}
 	})
 }
 bootstrap()

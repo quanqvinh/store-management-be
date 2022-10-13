@@ -9,10 +9,10 @@ import {
 	CreateAdminSchema,
 	UpdateAdminInfoDto,
 	UpdateAdminInfoSchema,
+	AdminInfoDto,
 } from './dto'
 import { JwtAccessTokenGuard } from '@/common/decorators/bearer-token.decorator'
 import { ApiResponse, ApiTags } from '@nestjs/swagger'
-import { AdminInfoResponse } from './types'
 import {
 	ObjectIdValidatePine,
 	JoiValidatePine,
@@ -29,8 +29,8 @@ export class AdminController {
 
 	@Get('all')
 	@JwtAccessTokenGuard()
-	@ApiResponse({ status: 200, type: [AdminInfoResponse] })
-	async getAllAdmin(): Promise<AdminInfoResponse[]> {
+	@ApiResponse({ status: 200, type: [AdminInfoDto] })
+	async getAllAdmin(): Promise<AdminInfoDto[]> {
 		return (await this.adminService.findAll()).map(admin => {
 			const { auth, ...insensitiveData } = admin
 			return {
@@ -42,10 +42,10 @@ export class AdminController {
 
 	@Get('id/:id')
 	@JwtAccessTokenGuard()
-	@ApiResponse({ status: 200, type: AdminInfoResponse })
+	@ApiResponse({ status: 200, type: AdminInfoDto })
 	async getAdminById(
 		@Param('id', ObjectIdValidatePine) id: string
-	): Promise<AdminInfoResponse> {
+	): Promise<AdminInfoDto> {
 		const admin = await this.adminService.findById(id)
 		if (!admin) throw new NotFoundDataException('Admin')
 		const { auth, ...insensitiveData } = admin
@@ -57,10 +57,10 @@ export class AdminController {
 
 	@Get('email/:email')
 	@JwtAccessTokenGuard()
-	@ApiResponse({ status: 200, type: AdminInfoResponse })
+	@ApiResponse({ status: 200, type: AdminInfoDto })
 	async getAdminByUsername(
 		@Param('email', EmailValidatePipe) email: string
-	): Promise<AdminInfoResponse> {
+	): Promise<AdminInfoDto> {
 		const admin = await this.adminService.findByEmail(email)
 		if (!admin) throw new NotFoundDataException('Admin')
 		const { auth, ...insensitiveData } = admin
@@ -72,10 +72,10 @@ export class AdminController {
 
 	@Get('username/:username')
 	@JwtAccessTokenGuard()
-	@ApiResponse({ status: 200, type: AdminInfoResponse })
+	@ApiResponse({ status: 200, type: AdminInfoDto })
 	async getAdminByMobile(
 		@Param('username', UsernameValidatePipe) username: string
-	): Promise<AdminInfoResponse> {
+	): Promise<AdminInfoDto> {
 		const admin = await this.adminService.findByUsername(username)
 		if (!admin) throw new NotFoundDataException('Admin')
 		const { auth, ...insensitiveData } = admin
@@ -87,10 +87,10 @@ export class AdminController {
 
 	@Post()
 	@JwtAccessTokenGuard()
-	@ApiResponse({ status: 201, type: AdminInfoResponse })
+	@ApiResponse({ status: 201, type: AdminInfoDto })
 	async create(
 		@Body(new JoiValidatePine(CreateAdminSchema)) dto: CreateAdminDto
-	): Promise<AdminInfoResponse> {
+	): Promise<AdminInfoDto> {
 		try {
 			const admin = await this.adminService.create(dto)
 			const { auth, ...insensitiveData } = admin?._doc

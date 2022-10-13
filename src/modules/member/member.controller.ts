@@ -10,6 +10,7 @@ import {
 	CreateMemberSchema,
 	UpdateMemberInfoDto,
 	UpdateMemberInfoSchema,
+	MemberInfoDto,
 } from './dto'
 import { ApiResponse, ApiTags } from '@nestjs/swagger'
 import {
@@ -20,7 +21,6 @@ import {
 } from '@/common/pipes'
 import { WriteResponse } from '@/types'
 import { JwtAccessTokenGuard } from '@/common/decorators/bearer-token.decorator'
-import { MemberInfoResponse } from './types'
 
 @Controller('member')
 @ApiTags('member')
@@ -29,8 +29,8 @@ export class MemberController {
 
 	@Get('list')
 	@JwtAccessTokenGuard()
-	@ApiResponse({ status: 200, type: [MemberInfoResponse] })
-	async getAllMember(): Promise<MemberInfoResponse[]> {
+	@ApiResponse({ status: 200, type: [MemberInfoDto] })
+	async getAllMember(): Promise<MemberInfoDto[]> {
 		return (await this.memberService.findAll()).map(admin => {
 			const { auth, ...insensitiveData } = admin
 			return {
@@ -42,10 +42,10 @@ export class MemberController {
 
 	@Get('id/:id')
 	@JwtAccessTokenGuard()
-	@ApiResponse({ status: 200, type: MemberInfoResponse })
+	@ApiResponse({ status: 200, type: MemberInfoDto })
 	async getMemberById(
 		@Param('id', ObjectIdValidatePine) id: string
-	): Promise<MemberInfoResponse> {
+	): Promise<MemberInfoDto> {
 		const member = await this.memberService.findById(id)
 		if (!member) throw new NotFoundDataException('Member')
 		const { auth, ...insensitiveData } = member
@@ -57,10 +57,10 @@ export class MemberController {
 
 	@Get('email/:email')
 	@JwtAccessTokenGuard()
-	@ApiResponse({ status: 200, type: MemberInfoResponse })
+	@ApiResponse({ status: 200, type: MemberInfoDto })
 	async getMemberByUsername(
 		@Param('email', EmailValidatePipe) email: string
-	): Promise<MemberInfoResponse> {
+	): Promise<MemberInfoDto> {
 		const member = await this.memberService.findByEmail(email)
 		if (!member) throw new NotFoundDataException('Member')
 		const { auth, ...insensitiveData } = member
@@ -72,10 +72,10 @@ export class MemberController {
 
 	@Get('mobile/:mobile')
 	@JwtAccessTokenGuard()
-	@ApiResponse({ status: 200, type: MemberInfoResponse })
+	@ApiResponse({ status: 200, type: MemberInfoDto })
 	async getMemberByMobile(
 		@Param('mobile', MobileValidatePipe) mobile: string
-	): Promise<MemberInfoResponse> {
+	): Promise<MemberInfoDto> {
 		const member = await this.memberService.findByEmail(mobile)
 		if (!member) throw new NotFoundDataException('Member')
 		const { auth, ...insensitiveData } = member
@@ -87,10 +87,10 @@ export class MemberController {
 
 	@Post()
 	@JwtAccessTokenGuard()
-	@ApiResponse({ status: 201, type: MemberInfoResponse })
+	@ApiResponse({ status: 201, type: MemberInfoDto })
 	async create(
 		@Body(new JoiValidatePine(CreateMemberSchema)) dto: CreateMemberDto
-	): Promise<MemberInfoResponse> {
+	): Promise<MemberInfoDto> {
 		try {
 			const member = await this.memberService.create(dto)
 			const { auth, ...insensitiveData } = member?._doc

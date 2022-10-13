@@ -12,8 +12,7 @@ import {
 	JwtRefreshTokenGuard,
 } from '@/common/decorators/bearer-token.decorator'
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger'
-import { TokenData } from './types'
-import { LoginDto } from './dto/login.dto'
+import { LoginDto, TokenDto } from './dto'
 
 @ApiTags('auth')
 @Controller('auth')
@@ -22,15 +21,15 @@ export class AuthController {
 
 	@Post('admin/login')
 	@UseGuards(LocalAdminGuard)
-	@ApiResponse({ status: 200, type: TokenData })
+	@ApiResponse({ status: 200, type: TokenDto })
 	@ApiBody({ type: LoginDto })
-	async loginAdmin(@User() user): Promise<TokenData> {
+	async loginAdmin(@User() user): Promise<TokenDto> {
 		return this.authService.generateTokens(user)
 	}
 
 	@Post('member/login')
 	@UseGuards(LocalMemberGuard)
-	@ApiResponse({ status: 200, type: TokenData })
+	@ApiResponse({ status: 200, type: TokenDto })
 	@ApiBody({ type: LoginDto })
 	async loginMember(@User() user) {
 		console.log(user)
@@ -39,7 +38,7 @@ export class AuthController {
 
 	@Post('salesperson/login')
 	@UseGuards(LocalSalespersonGuard)
-	@ApiResponse({ status: 200, type: TokenData })
+	@ApiResponse({ status: 200, type: TokenDto })
 	@ApiBody({ type: LoginDto })
 	async loginSalesperson(@User() user) {
 		return this.authService.generateTokens(user)
@@ -47,7 +46,7 @@ export class AuthController {
 
 	@Post('refresh')
 	@JwtRefreshTokenGuard()
-	@ApiResponse({ status: 200, type: TokenData })
+	@ApiResponse({ status: 200, type: TokenDto })
 	async refresh(@User() user) {
 		return this.authService.generateTokens(user)
 	}

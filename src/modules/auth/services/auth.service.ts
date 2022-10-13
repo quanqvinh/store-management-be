@@ -1,4 +1,3 @@
-import { TokenData } from './../types/index'
 import { UserRole } from '@/constants/index'
 import { UserService } from '@/modules/user/user.service'
 import { HashService } from '@/common/providers/hash.service'
@@ -13,6 +12,7 @@ import { TokenSubject } from '@/constants'
 import { MemberService } from '@/modules/member/member.service'
 import { SalespersonService } from '@/modules/salesperson/salesperson.service'
 import { User } from '@/modules/user/schemas/user.schema'
+import { TokenDto } from '../dto'
 
 @Injectable()
 export class AuthService {
@@ -61,7 +61,7 @@ export class AuthService {
 		return null
 	}
 
-	async generateTokens(user: any): Promise<TokenData> {
+	async generateTokens(user: any): Promise<TokenDto> {
 		const payload = { aud: user._id?.toString() || user.id, role: user.role }
 		const tokens = {
 			access_token: this.jwtService.sign(payload, {
