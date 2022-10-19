@@ -1,17 +1,19 @@
-import { RefreshService } from '../../services/refresh.service'
-import { UserService } from '@/modules/user/user.service'
+import { Injectable } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { Strategy, ExtractJwt } from 'passport-jwt'
-import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { RefreshService } from '@/modules/token/services/refresh.service'
 import { TokenSubject } from '@/constants'
+import { JwtPayload } from '@/types'
+import { Auth } from '../../schemas/auth.schema'
+import { EmployeeService } from '@/modules/employee/employee.service'
+import { MemberService } from '@/modules/member/member.service'
 import {
 	NotFoundDataException,
 	DetectedAbnormalLoginException,
 	InvalidRefreshTokenException,
 	ReusedTokenException,
 } from '@/common/exceptions/http'
-import { JwtPayload } from '@/types'
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
@@ -20,7 +22,8 @@ export class JwtRefreshStrategy extends PassportStrategy(
 ) {
 	constructor(
 		private configService: ConfigService,
-		private userService: UserService,
+		private employeeService: EmployeeService,
+		private memberService: MemberService,
 		private refreshService: RefreshService
 	) {
 		super({
@@ -32,15 +35,32 @@ export class JwtRefreshStrategy extends PassportStrategy(
 	}
 
 	async validate(payload: JwtPayload) {
-		const { aud: uid, iat: issuedAt, role } = payload
-		const [user, token] = await Promise.all([
-			this.userService.findById(uid, role),
-			this.refreshService.get(payload),
-		])
-		if (!user) throw new NotFoundDataException('User')
+		const token = await this.refreshService.get(payload)
 		if (!token) throw new InvalidRefreshTokenException()
 
-		if (user.auth.validTokenTime > issuedAt * 1000)
+		const { aud: uid, iat: issuedAt, role } = payload
+		const auth: Partial<Auth> = {}
+		if (role) {
+			const employee = await this.employeeService.employeeModel
+				.findOne({
+					_id: uid,
+					role,
+				})
+				.select('auth')
+				.lean()
+				.exec()
+			Object.assign(auth, employee?.auth)
+		} else {
+			const member = await this.memberService.memberModel
+				.findById(uid)
+				.select('auth')
+				.lean()
+				.exec()
+			Object.assign(auth, member?.auth)
+		}
+		if (Object.keys(auth).length === 0) throw new NotFoundDataException('user')
+
+		if (auth.validTokenTime > issuedAt * 1000)
 			throw new DetectedAbnormalLoginException()
 
 		if (await this.refreshService.check(token)) return { id: uid, role }

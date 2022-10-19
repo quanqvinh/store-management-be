@@ -1,13 +1,13 @@
-import { UserRole } from '@/constants/index'
+import { EmployeeRole } from '@/constants/index'
 import { HttpException, HttpStatus } from '@nestjs/common'
 import { ApiProperty } from '@nestjs/swagger'
 
 export class JwtPayload {
 	sub: string
 	aud: string
-	role: UserRole
 	exp: number
 	iat: number
+	role?: EmployeeRole
 }
 
 export class ResponseData<T> {

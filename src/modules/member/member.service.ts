@@ -11,7 +11,7 @@ import { NotFoundDataException } from '@/common/exceptions/http'
 @Injectable()
 export class MemberService {
 	constructor(
-		@InjectModel(Member.name) private memberModel: Model<MemberDocument>,
+		@InjectModel(Member.name) public memberModel: Model<MemberDocument>,
 		private hashService: HashService
 	) {}
 

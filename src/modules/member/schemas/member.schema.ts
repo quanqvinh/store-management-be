@@ -1,42 +1,68 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose'
 import { Document, Types } from 'mongoose'
+import { Auth } from '@/modules/auth/schemas/auth.schema'
 import { Gender } from '@/constants'
-import { Auth } from '@/modules/user/schemas/user.schema'
 import { ChangeFields } from '@/types'
-import { ApiProperty } from '@nestjs/swagger'
 
 export type MemberDocument = Member & Document
 
-@Schema({ discriminatorKey: 'role', versionKey: false })
-export class Member {
-	@ApiProperty()
-	email: string
-	@ApiProperty()
-	avatar: string
-	@ApiProperty()
-	firstName: string
-	@ApiProperty()
-	lastName: string
-	@ApiProperty()
-	auth: Auth
-	@ApiProperty()
-	gender: Gender
-	@ApiProperty()
-	dob: Date
-	@ApiProperty()
-	role: string
-
-	@ApiProperty()
-	@Prop({ type: String, required: true })
-	mobile: string
-
-	@ApiProperty()
-	@Prop({ type: Types.ObjectId, ref: 'MemberType' })
+@Schema({ versionKey: false, _id: false })
+export class MemberMilestone {
+	@Prop({ type: Types.ObjectId, required: true })
 	memberType: Types.ObjectId
 
-	@ApiProperty()
-	@Prop({ type: [String] })
-	address: Array<string>
+	@Prop({ type: Date, required: true })
+	from: Date
+}
+
+@Schema({ versionKey: false, _id: false })
+export class MemberInfo {
+	@Prop({ type: Number, required: true, default: 0 })
+	usedPoint: number
+
+	@Prop({ type: Number, required: true, default: 0 })
+	expiredPoint: number
+
+	@Prop({ type: Number, required: true, default: 0 })
+	currentPoint: number
+
+	@Prop({ type: Array<MemberMilestone>, required: true })
+	memberMilestone: Array<MemberMilestone>
+}
+
+@Schema({ versionKey: false, timestamps: { createdAt: 'joinedAt' } })
+export class Member {
+	_id: Types.ObjectId
+
+	@Prop({ type: String, required: true, unique: true })
+	email: string
+
+	@Prop({ type: String, required: true, unique: true })
+	mobile: string
+
+	@Prop({ type: Auth, required: true })
+	auth: Auth
+
+	@Prop({ type: String })
+	avatar: string
+
+	@Prop({ type: String, required: true })
+	firstName: string
+
+	@Prop({ type: String, required: true })
+	lastName: string
+
+	@Prop({ type: String, enum: Object.values(Gender) })
+	gender: Gender
+
+	@Prop({ type: Date })
+	dob: Date
+
+	@Prop({ type: Date })
+	joinedAt: Date
+
+	@Prop({ type: MemberInfo, required: true })
+	memberInfo: MemberInfo
 }
 
 export type MemberInsensitiveData = ChangeFields<

@@ -1,20 +1,20 @@
+import { Injectable } from '@nestjs/common'
+import { InjectModel } from '@nestjs/mongoose'
 import { ConfigService } from '@nestjs/config'
-import { ReusedTokenException } from '@/common/exceptions/http'
 import { JwtService } from '@nestjs/jwt'
+import { Model } from 'mongoose'
 import {
 	RefreshToken,
 	RefreshTokenDocument,
-} from './../schemas/refresh-token.schema'
-import { Injectable } from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
+} from '../schemas/refresh-token.schema'
+import { JwtPayload } from '@/types'
 import { UpdateResult, DeleteResult } from 'mongodb'
 
 @Injectable()
 export class RefreshService {
 	constructor(
 		@InjectModel(RefreshToken.name)
-		private refreshTokenModel: Model<RefreshTokenDocument>,
+		public refreshTokenModel: Model<RefreshTokenDocument>,
 		private jwtService: JwtService,
 		private configService: ConfigService
 	) {}
@@ -41,13 +41,12 @@ export class RefreshService {
 		const token = await this.refreshTokenModel.create({
 			uid,
 			value,
-			tokenType: RefreshToken.name,
 		})
 		if (token) return true
 		return false
 	}
 
-	async get(payload): Promise<RefreshToken> {
+	async get(payload: JwtPayload): Promise<RefreshToken> {
 		return await this.refreshTokenModel
 			.findOne({ value: this.resignToken(payload) })
 			.lean()
