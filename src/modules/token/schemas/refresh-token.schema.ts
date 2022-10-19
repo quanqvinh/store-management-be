@@ -8,9 +8,15 @@ export type RefreshTokenDocument = Document & RefreshToken
 
 @Schema({ versionKey: false })
 export class RefreshToken {
+	@Prop({ type: Types.ObjectId })
 	uid: Types.ObjectId
+
+	@Prop({
+		type: String,
+		required: true,
+		unique: true,
+	})
 	value: string
-	type: string
 
 	@Prop({
 		type: Boolean,

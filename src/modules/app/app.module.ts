@@ -3,8 +3,9 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { ConfigModule } from '@nestjs/config'
 import { MongooseModule } from '@nestjs/mongoose'
-import { UserModule } from '@/modules/user/user.module'
-import { AuthModule } from './../auth/auth.module'
+import { EmployeeModule } from '@/modules/employee/employee.module'
+import { MemberModule } from '@/modules/member/member.module'
+import { AuthModule } from '@/modules/auth/auth.module'
 import { ThrottlerModule } from '@nestjs/throttler'
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core'
 import {
@@ -26,7 +27,8 @@ import { TransformInterceptor } from '@/common/interceptors/transform.intercepto
 			cache: true,
 		}),
 		MongooseModule.forRoot(envConfigLoad().mongo.url),
-		UserModule,
+		EmployeeModule,
+		MemberModule,
 		AuthModule,
 		ThrottlerModule.forRoot({
 			ttl: 60,

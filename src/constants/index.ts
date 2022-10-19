@@ -1,7 +1,7 @@
 export enum IdentifierType {
-	EMAIL = 'Email',
-	USERNAME = 'Username',
-	MOBILE = 'Mobile',
+	EMAIL = 'email',
+	USERNAME = 'username',
+	MOBILE = 'mobile',
 }
 
 export enum TokenSubject {
@@ -15,8 +15,7 @@ export enum Gender {
 	OTHER = 'other',
 }
 
-export enum UserRole {
-	ADMIN = 'Admin',
-	MEMBER = 'Member',
-	SALESPERSON = 'Salesperson',
+export enum EmployeeRole {
+	ADMIN = 'admin',
+	SALESPERSON = 'salesperson',
 }
