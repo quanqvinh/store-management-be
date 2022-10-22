@@ -5,11 +5,7 @@ import {
 	LocalMemberGuard,
 	LocalSalespersonGuard,
 } from '@/common/guards/local-auth.guard'
-import {
-	User,
-	JwtAccessTokenGuard,
-	JwtRefreshTokenGuard,
-} from '@/common/decorators'
+import { User, JwtAccessTokenGuard, JwtRefreshTokenGuard } from '@/common/decorators'
 import { TokenService } from '../token/services/token.service'
 import { TokenPairDto } from '../token/dto/token-pair.dto'
 

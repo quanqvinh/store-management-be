@@ -33,8 +33,7 @@ export class TokenService {
 				subject: TokenSubject.REFRESH,
 			}),
 		}
-		if (await this.refreshService.save(payload.aud, tokenPair.refresh_token))
-			return tokenPair
+		if (await this.refreshService.save(payload.aud, tokenPair.refresh_token)) return tokenPair
 		throw new NotSavedDataException()
 	}
 }

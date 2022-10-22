@@ -1,5 +1,5 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose'
-import { Document, Types } from 'mongoose'
+import { Document, ObjectId } from 'mongoose'
 import { Gender, EmployeeRole } from '@/constants'
 import { Auth } from '@/modules/auth/schemas/auth.schema'
 
@@ -7,7 +7,7 @@ export type EmployeeDocument = Employee & Document
 
 @Schema({ versionKey: false, timestamps: { createdAt: 'joinedAt' } })
 export class Employee {
-	_id: Types.ObjectId
+	_id: ObjectId
 
 	@Prop({ type: String, required: true, unique: true })
 	username: string
@@ -36,6 +36,7 @@ export class Employee {
 	@Prop({ type: Date })
 	dob: Date
 
+	@Prop({ type: Date, expires: 0 })
 	joinedAt: Date
 }
 

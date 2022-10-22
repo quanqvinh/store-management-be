@@ -1,10 +1,5 @@
 import { MongoError } from 'mongodb'
-import {
-	ExceptionFilter,
-	Catch,
-	ArgumentsHost,
-	HttpStatus,
-} from '@nestjs/common'
+import { ExceptionFilter, Catch, ArgumentsHost, HttpStatus } from '@nestjs/common'
 import { Response } from 'express'
 
 @Catch(MongoError)

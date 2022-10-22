@@ -1,38 +1,22 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose'
-import { Document, Types } from 'mongoose'
+import { Document, ObjectId } from 'mongoose'
 import { Auth } from '@/modules/auth/schemas/auth.schema'
 import { Gender } from '@/constants'
-import { ChangeFields } from '@/types'
+import { MemberInfo, MemberInfoSchema } from './member-info.schema'
+import { MemberHistoryDay, MemberHistoryDaySchema } from './member-history-day.schema'
+import {
+	Notification,
+	NotificationSchema,
+} from '@/modules/notification/schemas/notification.schema'
 
 export type MemberDocument = Member & Document
 
-@Schema({ versionKey: false, _id: false })
-export class MemberMilestone {
-	@Prop({ type: Types.ObjectId, required: true })
-	memberType: Types.ObjectId
-
-	@Prop({ type: Date, required: true })
-	from: Date
-}
-
-@Schema({ versionKey: false, _id: false })
-export class MemberInfo {
-	@Prop({ type: Number, required: true, default: 0 })
-	usedPoint: number
-
-	@Prop({ type: Number, required: true, default: 0 })
-	expiredPoint: number
-
-	@Prop({ type: Number, required: true, default: 0 })
-	currentPoint: number
-
-	@Prop({ type: Array<MemberMilestone>, required: true })
-	memberMilestone: Array<MemberMilestone>
-}
-
 @Schema({ versionKey: false, timestamps: { createdAt: 'joinedAt' } })
 export class Member {
-	_id: Types.ObjectId
+	_id: ObjectId
+
+	@Prop({ type: String, required: true, unique: true })
+	code: string
 
 	@Prop({ type: String, required: true, unique: true })
 	email: string
@@ -61,15 +45,14 @@ export class Member {
 	@Prop({ type: Date })
 	joinedAt: Date
 
-	@Prop({ type: MemberInfo, required: true })
+	@Prop({ type: MemberInfoSchema, required: true })
 	memberInfo: MemberInfo
-}
 
-export type MemberInsensitiveData = ChangeFields<
-	Member,
-	{
-		auth: Pick<Auth, 'isVerified'>
-	}
->
+	@Prop({ type: MemberHistoryDaySchema })
+	specialDays: MemberHistoryDay
+
+	@Prop([{ type: NotificationSchema }])
+	notifications: Array<Notification>
+}
 
 export const MemberSchema = SchemaFactory.createForClass(Member)

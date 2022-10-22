@@ -3,10 +3,7 @@ import { InjectModel } from '@nestjs/mongoose'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { Model } from 'mongoose'
-import {
-	RefreshToken,
-	RefreshTokenDocument,
-} from '../schemas/refresh-token.schema'
+import { RefreshToken, RefreshTokenDocument } from '../schemas/refresh-token.schema'
 import { JwtPayload } from '@/types'
 import { UpdateResult, DeleteResult } from 'mongodb'
 
@@ -31,9 +28,7 @@ export class RefreshService {
 	}
 
 	private async disable(tokenValue): Promise<UpdateResult> {
-		return await this.refreshTokenModel
-			.updateOne({ value: tokenValue }, { disabled: true })
-			.exec()
+		return await this.refreshTokenModel.updateOne({ value: tokenValue }, { disabled: true }).exec()
 	}
 
 	// Public methods
@@ -59,8 +54,7 @@ export class RefreshService {
 			return false
 		}
 		const disableStatus = await this.disable(token.value)
-		if (disableStatus.modifiedCount !== 1)
-			console.log('Disable refresh token failed')
+		if (disableStatus.modifiedCount !== 1) console.log('Disable refresh token failed')
 		return true
 	}
 }
