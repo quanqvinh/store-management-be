@@ -1,5 +1,5 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose'
-import { Types, Document } from 'mongoose'
+import { Types, Document, ObjectId } from 'mongoose'
 import { envConfigLoad } from '@/config/env.config'
 
 const env = envConfigLoad({ load: true })
@@ -9,7 +9,7 @@ export type RefreshTokenDocument = Document & RefreshToken
 @Schema({ versionKey: false })
 export class RefreshToken {
 	@Prop({ type: Types.ObjectId })
-	uid: Types.ObjectId
+	uid: ObjectId
 
 	@Prop({
 		type: String,

@@ -16,10 +16,7 @@ import {
 } from '@/common/exceptions/http'
 
 @Injectable()
-export class JwtRefreshStrategy extends PassportStrategy(
-	Strategy,
-	'refresh-jwt'
-) {
+export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'refresh-jwt') {
 	constructor(
 		private configService: ConfigService,
 		private employeeService: EmployeeService,
@@ -51,17 +48,12 @@ export class JwtRefreshStrategy extends PassportStrategy(
 				.exec()
 			Object.assign(auth, employee?.auth)
 		} else {
-			const member = await this.memberService.memberModel
-				.findById(uid)
-				.select('auth')
-				.lean()
-				.exec()
+			const member = await this.memberService.memberModel.findById(uid).select('auth').lean().exec()
 			Object.assign(auth, member?.auth)
 		}
 		if (Object.keys(auth).length === 0) throw new NotFoundDataException('user')
 
-		if (auth.validTokenTime > issuedAt * 1000)
-			throw new DetectedAbnormalLoginException()
+		if (auth.validTokenTime > issuedAt * 1000) throw new DetectedAbnormalLoginException()
 
 		if (await this.refreshService.check(token)) return { id: uid, role }
 		else throw new ReusedTokenException()

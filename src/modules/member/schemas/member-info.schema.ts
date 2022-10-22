@@ -1,10 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import {
-	MemberMilestone,
-	MemberMilestoneSchema,
-} from './member-milestone.schema'
-
-
+import { ObjectId, Types } from 'mongoose'
 
 @Schema({ versionKey: false, _id: false })
 export class MemberInfo {
@@ -17,12 +12,8 @@ export class MemberInfo {
 	@Prop({ type: Number, required: true, default: 0 })
 	currentPoint: number
 
-	@Prop({ type: [MemberMilestoneSchema], required: true })
-	memberMilestone: [MemberMilestone]
+	@Prop({ type: Types.ObjectId, required: true, ref: 'MemberType' })
+	memberType: ObjectId
 }
 
 export const MemberInfoSchema = SchemaFactory.createForClass(MemberInfo)
-
-MemberInfoSchema.virtual('currentType').get(function () {
-	return this.memberMilestone[0].memberType
-})

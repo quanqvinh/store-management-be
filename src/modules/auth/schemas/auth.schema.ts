@@ -8,9 +8,9 @@ export class Auth {
 	@Prop({ type: String, required: true })
 	password: string
 
-	@Prop({ type: String, required: true, default: false })
+	@Prop({ type: Boolean, required: true, default: false })
 	isVerified: boolean
 
-	@Prop({ type: Number, required: true, default: Date.now() })
+	@Prop({ type: Number, required: true, default: Date.now(), expires: 30 })
 	validTokenTime: number
 }
