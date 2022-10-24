@@ -17,4 +17,6 @@ export class AppliedPeriodicCoupon extends AppliedCoupon {
 	startDate: Date
 }
 
-export const AppliedPeriodicCouponSchema = SchemaFactory.createForClass(AppliedPeriodicCoupon)
+export const AppliedPeriodicCouponSchema = SchemaFactory.createForClass(
+	AppliedPeriodicCoupon
+)

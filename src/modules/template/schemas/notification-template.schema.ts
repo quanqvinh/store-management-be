@@ -1,7 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document } from 'mongoose'
 import { TemplateType } from '@/constants/index'
-import { Template, TemplateScript, TemplateScriptDefine } from './template.schema'
+import {
+	Template,
+	TemplateScript,
+	TemplateScriptDefine,
+} from './template.schema'
 
 export type NotificationTemplateDocument = Document & NotificationTemplate
 
@@ -23,4 +27,5 @@ export class NotificationTemplate extends Template {
 	order: NotificationTemplateScript
 }
 
-export const NotificationTemplateSchema = SchemaFactory.createForClass(NotificationTemplate)
+export const NotificationTemplateSchema =
+	SchemaFactory.createForClass(NotificationTemplate)

@@ -75,3 +75,9 @@ export enum TemplateType {
 	MAIL = 'mail',
 	NOTIFICATION = 'notification',
 }
+
+export enum ContactType {
+	PHONE_NUMBER = 'phone_number',
+	EMAIL = 'email',
+	WEBSITE = 'website',
+}

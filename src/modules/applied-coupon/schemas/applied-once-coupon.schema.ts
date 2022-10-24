@@ -7,4 +7,5 @@ export type AppliedOnceCouponDocument = AppliedOnceCoupon & Document
 @Schema({ versionKey: false })
 export class AppliedOnceCoupon extends AppliedCoupon {}
 
-export const AppliedOnceCouponSchema = SchemaFactory.createForClass(AppliedOnceCoupon)
+export const AppliedOnceCouponSchema =
+	SchemaFactory.createForClass(AppliedOnceCoupon)

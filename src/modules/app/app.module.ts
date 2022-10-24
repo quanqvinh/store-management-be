@@ -8,10 +8,15 @@ import { MemberModule } from '@/modules/member/member.module'
 import { AuthModule } from '@/modules/auth/auth.module'
 import { ThrottlerModule } from '@nestjs/throttler'
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core'
-import { HttpExceptionFilter, MongoExceptionFilter, JoiExceptionFilter } from '@/common/filters'
+import {
+	HttpExceptionFilter,
+	MongoExceptionFilter,
+	JoiExceptionFilter,
+} from '@/common/filters'
 import { envConfigValidate, envConfigLoad } from '@/config/env.config'
 import { ThrottlerGuard } from '@nestjs/throttler/dist/throttler.guard'
 import { TransformInterceptor } from '@/common/interceptors/transform.interceptor'
+import { ProductModule } from '@/modules/product/product.module'
 
 @Module({
 	imports: [
@@ -26,6 +31,7 @@ import { TransformInterceptor } from '@/common/interceptors/transform.intercepto
 		EmployeeModule,
 		MemberModule,
 		AuthModule,
+		ProductModule,
 		ThrottlerModule.forRoot({
 			ttl: 60,
 			limit: 10,

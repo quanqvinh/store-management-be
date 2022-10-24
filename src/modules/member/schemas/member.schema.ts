@@ -1,13 +1,17 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose'
-import { Document, ObjectId } from 'mongoose'
+import { Document, ObjectId, Types } from 'mongoose'
 import { Auth } from '@/modules/auth/schemas/auth.schema'
 import { Gender } from '@/constants'
 import { MemberInfo, MemberInfoSchema } from './member-info.schema'
-import { MemberHistoryDay, MemberHistoryDaySchema } from './member-history-day.schema'
+import {
+	MemberHistoryDay,
+	MemberHistoryDaySchema,
+} from './member-history-day.schema'
 import {
 	Notification,
 	NotificationSchema,
 } from '@/modules/notification/schemas/notification.schema'
+import mongooseLeanVirtuals from 'mongoose-lean-virtuals'
 
 export type MemberDocument = Member & Document
 
@@ -48,6 +52,17 @@ export class Member {
 	@Prop({ type: MemberInfoSchema, required: true })
 	memberInfo: MemberInfo
 
+	@Prop({
+		type: {
+			product: [{ type: Types.ObjectId, ref: 'Product' }],
+			store: [{ type: Types.ObjectId, ref: 'Store' }],
+		},
+	})
+	favorite: {
+		product: Array<ObjectId>
+		store: Array<ObjectId>
+	}
+
 	@Prop({ type: MemberHistoryDaySchema })
 	specialDays: MemberHistoryDay
 
@@ -56,3 +71,8 @@ export class Member {
 }
 
 export const MemberSchema = SchemaFactory.createForClass(Member)
+
+MemberSchema.plugin(mongooseLeanVirtuals)
+MemberSchema.virtual('variables').get(function () {
+	return {}
+})

@@ -2,8 +2,16 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 
 @Schema({ versionKey: false, _id: false })
 export class DiscountType {
-	@Prop({ type: Number })
-	percentage: number
+	@Prop({
+		type: {
+			amount: { type: Number, required: true },
+			maxDecrease: { type: Number },
+		},
+	})
+	percentage: {
+		amount: number
+		maxDecrease: number
+	}
 
 	@Prop({ type: Number })
 	decrease: number

@@ -12,7 +12,11 @@ export class AuthService {
 		private hashService: HashService
 	) {}
 
-	async validateMember(identifier: string, identifierType: IdentifierType, password: string) {
+	async validateMember(
+		identifier: string,
+		identifierType: IdentifierType,
+		password: string
+	) {
 		const member = await this.memberService.memberModel
 			.findOne({
 				[identifierType]: identifier,
@@ -27,7 +31,11 @@ export class AuthService {
 		return null
 	}
 
-	async validateEmployee(username: string, role: EmployeeRole, password: string) {
+	async validateEmployee(
+		username: string,
+		role: EmployeeRole,
+		password: string
+	) {
 		const employee = await this.employeeService.employeeModel
 			.findOne({
 				username,
@@ -36,7 +44,10 @@ export class AuthService {
 			.select('auth email role')
 			.lean()
 			.exec()
-		if (employee && this.hashService.compare(password, employee.auth.password)) {
+		if (
+			employee &&
+			this.hashService.compare(password, employee.auth.password)
+		) {
 			employee.auth = undefined
 			return employee
 		}

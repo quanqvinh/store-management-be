@@ -1,5 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Product, ProductSchema } from '@/modules/product/schemas/product.schema'
+import {
+	Product,
+	ProductSchema,
+} from '@/modules/product/schemas/product.schema'
 import { Option, OptionSchema } from '@/modules/product/schemas/option.schema'
 
 @Schema({ versionKey: false, _id: false })

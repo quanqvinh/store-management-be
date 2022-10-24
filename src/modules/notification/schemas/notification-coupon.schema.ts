@@ -14,4 +14,5 @@ export class NotificationCoupon extends Notification {
 	applyCouponId: ObjectId
 }
 
-export const NotificationCouponSchema = SchemaFactory.createForClass(NotificationCoupon)
+export const NotificationCouponSchema =
+	SchemaFactory.createForClass(NotificationCoupon)

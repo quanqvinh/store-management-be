@@ -30,7 +30,10 @@ export class Notification {
 	createdAt: Date
 }
 
-export type NotificationContent = Pick<Notification, 'title' | 'content' | 'image'>
+export type NotificationContent = Pick<
+	Notification,
+	'title' | 'content' | 'image'
+>
 
 export const NotificationContentPropertyDefine = {
 	title: { type: String, required: true },

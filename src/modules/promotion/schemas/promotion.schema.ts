@@ -1,3 +1,7 @@
+import {
+	Category,
+	CategorySchema,
+} from '@/modules/product/schemas/category.schema'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Types, ObjectId, Document } from 'mongoose'
 
@@ -36,6 +40,9 @@ export class Promotion {
 
 	@Prop({ type: Types.ObjectId, ref: 'Partner' })
 	partner: ObjectId
+
+	@Prop({ type: CategorySchema, required: true })
+	category: Category
 
 	createAt: Date
 	updatedAt: Date

@@ -4,6 +4,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 export class Option {
 	@Prop([{ type: { name: String, fee: Number } }])
 	size: Array<{
+		key: string
 		name: string
 		fee: number
 	}>

@@ -1,7 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document } from 'mongoose'
 import { TemplateType } from '@/constants/index'
-import { Template, TemplateScript, TemplateScriptDefine } from './template.schema'
+import {
+	Template,
+	TemplateScript,
+	TemplateScriptDefine,
+} from './template.schema'
 
 export type MailTemplateDocument = Document & MailTemplate
 

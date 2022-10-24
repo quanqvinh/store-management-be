@@ -1,4 +1,9 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common'
+import {
+	ExceptionFilter,
+	Catch,
+	ArgumentsHost,
+	HttpException,
+} from '@nestjs/common'
 import { Response } from 'express'
 import { ThrottlerException } from '@nestjs/throttler'
 import { TooManyRequestException } from '../exceptions/http'
@@ -10,7 +15,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
 		const response = ctx.getResponse<Response>()
 
 		// Custom Throttler Exception response
-		if (exception instanceof ThrottlerException) exception = new TooManyRequestException()
+		if (exception instanceof ThrottlerException)
+			exception = new TooManyRequestException()
 
 		const status = exception.getStatus()
 

@@ -12,13 +12,24 @@ export class Condition {
 	@Prop({ type: String })
 	orderType: string
 
-	@Prop({ type: String })
-	size: string
-
-	@Prop([{ type: Types.ObjectId, ref: 'Product' }])
+	@Prop([
+		{
+			type: {
+				product: { type: Types.ObjectId, required: true, ref: 'Product' },
+				sizeKey: { type: String },
+			},
+		},
+	])
 	includeOne: [ObjectId]
 
-	@Prop([{ type: Types.ObjectId, ref: 'Product' }])
+	@Prop([
+		{
+			type: {
+				product: { type: Types.ObjectId, required: true, ref: 'Product' },
+				sizeKey: { type: String },
+			},
+		},
+	])
 	includeAll: [ObjectId]
 }
 

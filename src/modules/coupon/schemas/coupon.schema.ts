@@ -30,7 +30,7 @@ export class Coupon {
 	description: string
 
 	@Prop({ type: ConditionSchema })
-	condition: Condition
+	orderCondition: Condition
 
 	@Prop({
 		type: String,
@@ -41,9 +41,6 @@ export class Coupon {
 
 	@Prop({ type: Number, default: 0 })
 	applyTime: number
-
-	@Prop([{ type: Types.ObjectId, required: true, ref: 'Product' }])
-	applyTo: [ObjectId]
 
 	@Prop({ type: NotificationContentPropertyDefine })
 	notification: NotificationContent

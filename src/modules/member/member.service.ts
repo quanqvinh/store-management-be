@@ -20,15 +20,24 @@ export class MemberService {
 	}
 
 	async findById(id: string): Promise<Member> {
-		return await this.memberModel.findOne({ role: Member.name, _id: id }).lean().exec()
+		return await this.memberModel
+			.findOne({ role: Member.name, _id: id })
+			.lean()
+			.exec()
 	}
 
 	async findByEmail(email: string): Promise<Member> {
-		return await this.memberModel.findOne({ role: Member.name, email }).lean().exec()
+		return await this.memberModel
+			.findOne({ role: Member.name, email })
+			.lean()
+			.exec()
 	}
 
 	async findByMobile(mobile: string): Promise<Member> {
-		return await this.memberModel.findOne({ role: Member.name, mobile }).lean().exec()
+		return await this.memberModel
+			.findOne({ role: Member.name, mobile })
+			.lean()
+			.exec()
 	}
 
 	async create(dto: CreateMemberDto): Promise<any> {
@@ -40,7 +49,8 @@ export class MemberService {
 			.lean()
 			.exec()
 		if (existedMember) {
-			if (existedMember.email === dto.email) throw new DuplicateKeyException('email')
+			if (existedMember.email === dto.email)
+				throw new DuplicateKeyException('email')
 			else throw new DuplicateKeyException('mobile')
 		}
 		dto.password = this.hashService.hash(dto.password)
@@ -50,7 +60,10 @@ export class MemberService {
 		})
 	}
 
-	async updateInfo(userId: string, dto: UpdateMemberInfoDto): Promise<UpdateResult> {
+	async updateInfo(
+		userId: string,
+		dto: UpdateMemberInfoDto
+	): Promise<UpdateResult> {
 		const existedMember = await this.memberModel
 			.findOne({
 				role: Member.name,
@@ -59,10 +72,13 @@ export class MemberService {
 			.lean()
 			.exec()
 		if (!existedMember) {
-			if (existedMember.email === dto.email) throw new DuplicateKeyException('email')
+			if (existedMember.email === dto.email)
+				throw new DuplicateKeyException('email')
 			else throw new DuplicateKeyException('mobile')
 		}
-		return await this.memberModel.updateOne({ _id: userId, role: Member.name }, dto).exec()
+		return await this.memberModel
+			.updateOne({ _id: userId, role: Member.name }, dto)
+			.exec()
 	}
 
 	async delete(userId: string): Promise<DeleteResult> {
@@ -71,6 +87,8 @@ export class MemberService {
 			.lean()
 			.exec()
 		if (!existedMember) throw new NotFoundDataException('Member')
-		return await this.memberModel.deleteOne({ _id: userId, role: Member.name }).exec()
+		return await this.memberModel
+			.deleteOne({ _id: userId, role: Member.name })
+			.exec()
 	}
 }
