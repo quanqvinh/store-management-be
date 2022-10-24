@@ -24,5 +24,7 @@ export const CreateMemberSchema = Joi.object({
 	mobile: Joi.string().required().pattern(Pattern.mobile),
 	firstName: Joi.string().required().pattern(Pattern.name),
 	lastName: Joi.string().required().pattern(Pattern.name),
-	password: Joi.string().required().pattern(Pattern.password.amountCharacter(4, 30)),
+	password: Joi.string()
+		.required()
+		.pattern(Pattern.password.amountCharacter(4, 30)),
 })

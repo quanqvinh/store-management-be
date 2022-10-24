@@ -14,4 +14,5 @@ export class NotificationOrder extends Notification {
 	orderId: ObjectId
 }
 
-export const NotificationOrderSchema = SchemaFactory.createForClass(NotificationOrder)
+export const NotificationOrderSchema =
+	SchemaFactory.createForClass(NotificationOrder)

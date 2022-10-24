@@ -13,4 +13,5 @@ export class AdminAppSetting extends Setting {
 	appName: string
 }
 
-export const AdminAppSettingSchema = SchemaFactory.createForClass(AdminAppSetting)
+export const AdminAppSettingSchema =
+	SchemaFactory.createForClass(AdminAppSetting)

@@ -3,6 +3,7 @@ import { ObjectId, Types, Document } from 'mongoose'
 import { OrderType, PaymentType, StoreSatisfaction } from '@/constants'
 import { DetailOrder, DetailOrderSchema } from './detail-order.schema'
 import { Coupon, CouponSchema } from '@/modules/coupon/schemas/coupon.schema'
+import mongooseLeanVirtuals from 'mongoose-lean-virtuals'
 
 export type OrderDocument = Order & Document
 
@@ -94,3 +95,8 @@ export class Order {
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order)
+
+OrderSchema.plugin(mongooseLeanVirtuals)
+OrderSchema.virtual('variables').get(function () {
+	return {}
+})

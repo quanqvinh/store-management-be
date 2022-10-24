@@ -7,7 +7,8 @@ export class UsernameValidatePipe implements PipeTransform {
 	transform(value: any): string {
 		const username = '' + value
 		const validator = Joi.string().required().pattern(/\w+/)
-		if (validator.validate(username).error) throw new InvalidDataException('Username')
+		if (validator.validate(username).error)
+			throw new InvalidDataException('Username')
 		return username
 	}
 }

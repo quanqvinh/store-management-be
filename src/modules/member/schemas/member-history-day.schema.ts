@@ -44,4 +44,5 @@ export class MemberHistoryDay {
 	>
 }
 
-export const MemberHistoryDaySchema = SchemaFactory.createForClass(MemberHistoryDay)
+export const MemberHistoryDaySchema =
+	SchemaFactory.createForClass(MemberHistoryDay)

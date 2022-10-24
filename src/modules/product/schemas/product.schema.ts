@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { ObjectId, Document } from 'mongoose'
+import { Category, CategorySchema } from './category.schema'
 import { Option, OptionSchema } from './option.schema'
 
 export type ProductDocument = Product & Document
@@ -17,8 +18,8 @@ export class Product {
 	@Prop({ type: Number, required: true })
 	originPrice: number
 
-	@Prop({ type: String, required: true })
-	category: string
+	@Prop({ type: CategorySchema, required: true })
+	category: Category
 
 	@Prop({ type: String, default: 'No description' })
 	description: string

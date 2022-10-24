@@ -32,5 +32,7 @@ export const UpdateMemberInfoSchema = Joi.object({
 	avatar: Joi.string().uri().optional(),
 	firstName: Joi.string().optional().pattern(Pattern.name),
 	lastName: Joi.string().optional().pattern(Pattern.name),
-	password: Joi.string().optional().pattern(Pattern.password.amountCharacter(4, 30)),
+	password: Joi.string()
+		.optional()
+		.pattern(Pattern.password.amountCharacter(4, 30)),
 })
