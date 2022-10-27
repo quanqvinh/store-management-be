@@ -45,7 +45,7 @@ export class FileController {
 	async getInfoMulti(
 		@Query('id', ObjectIdListValidatePine) fileIds: Array<string>
 	) {
-		return fileIds
+		return this.fileService.getMany(fileIds)
 	}
 
 	@Get('info/:id')

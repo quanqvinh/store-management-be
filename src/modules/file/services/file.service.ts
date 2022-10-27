@@ -43,7 +43,10 @@ export class FileService {
 		try {
 			const file = await this.getOne(fileId)
 			if (!file) throw new NotFoundImageException()
-			response.set({ 'Content-Type': file.contentType })
+			response.set({
+				'Content-Type': file.contentType,
+				'Cache-Control': 'public, max-age=1800',
+			})
 			return this.gridFsConfigService.bucket
 				.openDownloadStream(new Types.ObjectId(fileId))
 				.pipe(response)
