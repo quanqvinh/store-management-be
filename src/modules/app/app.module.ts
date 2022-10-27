@@ -17,6 +17,10 @@ import { envConfigValidate, envConfigLoad } from '@/config/env.config'
 import { ThrottlerGuard } from '@nestjs/throttler/dist/throttler.guard'
 import { TransformInterceptor } from '@/common/interceptors/transform.interceptor'
 import { ProductModule } from '@/modules/product/product.module'
+import { FileModule } from '@/modules/file/file.module'
+
+const THROTTLER_TTL = 60
+const THROTTLER_LIMIT = 10
 
 @Module({
 	imports: [
@@ -32,9 +36,10 @@ import { ProductModule } from '@/modules/product/product.module'
 		MemberModule,
 		AuthModule,
 		ProductModule,
+		FileModule,
 		ThrottlerModule.forRoot({
-			ttl: 60,
-			limit: 10,
+			ttl: THROTTLER_TTL,
+			limit: THROTTLER_LIMIT,
 		}),
 	],
 	controllers: [AppController],

@@ -1,3 +1,5 @@
+export const STORAGE_CONNECTION_NAME = 'storage'
+
 export enum IdentifierType {
 	EMAIL = 'email',
 	USERNAME = 'username',

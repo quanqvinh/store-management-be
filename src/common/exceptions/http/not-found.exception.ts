@@ -11,3 +11,9 @@ export class NotMatchedDataException extends NotFoundException {
 		super('Not matched any data')
 	}
 }
+
+export class NotFoundImageException extends NotFoundException {
+	constructor() {
+		super('Not found image')
+	}
+}

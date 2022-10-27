@@ -11,7 +11,7 @@ export class ObjectIdValidatePine implements PipeTransform {
 			if (id === objectId.toString()) return id
 			else throw null
 		} catch {
-			throw new InvalidDataException('Id')
+			throw new InvalidDataException('ID')
 		}
 	}
 }

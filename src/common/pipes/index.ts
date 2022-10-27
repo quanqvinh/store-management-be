@@ -1,4 +1,5 @@
 export * from './object-id-validate.pipe'
+export * from './object-id-list-validate.pipe'
 export * from './joi-validate.pipe'
 export * from './email-validate.pipe'
 export * from './mobile-validate.pipe'
