@@ -34,32 +34,3 @@ import { TokenModule } from '../token/token.module'
 	],
 })
 export class AuthModule {}
-// @Module({
-// 	imports: [
-// 		AdminModule,
-// 		UserModule,
-// 		MemberModule,
-// 		SalespersonModule,
-// 		PassportModule,
-// 		JwtModule.register({}),
-// 		MongooseModule.forFeature([
-// 			{
-// 				name: Token.name,
-// 				schema: TokenSchema,
-// 				discriminators: [
-// 					{ name: RefreshToken.name, schema: RefreshTokenSchema },
-// 				],
-// 			},
-// 		]),
-// 	],
-// 	controllers: [AuthController],
-// 	providers: [
-// 		AuthService,
-// 		HashService,
-// 		RefreshService,c
-// 		LocalSalespersonStrategy,
-// 		JwtAccessStrategy,
-// 		JwtRefreshStrategy,
-// 	],
-// })
-// export class AuthModule {}

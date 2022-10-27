@@ -1,3 +1,1 @@
-import randomstring from 'randomstring'
-
-export const randomString = randomstring.generate
+export * from './random-string'

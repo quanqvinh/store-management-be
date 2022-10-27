@@ -42,6 +42,7 @@ jobs:
         env:
           HD_PORT: ${{ secrets.PORT }}
           HD_MONGO_URL: ${{ secrets.MONGO_URL }}
+          HD_MONGO_STORAGE_URL: ${{ secrets.MONGO_STORAGE_URL }}
           HD_ACCESS_TOKEN_SECRET_KEY: ${{ secrets.ACCESS_TOKEN_SECRET_KEY }}
           HD_ACCESS_TOKEN_EXPIRE: ${{ secrets.ACCESS_TOKEN_EXPIRE }}
           HD_REFRESH_TOKEN_SECRET_KEY: ${{ secrets.REFRESH_TOKEN_SECRET_KEY }}

@@ -18,6 +18,7 @@ export const envConfigLoad = (options = { load: false }) => {
 		port: process.env.PORT || 8080,
 		mongo: {
 			url: process.env.MONGO_URL,
+			storageUrl: process.env.MONGO_STORAGE_URL,
 		},
 		jwt: {
 			accessToken: {
