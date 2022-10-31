@@ -9,11 +9,12 @@ import {
 } from '../schemas/refresh-token.schema'
 import { JwtPayload } from '@/types'
 import { UpdateResult, DeleteResult } from 'mongodb'
+import { DatabaseConnectionName } from '@/constants'
 
 @Injectable()
 export class RefreshService {
 	constructor(
-		@InjectModel(RefreshToken.name)
+		@InjectModel(RefreshToken.name, DatabaseConnectionName.DATA)
 		public refreshTokenModel: Model<RefreshTokenDocument>,
 		private jwtService: JwtService,
 		private configService: ConfigService

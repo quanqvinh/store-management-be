@@ -13,9 +13,8 @@ export class FileService {
 
 	async getOne(fileId: string | ObjectId): Promise<GridFSFile> {
 		try {
-			fileId = new ObjectId(fileId)
 			const files = await this.gridFsConfigService.bucket
-				.find({ _id: fileId })
+				.find({ _id: new ObjectId(fileId) })
 				.toArray()
 			if (files.length === 0 || !files[0]) return null
 			return files[0]
@@ -24,16 +23,16 @@ export class FileService {
 		}
 	}
 
-	async getMany(fileIds: Array<string | ObjectId>): Promise<GridFSFile[]> {
+	async getMany(fileIds: Array<string | ObjectId> = []): Promise<GridFSFile[]> {
 		try {
-			const files = await Promise.all(
-				fileIds.map(fileId =>
-					this.gridFsConfigService.bucket
-						.find({ _id: new ObjectId(fileId) })
-						.toArray()
-				)
-			)
-			return files.map(file => file[0] ?? null)
+			if (fileIds.length === 0)
+				return await this.gridFsConfigService.bucket.find().toArray()
+			const files = await this.gridFsConfigService.bucket
+				.find({
+					_id: { $in: fileIds.map(id => new ObjectId(id)) },
+				})
+				.toArray()
+			return files
 		} catch (err) {
 			throw err
 		}

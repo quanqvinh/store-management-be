@@ -1,1 +1,1 @@
-export default new RegExp(/^\+?\d{7,14}$/)
+export const mobilePattern = new RegExp(/^\+?\d{7,14}$/)

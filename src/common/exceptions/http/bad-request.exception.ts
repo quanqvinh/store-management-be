@@ -17,3 +17,15 @@ export class InvalidDataException extends BadRequestException {
 		super(fieldName + ' is invalid')
 	}
 }
+
+export class ValidationException extends BadRequestException {
+	constructor() {
+		super('Validation failed')
+	}
+}
+
+export class LackOfImageException extends BadRequestException {
+	constructor(field: string) {
+		super(field + ' image is required')
+	}
+}

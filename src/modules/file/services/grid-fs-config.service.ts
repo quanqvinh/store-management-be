@@ -9,7 +9,7 @@ import path from 'path'
 import { InjectConnection } from '@nestjs/mongoose'
 import { Connection, mongo } from 'mongoose'
 import { ConfigService } from '@nestjs/config'
-import { STORAGE_CONNECTION_NAME } from '@/constants'
+import { DatabaseConnectionName } from '@/constants'
 
 const CHUNK_SIZE = 512 * 1024
 const FILE_SIZE_MAX = 2 * 1024 * 1024
@@ -18,8 +18,9 @@ const FILE_SIZE_MAX = 2 * 1024 * 1024
 export class GridFsConfigService implements MulterOptionsFactory {
 	private storage: InstanceType<typeof GridFsStorage>
 	bucket: InstanceType<typeof mongo.GridFSBucket>
+
 	constructor(
-		@InjectConnection(STORAGE_CONNECTION_NAME)
+		@InjectConnection(DatabaseConnectionName.STORAGE)
 		private readonly connection: Connection,
 		private configService: ConfigService
 	) {
@@ -28,7 +29,6 @@ export class GridFsConfigService implements MulterOptionsFactory {
 			cache: true,
 			file: (req, file) => {
 				if (!file.mimetype?.startsWith('image')) return null
-
 				return new Promise((resolve, rejects) => {
 					randomBytes(16, (err, buf) => {
 						if (err) return rejects(err)
@@ -36,7 +36,7 @@ export class GridFsConfigService implements MulterOptionsFactory {
 							buf.toString('hex') + path.extname(file.originalname)
 						const fileInfo = {
 							filename,
-							bucketName: 'photos',
+							bucketName: 'photo',
 							chunkSize: CHUNK_SIZE,
 						}
 						resolve(fileInfo)
@@ -46,19 +46,19 @@ export class GridFsConfigService implements MulterOptionsFactory {
 		})
 
 		this.bucket = new mongo.GridFSBucket(this.connection.db, {
-			bucketName: 'photos',
+			bucketName: 'photo',
 		})
 
 		this.storage.on('connection', () => {
-			Logger.debug('File storage server is opened!', 'MULTER')
+			Logger.debug('File storage server is opened!', 'Multer')
 		})
 
 		this.storage.on('connectionFailed', err => {
-			Logger.error(`Connection failed\n` + err, 'MULTER')
+			Logger.error(`Connection failed\n` + err, 'Multer')
 		})
 
 		this.storage.on('file', (file: Express.Multer.File) => {
-			Logger.log(`${file.filename} is saved!`, 'MULTER')
+			Logger.log(`${file.filename} is saved!`, 'Multer')
 		})
 	}
 

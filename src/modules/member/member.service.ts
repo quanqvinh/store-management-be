@@ -7,11 +7,13 @@ import { DuplicateKeyException } from '@/common/exceptions/mongo.exception'
 import { HashService } from '@/common/providers/hash.service'
 import { UpdateResult, DeleteResult } from 'mongodb'
 import { NotFoundDataException } from '@/common/exceptions/http'
+import { DatabaseConnectionName } from '@/constants'
 
 @Injectable()
 export class MemberService {
 	constructor(
-		@InjectModel(Member.name) public memberModel: Model<MemberDocument>,
+		@InjectModel(Member.name, DatabaseConnectionName.DATA)
+		public memberModel: Model<MemberDocument>,
 		private hashService: HashService
 	) {}
 

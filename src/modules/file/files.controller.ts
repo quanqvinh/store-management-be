@@ -14,8 +14,7 @@ import { FileService } from './services/file.service'
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express'
 import { Response } from 'express'
 import { ObjectIdValidatePine, ObjectIdListValidatePine } from '@/common/pipes'
-
-type File = Express.Multer.File
+import { File } from '@/types'
 
 @Controller('file')
 export class FileController {
@@ -46,6 +45,11 @@ export class FileController {
 		@Query('id', ObjectIdListValidatePine) fileIds: Array<string>
 	) {
 		return this.fileService.getMany(fileIds)
+	}
+
+	@Get('info/all')
+	async getInfoAll() {
+		return this.fileService.getMany()
 	}
 
 	@Get('info/:id')

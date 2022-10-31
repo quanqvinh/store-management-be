@@ -2,11 +2,9 @@ import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose'
 import { Types, Document, ObjectId } from 'mongoose'
 import { envConfigLoad } from '@/config/env.config'
 
-const env = envConfigLoad({ load: true })
-
 export type RefreshTokenDocument = Document & RefreshToken
 
-@Schema({ versionKey: false })
+@Schema({ versionKey: false, collection: 'refresh_tokens' })
 export class RefreshToken {
 	@Prop({ type: Types.ObjectId })
 	uid: ObjectId
@@ -26,7 +24,7 @@ export class RefreshToken {
 
 	@Prop({
 		type: Date,
-		expires: env.jwt.refreshToken.expire,
+		expires: envConfigLoad().jwt.refreshToken.expire,
 		required: true,
 		default: Date.now(),
 	})

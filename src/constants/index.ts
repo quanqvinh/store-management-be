@@ -1,4 +1,12 @@
-export const STORAGE_CONNECTION_NAME = 'storage'
+export enum DatabaseConnectionName {
+	STORAGE = 'storage',
+	DATA = 'data',
+}
+
+export enum NodeEnv {
+	DEVELOPMENT = 'development',
+	PRODUCTION = 'production',
+}
 
 export enum IdentifierType {
 	EMAIL = 'email',
