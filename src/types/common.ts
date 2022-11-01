@@ -1,5 +1,7 @@
 import { EmployeeRole } from '@/constants'
 
+export type File = Express.Multer.File
+
 export type JwtPayload = {
 	sub: string
 	aud: string

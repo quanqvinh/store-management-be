@@ -1,5 +1,9 @@
 import * as Joi from 'joi'
-import Pattern from '@/common/validators'
+import {
+	namePattern,
+	mobilePattern,
+	passwordPattern,
+} from '@/common/validators'
 import { ApiProperty } from '@nestjs/swagger'
 
 export class CreateMemberDto {
@@ -21,10 +25,10 @@ export class CreateMemberDto {
 
 export const CreateMemberSchema = Joi.object({
 	email: Joi.string().email().required(),
-	mobile: Joi.string().required().pattern(Pattern.mobile),
-	firstName: Joi.string().required().pattern(Pattern.name),
-	lastName: Joi.string().required().pattern(Pattern.name),
+	mobile: Joi.string().required().pattern(mobilePattern),
+	firstName: Joi.string().required().pattern(namePattern),
+	lastName: Joi.string().required().pattern(namePattern),
 	password: Joi.string()
 		.required()
-		.pattern(Pattern.password.amountCharacter(4, 30)),
+		.pattern(passwordPattern.amountCharacter(4, 30)),
 })

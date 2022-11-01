@@ -4,10 +4,14 @@ import { MemberController } from './member.controller'
 import { MongooseModule } from '@nestjs/mongoose'
 import { Member, MemberSchema } from './schemas/member.schema'
 import { HashService } from '@/common/providers/hash.service'
+import { DatabaseConnectionName } from '@/constants'
 
 @Module({
 	imports: [
-		MongooseModule.forFeature([{ name: Member.name, schema: MemberSchema }]),
+		MongooseModule.forFeature(
+			[{ name: Member.name, schema: MemberSchema }],
+			DatabaseConnectionName.DATA
+		),
 	],
 	controllers: [MemberController],
 	providers: [MemberService, HashService],

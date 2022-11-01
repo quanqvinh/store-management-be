@@ -4,7 +4,7 @@ import { PassportStrategy } from '@nestjs/passport'
 import { AuthService } from '../../auth.service'
 import * as Joi from 'joi'
 import { IdentifierType } from '@/constants'
-import Pattern from '@/common/validators'
+import { mobilePattern } from '@/common/validators'
 import {
 	FailedLoginException,
 	InvalidIdentifierException,
@@ -23,7 +23,7 @@ export class LocalMemberStrategy extends PassportStrategy(
 		let identifierType: IdentifierType
 		if (!Joi.string().email().validate(identifier).error)
 			identifierType = IdentifierType.EMAIL
-		else if (!Joi.string().pattern(Pattern.mobile).validate(identifier).error)
+		else if (!Joi.string().pattern(mobilePattern).validate(identifier).error)
 			identifierType = IdentifierType.MOBILE
 		else throw new InvalidIdentifierException()
 		const member = await this.authService.validateMember(

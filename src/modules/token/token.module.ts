@@ -7,13 +7,15 @@ import {
 } from './schemas/refresh-token.schema'
 import { TokenService } from './services/token.service'
 import { RefreshService } from './services/refresh.service'
+import { DatabaseConnectionName } from '@/constants'
 
 @Module({
 	imports: [
 		JwtModule,
-		MongooseModule.forFeature([
-			{ name: RefreshToken.name, schema: RefreshTokenSchema },
-		]),
+		MongooseModule.forFeature(
+			[{ name: RefreshToken.name, schema: RefreshTokenSchema }],
+			DatabaseConnectionName.DATA
+		),
 	],
 	providers: [TokenService, RefreshService],
 	exports: [TokenService, RefreshService],

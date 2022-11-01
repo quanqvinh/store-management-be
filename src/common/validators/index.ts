@@ -1,13 +1,6 @@
-import displayName from './display-name.pattern'
-import name from './name.pattern'
-import mobile from './mobile.pattern'
-import * as password from './password.pattern'
-import * as username from './username.pattern'
-
-export default {
-	displayName,
-	name,
-	mobile,
-	password,
-	username,
-}
+export * from './display-name.pattern'
+export * from './mobile.pattern'
+export * from './name.pattern'
+export * from './password.pattern'
+export * from './size-key.pattern'
+export * from './username.pattern'

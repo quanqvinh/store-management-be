@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
-import { ConfigModule } from '@nestjs/config'
-import { MongooseModule } from '@nestjs/mongoose'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose'
 import { EmployeeModule } from '@/modules/employee/employee.module'
 import { MemberModule } from '@/modules/member/member.module'
 import { AuthModule } from '@/modules/auth/auth.module'
@@ -18,6 +18,8 @@ import { ThrottlerGuard } from '@nestjs/throttler/dist/throttler.guard'
 import { TransformInterceptor } from '@/common/interceptors/transform.interceptor'
 import { ProductModule } from '@/modules/product/product.module'
 import { FileModule } from '@/modules/file/file.module'
+import { DatabaseConnectionName } from '@/constants'
+import { CleanerModule } from '@/modules/cleaner/cleaner.module'
 
 const THROTTLER_TTL = 60
 const THROTTLER_LIMIT = 10
@@ -31,12 +33,30 @@ const THROTTLER_LIMIT = 10
 			validationSchema: envConfigValidate,
 			cache: true,
 		}),
-		MongooseModule.forRoot(envConfigLoad().mongo.url),
+		MongooseModule.forRootAsync({
+			useFactory: async (
+				configService: ConfigService
+			): Promise<MongooseModuleOptions> => ({
+				uri: configService.get<string>('mongo.dataUrl'),
+			}),
+			inject: [ConfigService],
+			connectionName: DatabaseConnectionName.DATA,
+		}),
+		MongooseModule.forRootAsync({
+			useFactory: async (
+				configService: ConfigService
+			): Promise<MongooseModuleOptions> => ({
+				uri: configService.get<string>('mongo.storageUrl'),
+			}),
+			inject: [ConfigService],
+			connectionName: DatabaseConnectionName.STORAGE,
+		}),
 		EmployeeModule,
 		MemberModule,
 		AuthModule,
 		ProductModule,
 		FileModule,
+		CleanerModule,
 		ThrottlerModule.forRoot({
 			ttl: THROTTLER_TTL,
 			limit: THROTTLER_LIMIT,

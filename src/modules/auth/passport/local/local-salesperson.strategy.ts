@@ -3,7 +3,7 @@ import { Strategy } from 'passport-local'
 import { PassportStrategy } from '@nestjs/passport'
 import { AuthService } from '../../auth.service'
 import Joi from 'joi'
-import Pattern from '@/common/validators'
+import { usernamePattern } from '@/common/validators'
 import { FailedLoginException } from '@/common/exceptions/http'
 import { EmployeeRole, IdentifierType } from '@/constants'
 
@@ -19,8 +19,8 @@ export class LocalSalespersonStrategy extends PassportStrategy(
 	async validate(username: string, password: string) {
 		if (
 			!Joi.string()
-				.pattern(Pattern.username.normal)
-				.pattern(Pattern.username.hasLetter)
+				.pattern(usernamePattern.normal)
+				.pattern(usernamePattern.hasLetter)
 		)
 			throw new FailedLoginException(IdentifierType.USERNAME)
 		const employee = await this.authService.validateEmployee(

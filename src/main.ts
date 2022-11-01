@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core'
+import { Logger } from '@nestjs/common'
 import { AppModule } from '@/modules/app/app.module'
-import { ConfigService, ConfigModule } from '@nestjs/config'
+import { ConfigService } from '@nestjs/config'
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
 import morgan from 'morgan'
 import helmet from 'helmet'
@@ -10,7 +11,6 @@ import { static as staticDir } from 'express'
 import { join } from 'path'
 
 async function bootstrap() {
-	await ConfigModule.envVariablesLoaded
 	const app = await NestFactory.create(AppModule)
 	const configService = app.get(ConfigService)
 	const nodeEnv = configService.get<string>('nodeEnv')
@@ -39,8 +39,8 @@ async function bootstrap() {
 	const port = configService.get<number>('port') || 8080
 	await app.listen(port, () => {
 		if (nodeEnv === 'development') {
-			console.log(`Server runs at http://localhost:${port}`)
-			console.log(`OpenAPI viewed at http://localhost:${port}/api`)
+			Logger.debug(`Server runs at http://localhost:${port}`, 'Server')
+			Logger.debug(`OpenAPI viewed at http://localhost:${port}/api`, 'Swagger')
 		}
 	})
 }

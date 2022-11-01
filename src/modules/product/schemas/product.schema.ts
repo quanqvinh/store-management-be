@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { ObjectId, Document } from 'mongoose'
 import { Category, CategorySchema } from './category.schema'
 import { Option, OptionSchema } from './option.schema'
+import { mongooseLeanVirtuals } from 'mongoose-lean-virtuals'
 
 export type ProductDocument = Product & Document
 
@@ -32,3 +33,9 @@ export class Product {
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product)
+
+ProductSchema.plugin(mongooseLeanVirtuals)
+
+ProductSchema.virtual('mainImage').get(function () {
+	return this.images.length > 0 ? this.images[0] : null
+})
