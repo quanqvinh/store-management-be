@@ -1,5 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { SettingType } from '@/constants'
+import { Document } from 'mongoose'
+
+export type SettingDocument = Setting & Document
 
 @Schema({ versionKey: false, discriminatorKey: 'type' })
 export class Setting {

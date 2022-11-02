@@ -43,44 +43,30 @@ export class MemberService {
 	}
 
 	async create(dto: CreateMemberDto): Promise<any> {
-		const existedMember = await this.memberModel
-			.findOne({
-				role: Member.name,
-				$or: [{ email: dto.email }, { mobile: dto.mobile }],
+		try {
+			dto.password = this.hashService.hash(dto.password)
+			return await this.memberModel.create({
+				...(dto as Omit<CreateMemberDto, 'password'>),
+				auth: { password: dto.password },
 			})
-			.lean()
-			.exec()
-		if (existedMember) {
-			if (existedMember.email === dto.email)
-				throw new DuplicateKeyException('email')
-			else throw new DuplicateKeyException('mobile')
+		} catch (err) {
+			if (DuplicateKeyException.check(err)) throw new DuplicateKeyException(err)
+			throw err
 		}
-		dto.password = this.hashService.hash(dto.password)
-		return await this.memberModel.create({
-			...(dto as Omit<CreateMemberDto, 'password'>),
-			auth: { password: dto.password },
-		})
 	}
 
 	async updateInfo(
 		userId: string,
 		dto: UpdateMemberInfoDto
 	): Promise<UpdateResult> {
-		const existedMember = await this.memberModel
-			.findOne({
-				role: Member.name,
-				$or: [{ email: dto.email }, { mobile: dto.mobile }],
-			})
-			.lean()
-			.exec()
-		if (!existedMember) {
-			if (existedMember.email === dto.email)
-				throw new DuplicateKeyException('email')
-			else throw new DuplicateKeyException('mobile')
+		try {
+			return await this.memberModel
+				.updateOne({ _id: userId, role: Member.name }, dto)
+				.exec()
+		} catch (err) {
+			if (DuplicateKeyException.check(err)) throw new DuplicateKeyException(err)
+			throw err
 		}
-		return await this.memberModel
-			.updateOne({ _id: userId, role: Member.name }, dto)
-			.exec()
 	}
 
 	async delete(userId: string): Promise<DeleteResult> {

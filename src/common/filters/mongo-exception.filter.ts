@@ -1,18 +1,13 @@
-import { MongoError } from 'mongodb'
-import {
-	ExceptionFilter,
-	Catch,
-	ArgumentsHost,
-	HttpStatus,
-} from '@nestjs/common'
+import { ExceptionFilter, Catch, ArgumentsHost } from '@nestjs/common'
 import { Response } from 'express'
+import { MongoException } from '../exceptions/mongo.exception'
 
-@Catch(MongoError)
+@Catch(MongoException)
 export class MongoExceptionFilter implements ExceptionFilter {
-	catch(exception: MongoError, host: ArgumentsHost) {
+	catch(exception: MongoException, host: ArgumentsHost) {
 		const ctx = host.switchToHttp()
 		const response = ctx.getResponse<Response>()
-		const status = HttpStatus.BAD_REQUEST
+		const status = exception.httpCode
 
 		response.status(status).json({
 			statusCode: status,
