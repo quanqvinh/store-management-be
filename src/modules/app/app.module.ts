@@ -20,6 +20,8 @@ import { ProductModule } from '@/modules/product/product.module'
 import { FileModule } from '@/modules/file/file.module'
 import { DatabaseConnectionName } from '@/constants'
 import { CleanerModule } from '@/modules/cleaner/cleaner.module'
+import { StoreModule } from '@/modules/store/store.module'
+import { SettingModule } from '@/modules/setting/setting.module'
 
 const THROTTLER_TTL = 60
 const THROTTLER_LIMIT = 10
@@ -56,6 +58,8 @@ const THROTTLER_LIMIT = 10
 		AuthModule,
 		ProductModule,
 		FileModule,
+		StoreModule,
+		SettingModule,
 		CleanerModule,
 		ThrottlerModule.forRoot({
 			ttl: THROTTLER_TTL,

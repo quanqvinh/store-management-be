@@ -1,4 +1,9 @@
-import { Catch, ExceptionFilter, ArgumentsHost } from '@nestjs/common'
+import {
+	Catch,
+	ExceptionFilter,
+	ArgumentsHost,
+	HttpStatus,
+} from '@nestjs/common'
 import { ValidationError } from 'joi'
 import { Response } from 'express'
 
@@ -7,7 +12,7 @@ export class JoiExceptionFilter implements ExceptionFilter {
 	catch(exception: ValidationError, host: ArgumentsHost) {
 		const ctx = host.switchToHttp()
 		const response = ctx.getResponse<Response>()
-		const status = 400
+		const status = HttpStatus.BAD_REQUEST
 
 		response.status(status).json({
 			statusCode: status,

@@ -14,7 +14,7 @@ export class CreateProductDto {
 	topping: Array<Topping>
 }
 
-export const CreateProductDtoSchema = Joi.object({
+export const CreateProductDtoSchema = Joi.object<CreateProductDto>({
 	name: Joi.string().required(),
 	category: Joi.object({
 		isNew: Joi.boolean().required().default(false),

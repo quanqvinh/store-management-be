@@ -1,7 +1,5 @@
-import { Setting } from './setting.schema'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Document } from 'mongoose'
-import { SettingType } from '@/constants'
+import { Document, ObjectId, Types } from 'mongoose'
 import {
 	TemplateScript,
 	TemplateScriptDefine,
@@ -10,8 +8,8 @@ import {
 export type MemberAppSettingDocument = Document & MemberAppSetting
 
 @Schema({ versionKey: false })
-export class MemberAppSetting extends Setting {
-	type: SettingType.MEMBER_APP
+export class MemberAppSetting {
+	type: string
 
 	@Prop({ type: String })
 	appName: string
@@ -39,6 +37,12 @@ export class MemberAppSetting extends Setting {
 		image: string
 		content: TemplateScript
 	}
+
+	@Prop({ type: Types.ObjectId })
+	defaultProductImage: ObjectId
+
+	@Prop({ type: Types.ObjectId })
+	defaultStoreImage: ObjectId
 }
 
 export const MemberAppSettingSchema =
