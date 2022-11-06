@@ -1,33 +1,32 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document } from 'mongoose'
 import { TemplateType } from '@/constants/index'
-import {
-	Template,
-	TemplateScript,
-	TemplateScriptDefine,
-} from './template.schema'
+import { mailTemplateDefault } from './default/mail-template.default'
 
 export type MailTemplateDocument = Document & MailTemplate
 
 export type MailTemplateScript = {
-	title: TemplateScript
-	body: TemplateScript
+	variables: Array<string>
+	subject: string
+	body: string
 }
 
 const MailTemplateScriptDefine = {
-	title: TemplateScriptDefine,
-	body: TemplateScriptDefine,
+	variables: { type: [String] },
+	subject: { type: String },
+	body: { type: String },
 }
 
 @Schema({ versionKey: false })
-export class MailTemplate extends Template {
+export class MailTemplate {
 	type: TemplateType.MAIL
 
-	@Prop({ type: MailTemplateScriptDefine })
-	verifyAccount: MailTemplateScript
-
-	@Prop({ type: MailTemplateScriptDefine })
-	resetPassword: MailTemplateScript
+	@Prop({
+		type: MailTemplateScriptDefine,
+		default: mailTemplateDefault.otp,
+		_id: false,
+	})
+	otp: MailTemplateScript
 }
 
 export const MailTemplateSchema = SchemaFactory.createForClass(MailTemplate)

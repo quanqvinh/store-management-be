@@ -4,7 +4,11 @@ import { envConfigLoad } from '@/config/env.config'
 
 export type RefreshTokenDocument = Document & RefreshToken
 
-@Schema({ versionKey: false, collection: 'refresh_tokens' })
+@Schema({
+	versionKey: false,
+	timestamps: { createdAt: true },
+	collection: 'refresh_tokens',
+})
 export class RefreshToken {
 	@Prop({ type: Types.ObjectId })
 	uid: ObjectId

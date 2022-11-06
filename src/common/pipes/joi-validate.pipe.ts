@@ -7,14 +7,15 @@ export class JoiValidatePine implements PipeTransform {
 
 	transform(value: any) {
 		// Convert JSON strings to its right type
-		for (const key in value) {
-			try {
-				const result = JSON.parse(value[key])
-				value[key] = result
-			} catch {
-				continue
-			}
-		}
+		// for (const key in value) {
+		// 	if (key.includes('otp')) continue
+		// 	try {
+		// 		const result = JSON.parse(value[key])
+		// 		value[key] = result
+		// 	} catch {
+		// 		continue
+		// 	}
+		// }
 		const { error } = this.schema.validate(value)
 		if (error) throw error
 		return value

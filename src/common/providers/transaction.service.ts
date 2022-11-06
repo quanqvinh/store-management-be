@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common'
-import { ClientSession, startSession } from 'mongoose'
+import { ClientSession, Connection } from 'mongoose'
 import { count, sleep } from '@/utils'
+import { InjectConnection } from '@nestjs/mongoose'
+import { DatabaseConnectionName } from '@/constants'
 
 type TransactionParams = {
-	writeCb: (session: ClientSession) => Promise<void>
-	successCb: () => void
-	failedCb: (error: any) => void
+	writeCb: (session: ClientSession) => Promise<boolean>
 	retryTransactionTime?: number
 }
 
@@ -13,10 +13,15 @@ const DEFAULT_RETRY_TIME = 100
 
 @Injectable()
 export class TransactionService {
+	constructor(
+		@InjectConnection(DatabaseConnectionName.DATA)
+		private readonly connection: Connection
+	) {}
+
 	private async commitWithRetry(session: ClientSession) {
 		try {
 			await session.commitTransaction()
-			console.log('Transaction committed.')
+			console.log('Transaction committed')
 		} catch (error) {
 			if (error.hasErrorLabel('UnknownTransactionCommitResult')) {
 				console.log(
@@ -35,24 +40,24 @@ export class TransactionService {
 
 	async execute({
 		writeCb,
-		successCb,
-		failedCb,
-		retryTransactionTime,
-	}: TransactionParams) {
-		try {
-			const session = await startSession()
-			const retryTime = retryTransactionTime ?? DEFAULT_RETRY_TIME
+		retryTransactionTime = DEFAULT_RETRY_TIME,
+	}: TransactionParams): Promise<{ result: boolean; error: any }> {
+		console.log('Transaction start...')
+		const session = await this.connection.startSession()
+		session.startTransaction()
+		let result: boolean, error: any
 
+		try {
 			const counter = count()
 
-			while (counter.value() < retryTime) {
+			while (counter.value() < retryTransactionTime) {
 				try {
-					await writeCb(session)
+					result = await writeCb(session)
 					await this.commitWithRetry(session)
 					break
 				} catch (error) {
 					await session.abortTransaction()
-
+					console.log('Transaction aborted')
 					if (
 						error.hasErrorLabel &&
 						(error.hasErrorLabel('UnknownTransactionCommitResult') ||
@@ -69,11 +74,15 @@ export class TransactionService {
 				}
 			}
 
-			if (counter.value() > retryTime) throw new Error('Transaction failed')
-
-			successCb()
+			if (counter.value() > retryTransactionTime)
+				throw new Error('Transaction failed')
 		} catch (err) {
-			failedCb(err)
+			console.log(err)
+			error = err
+		} finally {
+			await session.endSession()
+			console.log('Transaction end...')
 		}
+		return { error, result }
 	}
 }

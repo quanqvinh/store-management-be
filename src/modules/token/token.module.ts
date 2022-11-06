@@ -5,9 +5,11 @@ import {
 	RefreshToken,
 	RefreshTokenSchema,
 } from './schemas/refresh-token.schema'
+import { OtpToken, OtpTokenSchema } from './schemas/otp-token.schema'
 import { TokenService } from './services/token.service'
 import { RefreshService } from './services/refresh.service'
 import { DatabaseConnectionName } from '@/constants'
+import { OtpService } from './services/otp.service'
 
 @Module({
 	imports: [
@@ -16,8 +18,12 @@ import { DatabaseConnectionName } from '@/constants'
 			[{ name: RefreshToken.name, schema: RefreshTokenSchema }],
 			DatabaseConnectionName.DATA
 		),
+		MongooseModule.forFeature(
+			[{ name: OtpToken.name, schema: OtpTokenSchema }],
+			DatabaseConnectionName.DATA
+		),
 	],
-	providers: [TokenService, RefreshService],
-	exports: [TokenService, RefreshService],
+	providers: [TokenService, RefreshService, OtpService],
+	exports: [TokenService, RefreshService, OtpService],
 })
 export class TokenModule {}

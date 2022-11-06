@@ -1,15 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document, ObjectId, Types } from 'mongoose'
-import {
-	TemplateScript,
-	TemplateScriptDefine,
-} from '@/modules/template/schemas/template.schema'
+import { SettingType } from '@/constants'
 
 export type MemberAppSettingDocument = Document & MemberAppSetting
 
 @Schema({ versionKey: false })
 export class MemberAppSetting {
-	type: string
+	type: SettingType.MEMBER_APP
 
 	@Prop({ type: String })
 	appName: string
@@ -30,19 +27,24 @@ export class MemberAppSetting {
 	@Prop({
 		type: {
 			image: { type: String },
-			content: { type: TemplateScriptDefine, required: true },
+			content: { type: String, required: true },
 		},
 	})
 	greeting: {
 		image: string
-		content: TemplateScript
+		content: string
 	}
 
-	@Prop({ type: Types.ObjectId })
-	defaultProductImage: ObjectId
-
-	@Prop({ type: Types.ObjectId })
-	defaultStoreImage: ObjectId
+	@Prop({
+		type: {
+			product: Types.ObjectId,
+			store: Types.ObjectId,
+		},
+	})
+	defaultImages: {
+		product: ObjectId
+		store: ObjectId
+	}
 }
 
 export const MemberAppSettingSchema =

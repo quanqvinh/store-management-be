@@ -3,12 +3,13 @@
 		"akhileshns",
 		"autopopulate",
 		"Futura",
+		"otplib",
 		"popout",
 		"procfile",
 		"Qovery",
 		"randomstring",
 		"thanos",
+		"totp",
 		"zàáâãèéêìíòóôõùúăđĩũơưăạảấầẩẫậắằẳẵặẹẻẽềềểếễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵýỷỹ"
 	],
-	"nuxt.isNuxtApp": false
 }

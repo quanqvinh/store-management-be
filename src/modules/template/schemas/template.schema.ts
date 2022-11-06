@@ -1,5 +1,8 @@
 import { TemplateType } from '@/constants'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { Document } from 'mongoose'
+
+export type TemplateDocument = Document & Template
 
 @Schema({ versionKey: false, discriminatorKey: 'type' })
 export class Template {
@@ -11,16 +14,6 @@ export class Template {
 		unique: true,
 	})
 	type: TemplateType
-}
-
-export type TemplateScript = {
-	variables: Array<string>
-	script: string
-}
-
-export const TemplateScriptDefine = {
-	variables: [{ type: String }],
-	script: { type: String },
 }
 
 export const TemplateSchema = SchemaFactory.createForClass(Template)

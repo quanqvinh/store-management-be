@@ -12,25 +12,6 @@ export class AuthService {
 		private hashService: HashService
 	) {}
 
-	async validateMember(
-		identifier: string,
-		identifierType: IdentifierType,
-		password: string
-	) {
-		const member = await this.memberService.memberModel
-			.findOne({
-				[identifierType]: identifier,
-			})
-			.select('auth email')
-			.lean()
-			.exec()
-		if (member && this.hashService.compare(password, member.auth.password)) {
-			member.auth = undefined
-			return member
-		}
-		return null
-	}
-
 	async validateEmployee(
 		username: string,
 		role: EmployeeRole,

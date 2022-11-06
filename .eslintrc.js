@@ -10,6 +10,7 @@ module.exports = {
 	},
 	plugins: ['@typescript-eslint/eslint-plugin', 'prettier'],
 	extends: [
+		'eslint:recommended',
 		'plugin:@typescript-eslint/recommended',
 		'plugin:prettier/recommended',
 	],
@@ -21,9 +22,22 @@ module.exports = {
 	ignorePatterns: ['.eslintrc.js'],
 	rules: {
 		'prettier/prettier': ['error', prettierConfig],
-		'@typescript-eslint/interface-name-prefix': 'off',
-		'@typescript-eslint/explicit-function-return-type': 'off',
-		'@typescript-eslint/explicit-module-boundary-types': 'off',
+
+		// Common
+		// 'no-unused-vars': 'off',
+		'no-useless-escape': 'off',
+		'no-irregular-whitespace': 'off',
+
+		// Typescript eslint
+		'@typescript-eslint/no-unused-vars': [
+			'warn',
+			{
+				argsIgnorePattern: '^_',
+				varsIgnorePattern: '^_',
+			},
+		],
 		'@typescript-eslint/no-explicit-any': 'off',
+		'@typescript-eslint/no-empty-function': 'off',
+		'@typescript-eslint/no-this-alias': 'off',
 	},
 }

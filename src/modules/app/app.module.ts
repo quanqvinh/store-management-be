@@ -22,6 +22,7 @@ import { DatabaseConnectionName } from '@/constants'
 import { CleanerModule } from '@/modules/cleaner/cleaner.module'
 import { StoreModule } from '@/modules/store/store.module'
 import { SettingModule } from '@/modules/setting/setting.module'
+import { MailModule } from '@/modules/mail/mail.module'
 
 const THROTTLER_TTL = 60
 const THROTTLER_LIMIT = 10
@@ -61,12 +62,13 @@ const THROTTLER_LIMIT = 10
 		StoreModule,
 		SettingModule,
 		CleanerModule,
+		MailModule,
 		ThrottlerModule.forRoot({
 			ttl: THROTTLER_TTL,
 			limit: THROTTLER_LIMIT,
 		}),
 	],
-	controllers: [AppController],
+	controllers: [],
 	providers: [
 		AppService,
 		{

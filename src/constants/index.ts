@@ -90,4 +90,5 @@ export enum ContactType {
 	PHONE_NUMBER = 'phone_number',
 	EMAIL = 'email',
 	WEBSITE = 'website',
+	OTHER = 'other',
 }

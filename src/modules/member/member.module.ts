@@ -3,7 +3,6 @@ import { MemberService } from './member.service'
 import { MemberController } from './member.controller'
 import { MongooseModule } from '@nestjs/mongoose'
 import { Member, MemberSchema } from './schemas/member.schema'
-import { HashService } from '@/common/providers/hash.service'
 import { DatabaseConnectionName } from '@/constants'
 
 @Module({
@@ -14,7 +13,7 @@ import { DatabaseConnectionName } from '@/constants'
 		),
 	],
 	controllers: [MemberController],
-	providers: [MemberService, HashService],
+	providers: [MemberService],
 	exports: [MemberService],
 })
 export class MemberModule {}
