@@ -20,8 +20,8 @@ export class TransformInterceptor implements NestInterceptor {
 
 		return next.handle().pipe(
 			map(data => {
-				if (requestMethod === 'GET') return { data }
-				else return { success: !!data }
+				if (typeof data === 'boolean') return { success: data }
+				else return { data }
 			})
 		)
 	}

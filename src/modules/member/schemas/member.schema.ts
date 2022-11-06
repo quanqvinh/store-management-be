@@ -1,6 +1,5 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose'
 import { Document, ObjectId, Types } from 'mongoose'
-import { Auth } from '@/modules/auth/schemas/auth.schema'
 import { Gender } from '@/constants'
 import { MemberInfo, MemberInfoSchema } from './member-info.schema'
 import {
@@ -11,6 +10,7 @@ import {
 	Notification,
 	NotificationSchema,
 } from '@/modules/notification/schemas/notification.schema'
+import mongooseDelete from 'mongoose-delete'
 import mongooseLeanVirtuals from 'mongoose-lean-virtuals'
 
 export type MemberDocument = Member & Document
@@ -28,8 +28,17 @@ export class Member {
 	@Prop({ type: String, required: true, unique: true })
 	mobile: string
 
-	@Prop({ type: Auth, required: true })
-	auth: Auth
+	@Prop({
+		type: {
+			validTokenTime: { type: Number, default: Date.now() },
+		},
+		default: {},
+		_id: false,
+		required: true,
+	})
+	auth: {
+		validTokenTime: number
+	}
 
 	@Prop({ type: String })
 	avatar: string
@@ -40,16 +49,16 @@ export class Member {
 	@Prop({ type: String, required: true })
 	lastName: string
 
-	@Prop({ type: String, enum: Object.values(Gender) })
+	@Prop({ type: String, enum: Object.values(Gender), required: true })
 	gender: Gender
 
-	@Prop({ type: Date })
+	@Prop({ type: Date, required: true })
 	dob: Date
 
 	@Prop({ type: Date })
 	joinedAt: Date
 
-	@Prop({ type: MemberInfoSchema, required: true })
+	@Prop({ type: MemberInfoSchema, default: {}, required: true })
 	memberInfo: MemberInfo
 
 	@Prop({
@@ -57,6 +66,8 @@ export class Member {
 			product: [{ type: Types.ObjectId, ref: 'Product' }],
 			store: [{ type: Types.ObjectId, ref: 'Store' }],
 		},
+		_id: false,
+		default: { product: [], store: [] },
 	})
 	favorite: {
 		product: Array<ObjectId>
@@ -72,7 +83,9 @@ export class Member {
 
 export const MemberSchema = SchemaFactory.createForClass(Member)
 
+MemberSchema.plugin(mongooseDelete)
 MemberSchema.plugin(mongooseLeanVirtuals)
+
 MemberSchema.virtual('variables').get(function () {
 	return {}
 })
