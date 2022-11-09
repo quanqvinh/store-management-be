@@ -31,12 +31,17 @@ export class MemberService {
 		return await this.memberModel.findOne({ email }).lean().exec()
 	}
 
-	async create(dto: CreateMemberDto): Promise<any> {
+	async create(dto: CreateMemberDto, memberTypeId: string): Promise<Member> {
 		try {
 			const code = 'M' + Math.floor(Date.now() / 1000)
 			const dob = stringToDate(dto.dob)
 			dto.dob = undefined
-			return await this.memberModel.create({ ...dto, code, dob })
+			return await this.memberModel.create({
+				...dto,
+				code,
+				dob,
+				memberInfo: { memberType: memberTypeId },
+			})
 		} catch (err) {
 			if (DuplicateKeyException.check(err)) throw new DuplicateKeyException(err)
 			throw err

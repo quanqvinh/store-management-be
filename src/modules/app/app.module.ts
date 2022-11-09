@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { AppController } from './app.controller'
+// import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose'
@@ -23,6 +23,9 @@ import { CleanerModule } from '@/modules/cleaner/cleaner.module'
 import { StoreModule } from '@/modules/store/store.module'
 import { SettingModule } from '@/modules/setting/setting.module'
 import { MailModule } from '@/modules/mail/mail.module'
+import { MemberTypeModule } from '@/modules/member-type/member-type.module'
+import { CouponModule } from '../coupon/coupon.module'
+import { AppliedCouponModule } from '../applied-coupon/applied-coupon.module'
 
 const THROTTLER_TTL = 60
 const THROTTLER_LIMIT = 10
@@ -63,6 +66,9 @@ const THROTTLER_LIMIT = 10
 		SettingModule,
 		CleanerModule,
 		MailModule,
+		MemberTypeModule,
+		CouponModule,
+		AppliedCouponModule,
 		ThrottlerModule.forRoot({
 			ttl: THROTTLER_TTL,
 			limit: THROTTLER_LIMIT,

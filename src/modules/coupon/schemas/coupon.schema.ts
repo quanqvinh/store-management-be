@@ -1,12 +1,13 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose'
-import { ObjectId, Types, Document } from 'mongoose'
+import { ObjectId, Document } from 'mongoose'
 import { DiscountType, DiscountTypeSchema } from './discount-type.schema'
 import { Condition, ConditionSchema } from './condition.schema'
-import { CouponType } from '@/constants'
+import { ApplyCouponType } from '@/constants'
 import {
 	NotificationContent,
 	NotificationContentPropertyDefine,
 } from '@/modules/notification/schemas/notification.schema'
+import mongooseDelete from 'mongoose-delete'
 
 export type CouponDocument = Coupon & Document
 
@@ -17,11 +18,11 @@ export class Coupon {
 	@Prop({ type: String, required: true })
 	title: string
 
-	@Prop({ type: String, required: true })
+	@Prop({ type: String, required: true, unique: true, index: 1 })
 	code: string
 
 	@Prop({ type: DiscountTypeSchema, required: true })
-	discount: DiscountType
+	discount: Partial<DiscountType>
 
 	@Prop({ type: String })
 	image: string
@@ -30,20 +31,15 @@ export class Coupon {
 	description: string
 
 	@Prop({ type: ConditionSchema })
-	orderCondition: Condition
-
-	@Prop({
-		type: String,
-		enum: Object.values(CouponType),
-		default: CouponType.ONCE,
-	})
-	type: CouponType
+	orderCondition: Partial<Condition>
 
 	@Prop({ type: Number, default: 0 })
 	applyTime: number
 
-	@Prop({ type: NotificationContentPropertyDefine })
+	@Prop({ type: NotificationContentPropertyDefine, _id: false })
 	notification: NotificationContent
 }
 
 export const CouponSchema = SchemaFactory.createForClass(Coupon)
+
+CouponSchema.plugin(mongooseDelete)

@@ -1,6 +1,6 @@
 import { UpdateResult } from 'mongodb'
 import { DatabaseConnectionName, SettingType } from '@/constants'
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import {
@@ -15,7 +15,28 @@ export class MemberAppService {
 		@InjectModel(SettingType.MEMBER_APP, DatabaseConnectionName.DATA)
 		private readonly memberAppModel: Model<MemberAppSettingDocument>,
 		private settingService: SettingService
-	) {}
+	) {
+		this.settingService
+			.initAppSetting(SettingType.MEMBER_APP)
+			.then(document => {
+				if (document)
+					Logger.debug(
+						'Init member app setting document successful',
+						'SettingCollection'
+					)
+				else
+					Logger.debug(
+						'Member app setting document existed',
+						'SettingCollection'
+					)
+			})
+			.catch(err =>
+				Logger.error(
+					'Init member app setting error\n' + err,
+					'SettingCollection'
+				)
+			)
+	}
 
 	async initSetting(): Promise<MemberAppSetting> {
 		return (await this.settingService.initAppSetting(
@@ -30,5 +51,13 @@ export class MemberAppService {
 				$set: { 'templates.otpMail.script': script },
 			}
 		)
+	}
+
+	async get(project = '') {
+		return await this.memberAppModel
+			.findOne()
+			.select(project)
+			.lean({ virtuals: true })
+			.exec()
 	}
 }

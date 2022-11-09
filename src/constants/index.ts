@@ -30,7 +30,7 @@ export enum EmployeeRole {
 	SALESPERSON = 'salesperson',
 }
 
-export enum CouponType {
+export enum ApplyCouponType {
 	ONCE = 'once',
 	PERIODIC = 'periodic',
 }

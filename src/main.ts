@@ -7,14 +7,11 @@ import morgan from 'morgan'
 import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
 import { randomString } from '@/utils'
-import { static as staticDir } from 'express'
-import { join } from 'path'
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule)
 	const configService = app.get(ConfigService)
 	const nodeEnv = configService.get<string>('nodeEnv')
-	app.use(staticDir(join(__dirname, '..', 'public')))
 
 	// Logger middleware
 	app.use(morgan('tiny'))

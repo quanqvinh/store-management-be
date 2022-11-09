@@ -6,8 +6,8 @@ export class NotModifiedDataException extends InternalServerErrorException {
 	}
 }
 
-export class NotSavedDataException extends InternalServerErrorException {
+export class NotCreatedDataException extends InternalServerErrorException {
 	constructor() {
-		super('Data is not saved')
+		super('Data is not created')
 	}
 }

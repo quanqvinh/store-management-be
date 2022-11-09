@@ -42,7 +42,10 @@ export class ProductService {
 			)
 		return this.productModel.create({
 			name: createProductDto.name,
-			images: productImages.map(file => file.id),
+			images:
+				productImages?.length > 0 && productImages[0].id
+					? productImages.map(file => file.id)
+					: [],
 			originPrice: createProductDto.originalPrice,
 			category,
 			description: createProductDto.description,
