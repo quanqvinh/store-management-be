@@ -5,6 +5,7 @@ import { InvalidDataException } from '../exceptions/http'
 @Injectable()
 export class ObjectIdValidatePine implements PipeTransform {
 	transform(value: any): string {
+		console.log(value)
 		const id = '' + value
 		try {
 			const objectId = new Types.ObjectId(id)

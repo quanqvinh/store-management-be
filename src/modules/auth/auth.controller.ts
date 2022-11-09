@@ -5,9 +5,9 @@ import {
 	LocalSalespersonGuard,
 } from '@/common/guards/local-auth.guard'
 import {
-	User,
 	JwtAccessTokenGuard,
 	JwtRefreshTokenGuard,
+	User,
 } from '@/common/decorators'
 import { TokenService } from '../token/services/token.service'
 import { TokenPairDto } from '../token/dto/token-pair.dto'
@@ -18,7 +18,7 @@ import { MailService } from '../mail/mail.service'
 import { MailTemplateService } from '../template/services/mail-template.service'
 import { ConfigService } from '@nestjs/config'
 import { TransactionService } from '@/common/providers/transaction.service'
-import { NotSavedDataException } from '@/common/exceptions/http'
+import { NotCreatedDataException } from '@/common/exceptions/http'
 import { expireTimeFormats } from '@/utils'
 import { MemberLoginDto, MemberLoginDtoSchema } from './dto/request'
 import { MemberVerifyLoginDto, MemberVerifyLoginDtoSchema } from './dto/request'
@@ -27,7 +27,7 @@ import { MemberAccountIdentifyDto } from './dto/response/member-account-identify
 @Controller('auth')
 export class AuthController {
 	constructor(
-		private readonly tokenService: TokenService,
+		private tokenService: TokenService,
 		private memberService: MemberService,
 		private otpService: OtpService,
 		private mailService: MailService,
@@ -57,7 +57,7 @@ export class AuthController {
 		const status = await this.transactionService.execute({
 			writeCb: async session => {
 				const otp = await this.otpService.generate(loginDto.email, session)
-				if (!otp) throw new NotSavedDataException()
+				if (!otp) throw new NotCreatedDataException()
 
 				const mailTemplateData = await this.mailTemplateService.getOtpMailData()
 				Object.assign(mailTemplateData.data, {
@@ -91,14 +91,21 @@ export class AuthController {
 		const member = await this.memberService.findByEmail(
 			memberVerifyLoginDto.email
 		)
-		const isNew = !member
-		return { isNew, email }
+		const isNewAccount = !member
+		return {
+			isNewAccount,
+			email: isNewAccount ? email : undefined,
+			tokens: !isNewAccount
+				? await this.tokenService.generateTokenPair(member)
+				: undefined,
+		}
 	}
 
 	@Post('refresh')
 	@JwtRefreshTokenGuard()
-	async refresh(@User() user) {
-		return this.tokenService.generateTokenPair(user)
+	async memberRefresh(@User() member) {
+		console.log(member)
+		return this.tokenService.generateTokenPair(member)
 	}
 
 	@Get('profile')

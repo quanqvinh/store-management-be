@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document, ObjectId, Types } from 'mongoose'
 import { SettingType } from '@/constants'
+import { memberAppDefault } from './default/member-app.default'
 
 export type MemberAppSettingDocument = Document & MemberAppSetting
 
@@ -39,11 +40,37 @@ export class MemberAppSetting {
 		type: {
 			product: Types.ObjectId,
 			store: Types.ObjectId,
+			coupon: Types.ObjectId,
+			couponNotification: Types.ObjectId,
 		},
 	})
 	defaultImages: {
-		product: ObjectId
-		store: ObjectId
+		product: Types.ObjectId
+		store: Types.ObjectId
+		coupon: Types.ObjectId
+		couponNotification: Types.ObjectId
+	}
+
+	@Prop({
+		type: {
+			defaultDisplay: {
+				type: {
+					icon: Types.ObjectId,
+					color: String,
+					background: Types.ObjectId,
+				},
+				_id: false,
+			},
+		},
+		_id: false,
+		default: memberAppDefault.memberType,
+	})
+	memberType: {
+		defaultDisplay: {
+			icon: Types.ObjectId
+			color: string
+			background: Types.ObjectId
+		}
 	}
 }
 

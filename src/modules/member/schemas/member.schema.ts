@@ -1,3 +1,7 @@
+import {
+	AppliedCoupon,
+	AppliedCouponSchema,
+} from '@/modules/applied-coupon/schemas/applied-coupon.schema'
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose'
 import { Document, ObjectId, Types } from 'mongoose'
 import { Gender } from '@/constants'
@@ -73,6 +77,9 @@ export class Member {
 		product: Array<ObjectId>
 		store: Array<ObjectId>
 	}
+
+	@Prop({ type: [AppliedCouponSchema], default: [] })
+	coupons: Array<AppliedCoupon>
 
 	@Prop({ type: MemberHistoryDaySchema })
 	specialDays: MemberHistoryDay

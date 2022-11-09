@@ -37,7 +37,7 @@ export class AuthService {
 }
 // import { EmployeeRole } from '@/constants/index'
 // import { HashService } from '@/common/providers/hash.service'
-// import { NotSavedDataException } from '@/common/exceptions/http'
+// import { NotCreatedDataException } from '@/common/exceptions/http'
 // import { RefreshService } from './refresh.service'
 // import { Injectable } from '@nestjs/common'
 // import { AdminService } from '@/modules/admin/admin.service'
@@ -109,6 +109,6 @@ export class AuthService {
 // 		}
 // 		if (await this.refreshService.save(payload.aud, tokens.refresh_token))
 // 			return tokens
-// 		throw new NotSavedDataException()
+// 		throw new NotCreatedDataException()
 // 	}
 // }

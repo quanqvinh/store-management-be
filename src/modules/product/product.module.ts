@@ -7,6 +7,7 @@ import { CategoryService } from './services/category.service'
 import { ProductService } from './services/product.service'
 import { ConfigModule } from '@nestjs/config'
 import { DatabaseConnectionName } from '@/constants'
+import { PortalMulterModule } from '../file/file.module'
 
 @Module({
 	imports: [
@@ -15,6 +16,7 @@ import { DatabaseConnectionName } from '@/constants'
 			DatabaseConnectionName.DATA
 		),
 		ConfigModule,
+		PortalMulterModule,
 	],
 	controllers: [ProductController, CategoryController],
 	providers: [CategoryService, ProductService],

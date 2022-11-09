@@ -5,8 +5,9 @@ import { Employee } from '@/modules/employee/schemas/employee.schema'
 import { Member } from '@/modules/member/schemas/member.schema'
 import { TokenSubject } from '@/constants'
 import { RefreshService } from './refresh.service'
-import { NotSavedDataException } from '@/common/exceptions/http'
+import { NotCreatedDataException } from '@/common/exceptions/http'
 import { TokenPairDto } from '../dto/token-pair.dto'
+import { EmployeeAuth, MemberAuth } from '@/common/decorators'
 
 @Injectable()
 export class TokenService {
@@ -16,10 +17,12 @@ export class TokenService {
 		private refreshService: RefreshService
 	) {}
 
-	async generateTokenPair(user: Employee | Member): Promise<TokenPairDto> {
+	async generateTokenPair(
+		user: Member | Employee | MemberAuth | EmployeeAuth
+	): Promise<TokenPairDto> {
 		const payload = {
-			aud: user._id?.toString(),
-			role: (user as Employee).role,
+			aud: (user as Employee)._id?.toString() ?? (user as EmployeeAuth).id,
+			role: user['role'] ?? undefined,
 		}
 		const tokenPair = {
 			access_token: this.jwtService.sign(payload, {
@@ -35,6 +38,6 @@ export class TokenService {
 		}
 		if (await this.refreshService.save(payload.aud, tokenPair.refresh_token))
 			return tokenPair
-		throw new NotSavedDataException()
+		throw new NotCreatedDataException()
 	}
 }

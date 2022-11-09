@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { ObjectId, Document } from 'mongoose'
+import { ObjectId, Document, Types } from 'mongoose'
 import { NotificationType } from '@/constants'
 
 export type NotificationDocument = Notification & Document
@@ -18,8 +18,8 @@ export class Notification {
 	@Prop({ type: String, required: true })
 	content: string
 
-	@Prop({ type: String })
-	image?: string
+	@Prop({ type: Types.ObjectId })
+	image?: ObjectId
 
 	@Prop({ type: String, enum: Object.values(NotificationType) })
 	type?: NotificationType
@@ -38,7 +38,7 @@ export type NotificationContent = Pick<
 export const NotificationContentPropertyDefine = {
 	title: { type: String, required: true },
 	content: { type: String, required: true },
-	image: { type: String },
+	image: { type: Types.ObjectId },
 }
 
 export const NotificationSchema = SchemaFactory.createForClass(Notification)

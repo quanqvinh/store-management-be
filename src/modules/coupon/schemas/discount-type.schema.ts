@@ -7,6 +7,7 @@ export class DiscountType {
 			amount: { type: Number, required: true },
 			maxDecrease: { type: Number },
 		},
+		_id: false,
 	})
 	percentage: {
 		amount: number
