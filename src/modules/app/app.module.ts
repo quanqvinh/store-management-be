@@ -23,7 +23,7 @@ import { CleanerModule } from '@/modules/cleaner/cleaner.module'
 import { StoreModule } from '@/modules/store/store.module'
 import { SettingModule } from '@/modules/setting/setting.module'
 import { MailModule } from '@/modules/mail/mail.module'
-import { MemberTypeModule } from '@/modules/member-type/member-type.module'
+import { MemberRankModule } from '@/modules/member-rank/member-rank.module'
 import { CouponModule } from '../coupon/coupon.module'
 import { AppliedCouponModule } from '../applied-coupon/applied-coupon.module'
 
@@ -66,7 +66,7 @@ const THROTTLER_LIMIT = 10
 		SettingModule,
 		CleanerModule,
 		MailModule,
-		MemberTypeModule,
+		MemberRankModule,
 		CouponModule,
 		AppliedCouponModule,
 		ThrottlerModule.forRoot({

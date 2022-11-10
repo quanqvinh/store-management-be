@@ -16,6 +16,7 @@ import { HashService } from '@/common/providers/hash.service'
 import { JwtAccessStrategy, JwtRefreshStrategy } from './passport/jwt'
 import { TokenModule } from '../token/token.module'
 import { TransactionService } from '@/common/providers/transaction.service'
+import { MemberRankModule } from '../member-rank/member-rank.module'
 
 @Module({
 	imports: [
@@ -26,13 +27,13 @@ import { TransactionService } from '@/common/providers/transaction.service'
 		JwtModule.register({}),
 		MailModule,
 		TemplateModule,
+		MemberRankModule,
 	],
 	controllers: [AuthController],
 	providers: [
 		AuthService,
 		HashService,
 		LocalAdminStrategy,
-		// LocalMemberStrategy,
 		LocalSalespersonStrategy,
 		JwtAccessStrategy,
 		JwtRefreshStrategy,

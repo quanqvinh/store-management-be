@@ -28,6 +28,8 @@ export class AppliedCouponService {
 	): Promise<UpdateResult> {
 		const coupon = await this.couponService.getById(dto.couponId)
 
+		dto.startTime = +dto.startTime
+
 		if (dto.startTime === 0) dto.startTime = Date.now()
 
 		const appliedCoupon = new this.appliedCouponModel({
@@ -58,7 +60,7 @@ export class AppliedCouponService {
 	async getOne(memberId: string, couponId: string): Promise<AppliedCoupon> {
 		const coupons = (
 			await this.memberModel
-				.findOne({ _id: memberId })
+				.findOne({ _id: memberId, startTime: { $lt: Date.now() } })
 				.lean({ virtuals: true })
 				.exec()
 		).coupons

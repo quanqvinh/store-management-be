@@ -4,25 +4,25 @@ import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { MemberAppService } from '../setting/services/member-app.service'
-import { CreateMemberTypeDto } from './dto/create-member-type.dto'
-import { MemberType, MemberTypeDocument } from './schemas/member-type.schema'
+import { CreateMemberRankDto } from './dto/create-member-rank.dto'
+import { MemberRank, MemberRankDocument } from './schemas/member-rank.schema'
 
 @Injectable()
-export class MemberTypeService {
+export class MemberRankService {
 	constructor(
-		@InjectModel(MemberType.name, DatabaseConnectionName.DATA)
-		private readonly memberTypeModel: Model<MemberTypeDocument>,
+		@InjectModel(MemberRank.name, DatabaseConnectionName.DATA)
+		private readonly memberRankModel: Model<MemberRankDocument>,
 		private memberAppService: MemberAppService
 	) {}
 
-	async create(dto: CreateMemberTypeDto, icon: File, background: File) {
+	async create(dto: CreateMemberRankDto, icon: File, background: File) {
 		const { name, color } = dto
 		let { rank, condition, coefficientPoint } = dto
 
-		rank = rank ?? (await this.memberTypeModel.estimatedDocumentCount().exec())
+		rank = rank ?? (await this.memberRankModel.estimatedDocumentCount().exec())
 
 		if (rank > 0 && (!condition || !coefficientPoint)) {
-			const latestRank = await this.memberTypeModel
+			const latestRank = await this.memberRankModel
 				.findOne({ rank: rank - 1 })
 				.select('condition coefficientPoint')
 				.lean()
@@ -35,8 +35,8 @@ export class MemberTypeService {
 
 		let display
 		if (!icon || !background || !color) {
-			const defaultDisplay = (await this.memberAppService.get('memberType'))
-				?.memberType.defaultDisplay
+			const defaultDisplay = (await this.memberAppService.get('memberRank'))
+				?.memberRank.defaultDisplay
 			display = {
 				color: color ?? defaultDisplay.color,
 				icon: icon?.id ?? defaultDisplay.icon,
@@ -44,7 +44,7 @@ export class MemberTypeService {
 			}
 		}
 
-		return await this.memberTypeModel.create({
+		return await this.memberRankModel.create({
 			name,
 			rank,
 			condition,
@@ -59,8 +59,8 @@ export class MemberTypeService {
 	}: {
 		id?: string
 		rank?: number
-	}): Promise<MemberType> {
-		return await this.memberTypeModel
+	}): Promise<MemberRank> {
+		return await this.memberRankModel
 			.findOne({ $or: [{ _id: id }, { rank }] })
 			.exec()
 	}

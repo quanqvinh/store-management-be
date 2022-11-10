@@ -21,7 +21,7 @@ export class AppliedCoupon {
 	@Prop({ type: String, enum: Object.values(CycleType) })
 	cycleType?: CycleType
 
-	@Prop({ type: Date, expires: 0 })
+	@Prop({ type: Date })
 	expireAt: Date
 
 	@Prop({ type: Number, required: true })
