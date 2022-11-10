@@ -27,12 +27,14 @@ export class MemberAppSetting {
 
 	@Prop({
 		type: {
-			image: { type: String },
+			image: { type: Types.ObjectId },
 			content: { type: String, required: true },
 		},
+		default: memberAppDefault.greeting,
+		_id: false,
 	})
 	greeting: {
-		image: string
+		image: Types.ObjectId
 		content: string
 	}
 
@@ -63,9 +65,9 @@ export class MemberAppSetting {
 			},
 		},
 		_id: false,
-		default: memberAppDefault.memberType,
+		default: memberAppDefault.memberRank,
 	})
-	memberType: {
+	memberRank: {
 		defaultDisplay: {
 			icon: Types.ObjectId
 			color: string

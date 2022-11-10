@@ -24,9 +24,6 @@ export class Member {
 	_id: ObjectId
 
 	@Prop({ type: String, required: true, unique: true })
-	code: string
-
-	@Prop({ type: String, required: true, unique: true })
 	email: string
 
 	@Prop({ type: String, required: true, unique: true })
@@ -93,6 +90,13 @@ export const MemberSchema = SchemaFactory.createForClass(Member)
 MemberSchema.plugin(mongooseDelete)
 MemberSchema.plugin(mongooseLeanVirtuals)
 
+MemberSchema.virtual('fullName').get(function() {
+	return `${this.firstName} ${this.lastName}`
+})
+
 MemberSchema.virtual('variables').get(function () {
-	return {}
+	return {
+		firstName: this.firstName,
+		lastName: this.lastName,
+	}
 })

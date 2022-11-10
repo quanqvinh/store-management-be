@@ -22,7 +22,7 @@ export class Promotion {
 
 	@Prop({
 		type: {
-			applyTo: { type: Types.ObjectId, required: true, ref: 'MemberType' },
+			applyTo: { type: Types.ObjectId, required: true, ref: 'MemberRank' },
 			beginDay: { type: Date, required: true },
 			endDay: { type: Date },
 			limit: { type: Number },

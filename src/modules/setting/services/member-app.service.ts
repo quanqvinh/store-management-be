@@ -53,10 +53,10 @@ export class MemberAppService {
 		)
 	}
 
-	async get(project = '') {
+	async get(project = ''): Promise<MemberAppSetting> {
 		return await this.memberAppModel
 			.findOne()
-			.select(project)
+			.select(project + ' -_id')
 			.lean({ virtuals: true })
 			.exec()
 	}

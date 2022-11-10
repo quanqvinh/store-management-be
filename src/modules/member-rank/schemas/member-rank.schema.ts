@@ -1,10 +1,10 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose'
 import { ObjectId, Document, Types } from 'mongoose'
 
-export type MemberTypeDocument = MemberType & Document
+export type MemberRankDocument = MemberRank & Document
 
-@Schema({ versionKey: false, collection: 'member_types' })
-export class MemberType {
+@Schema({ versionKey: false, collection: 'member_ranks' })
+export class MemberRank {
 	_id: ObjectId
 
 	@Prop({ type: String, required: true })
@@ -41,4 +41,4 @@ export class MemberType {
 	gifts: Array<ObjectId>
 }
 
-export const MemberTypeSchema = SchemaFactory.createForClass(MemberType)
+export const MemberRankSchema = SchemaFactory.createForClass(MemberRank)

@@ -23,6 +23,8 @@ import { expireTimeFormats } from '@/utils'
 import { MemberLoginDto, MemberLoginDtoSchema } from './dto/request'
 import { MemberVerifyLoginDto, MemberVerifyLoginDtoSchema } from './dto/request'
 import { MemberAccountIdentifyDto } from './dto/response/member-account-identify.dto'
+import { CreateMemberDto, CreateMemberDtoSchema } from '../member/dto'
+import { MemberRankService } from '../member-rank/member-rank.service'
 
 @Controller('auth')
 export class AuthController {
@@ -33,7 +35,8 @@ export class AuthController {
 		private mailService: MailService,
 		private mailTemplateService: MailTemplateService,
 		private configService: ConfigService,
-		private transactionService: TransactionService
+		private transactionService: TransactionService,
+		private memberRankService: MemberRankService
 	) {}
 
 	@Post('admin/login')
@@ -76,6 +79,20 @@ export class AuthController {
 
 		if (status.error) throw status.error
 		return status.result
+	}
+
+	@Post('member/sign-up')
+	async memberSignUp(
+		@Body(new JoiValidatePine(CreateMemberDtoSchema))
+		createMemberDto: CreateMemberDto
+	) {
+		const firstMemberRank = await this.memberRankService.getOne({ rank: 0 })
+		const member = await this.memberService.create(
+			createMemberDto,
+			firstMemberRank._id.toString()
+		)
+		if (!member) throw new NotCreatedDataException()
+		return this.tokenService.generateTokenPair(member)
 	}
 
 	@Post('member/otp-verify')

@@ -5,7 +5,9 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { Member, MemberSchema } from './schemas/member.schema'
 import { DatabaseConnectionName } from '@/constants'
 import { TokenModule } from '../token/token.module'
-import { MemberTypeModule } from '../member-type/member-type.module'
+import { MemberRankModule } from '../member-rank/member-rank.module'
+import { SettingModule } from '../setting/setting.module'
+import { TemplateModule } from '../template/template.module'
 
 @Module({
 	imports: [
@@ -14,7 +16,9 @@ import { MemberTypeModule } from '../member-type/member-type.module'
 			DatabaseConnectionName.DATA
 		),
 		TokenModule,
-		MemberTypeModule,
+		MemberRankModule,
+		SettingModule,
+		TemplateModule,
 	],
 	controllers: [MemberController],
 	providers: [MemberService],

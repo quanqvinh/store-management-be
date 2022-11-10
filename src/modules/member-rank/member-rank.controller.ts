@@ -8,15 +8,15 @@ import {
 import { Post } from '@nestjs/common'
 import { FileFieldsInterceptor } from '@nestjs/platform-express'
 import {
-	CreateMemberTypeDto,
-	CreateMemberTypeDtoSchema,
-} from './dto/create-member-type.dto'
-import { MemberTypeService } from './member-type.service'
+	CreateMemberRankDto,
+	CreateMemberRankDtoSchema,
+} from './dto/create-member-rank.dto'
+import { MemberRankService } from './member-rank.service'
 import { File } from '@/types'
 
-@Controller('member-type')
-export class MemberTypeController {
-	constructor(private memberTypeService: MemberTypeService) {}
+@Controller('member-rank')
+export class MemberRankController {
+	constructor(private memberRankService: MemberRankService) {}
 
 	@Post('create')
 	@UseInterceptors(
@@ -34,11 +34,11 @@ export class MemberTypeController {
 			icon?: Array<File>
 			background?: Array<File>
 		},
-		@Body(new JoiValidatePine(CreateMemberTypeDtoSchema))
-		createMemberTypeDto: CreateMemberTypeDto
+		@Body(new JoiValidatePine(CreateMemberRankDtoSchema))
+		createMemberRankDto: CreateMemberRankDto
 	) {
-		return !!(await this.memberTypeService.create(
-			createMemberTypeDto,
+		return !!(await this.memberRankService.create(
+			createMemberRankDto,
 			icon?.length > 0 ? icon[0] : undefined,
 			background?.length > 0 ? background[0] : undefined
 		))

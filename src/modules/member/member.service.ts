@@ -8,6 +8,7 @@ import { UpdateResult, DeleteResult } from 'mongodb'
 import { NotFoundDataException } from '@/common/exceptions/http'
 import { DatabaseConnectionName } from '@/constants'
 import { stringToDate } from '@/utils'
+import { MemberRank } from '../member-rank/schemas/member-rank.schema'
 
 @Injectable()
 export class MemberService {
@@ -31,16 +32,15 @@ export class MemberService {
 		return await this.memberModel.findOne({ email }).lean().exec()
 	}
 
-	async create(dto: CreateMemberDto, memberTypeId: string): Promise<Member> {
+	async create(dto: CreateMemberDto, memberRankId: string): Promise<Member> {
 		try {
 			const code = 'M' + Math.floor(Date.now() / 1000)
 			const dob = stringToDate(dto.dob)
 			dto.dob = undefined
 			return await this.memberModel.create({
 				...dto,
-				code,
 				dob,
-				memberInfo: { memberType: memberTypeId },
+				memberInfo: { code, memberRank: memberRankId },
 			})
 		} catch (err) {
 			if (DuplicateKeyException.check(err)) throw new DuplicateKeyException(err)
@@ -49,12 +49,12 @@ export class MemberService {
 	}
 
 	async updateInfo(
-		userId: string,
+		memberId: string,
 		dto: UpdateMemberInfoDto
 	): Promise<UpdateResult> {
 		try {
 			return await this.memberModel
-				.updateOne({ _id: userId, role: Member.name }, dto)
+				.updateOne({ _id: memberId, role: Member.name }, dto)
 				.exec()
 		} catch (err) {
 			if (DuplicateKeyException.check(err)) throw new DuplicateKeyException(err)
@@ -62,14 +62,39 @@ export class MemberService {
 		}
 	}
 
-	async delete(userId: string): Promise<DeleteResult> {
+	async delete(memberId: string): Promise<DeleteResult> {
 		const existedMember = await this.memberModel
-			.findOne({ _id: userId, role: Member.name })
+			.findOne({ _id: memberId, role: Member.name })
 			.lean()
 			.exec()
 		if (!existedMember) throw new NotFoundDataException('Member')
 		return await this.memberModel
-			.deleteOne({ _id: userId, role: Member.name })
+			.deleteOne({ _id: memberId, role: Member.name })
 			.exec()
+	}
+
+	async getMemberDataInHome(memberId: string) {
+		const memberData = await this.memberModel
+			.findById(memberId)
+			.populate<{ 'memberInfo.rank': MemberRank }>('memberInfo.rank')
+			.orFail()
+			.select('firstName lastName coupons notifications memberInfo -_id')
+			.lean({ virtuals: true })
+			.exec()
+
+		const couponCount = memberData.coupons.filter(
+			coupon => coupon.startTime < Date.now()
+		).length
+		const notificationCount = memberData.notifications.length
+		return {
+			memberData: {
+				firstName: memberData.firstName,
+				lastName: memberData.lastName,
+				fullName: memberData['fullName'],
+				memberInfo: memberData.memberInfo,
+			},
+			couponCount,
+			notificationCount,
+		}
 	}
 }

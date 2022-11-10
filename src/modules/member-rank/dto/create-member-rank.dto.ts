@@ -1,7 +1,7 @@
 import { colorPattern } from '@/common/validators'
 import * as Joi from 'joi'
 
-export class CreateMemberTypeDto {
+export class CreateMemberRankDto {
 	name: string
 	rank?: number
 	color?: string
@@ -9,7 +9,7 @@ export class CreateMemberTypeDto {
 	coefficientPoint?: number
 }
 
-export const CreateMemberTypeDtoSchema = Joi.object<CreateMemberTypeDto>({
+export const CreateMemberRankDtoSchema = Joi.object<CreateMemberRankDto>({
 	name: Joi.string().required(),
 	rank: Joi.number().min(0).optional(),
 	color: Joi.string().pattern(colorPattern).optional(),

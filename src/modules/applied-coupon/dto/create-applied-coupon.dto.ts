@@ -26,5 +26,5 @@ export const CreateAppliedCouponDtoSchema = Joi.object<CreateAppliedCouponDto>({
 		.valid(...Object.values(CouponSource))
 		.default(CouponSource.AUTO_SYSTEM)
 		.optional(),
-	startTime: Joi.number().min(0).required(),
+	startTime: Joi.number().min(0).required().custom((value, helpers): number => +value),
 })
