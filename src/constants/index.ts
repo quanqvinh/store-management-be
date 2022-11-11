@@ -92,3 +92,9 @@ export enum ContactType {
 	WEBSITE = 'website',
 	OTHER = 'other',
 }
+
+export enum CategoryType {
+	DRINK = 'drink',
+	FOOD = 'food',
+	ITEM = 'item',
+}

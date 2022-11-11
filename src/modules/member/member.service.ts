@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { Member, MemberDocument } from './schemas/member.schema'
-import { CreateMemberDto, UpdateMemberInfoDto } from './dto'
+import { CreateMemberDto, UpdateMemberInfoDto } from './dto/request'
 import { DuplicateKeyException } from '@/common/exceptions/mongo.exception'
 import { UpdateResult, DeleteResult } from 'mongodb'
 import { NotFoundDataException } from '@/common/exceptions/http'
@@ -40,7 +40,7 @@ export class MemberService {
 			return await this.memberModel.create({
 				...dto,
 				dob,
-				memberInfo: { code, memberRank: memberRankId },
+				memberInfo: { code, rank: memberRankId },
 			})
 		} catch (err) {
 			if (DuplicateKeyException.check(err)) throw new DuplicateKeyException(err)

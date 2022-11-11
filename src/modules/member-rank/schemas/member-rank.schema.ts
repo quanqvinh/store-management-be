@@ -15,17 +15,17 @@ export class MemberRank {
 
 	@Prop({
 		type: {
-			icon: { type: Types.ObjectId },
+			icon: { type: String },
 			color: { type: String },
-			background: { type: Types.ObjectId },
+			background: { type: String },
 		},
 		required: true,
 		_id: false,
 	})
 	display: {
-		icon: Types.ObjectId
+		icon: string
 		color: string
-		background: Types.ObjectId
+		background: string
 	}
 
 	@Prop({ type: Number, required: true, min: 0, default: 0 })

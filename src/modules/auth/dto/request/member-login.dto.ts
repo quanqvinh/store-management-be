@@ -1,6 +1,9 @@
 import * as Joi from 'joi'
 
 export class MemberLoginDto {
+	/**
+	 * @example example@gmail.com
+	 */
 	email: string
 }
 

@@ -29,3 +29,12 @@ export class LackOfImageException extends BadRequestException {
 		super(field + ' image is required')
 	}
 }
+
+export class NotImageFileException extends BadRequestException {
+	constructor(mimetype?: string) {
+		super(
+			'Only accept image files' +
+				(mimetype ? ` (${mimetype} type is sent)` : '')
+		)
+	}
+}

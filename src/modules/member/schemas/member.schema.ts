@@ -90,7 +90,7 @@ export const MemberSchema = SchemaFactory.createForClass(Member)
 MemberSchema.plugin(mongooseDelete)
 MemberSchema.plugin(mongooseLeanVirtuals)
 
-MemberSchema.virtual('fullName').get(function() {
+MemberSchema.virtual('fullName').get(function () {
 	return `${this.firstName} ${this.lastName}`
 })
 

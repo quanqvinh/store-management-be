@@ -1,13 +1,13 @@
 import { Size, Topping } from '../../schemas/option.schema'
 import * as Joi from 'joi'
-import { sizeKeyPattern } from '@/common/validators'
+import { objectIdPattern, sizeKeyPattern } from '@/common/validators'
+import { ApiPropertyMultiFiles } from '@/common/decorators/file-swagger.decorator'
 
 export class CreateProductDto {
+	@ApiPropertyMultiFiles()
+	images: any
 	name: string
-	category: {
-		isNew: boolean
-		name: string
-	}
+	category: string
 	originalPrice: number
 	description: string
 	size: Array<Size>
@@ -16,24 +16,21 @@ export class CreateProductDto {
 
 export const CreateProductDtoSchema = Joi.object<CreateProductDto>({
 	name: Joi.string().required(),
-	category: Joi.object({
-		isNew: Joi.boolean().required().default(false),
-		name: Joi.string().required(),
-	}).required(),
+	category: Joi.string().pattern(objectIdPattern).required(),
 	originalPrice: Joi.number().required(),
 	description: Joi.string().optional(),
 	size: Joi.array()
 		.items(
-			Joi.object({
+			Joi.object<Size>({
 				name: Joi.string().required(),
 				key: Joi.string().pattern(sizeKeyPattern).required(),
 				fee: Joi.number().required(),
 			})
 		)
-		.required(),
+		.optional(),
 	topping: Joi.array()
 		.items(
-			Joi.object({
+			Joi.object<Topping>({
 				name: Joi.string().required(),
 				fee: Joi.number().required(),
 			})

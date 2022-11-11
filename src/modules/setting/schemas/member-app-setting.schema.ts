@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Document, ObjectId, Types } from 'mongoose'
+import { Document, Types } from 'mongoose'
 import { SettingType } from '@/constants'
 import { memberAppDefault } from './default/member-app.default'
 
@@ -27,39 +27,42 @@ export class MemberAppSetting {
 
 	@Prop({
 		type: {
-			image: { type: Types.ObjectId },
+			image: { type: String },
 			content: { type: String, required: true },
 		},
 		default: memberAppDefault.greeting,
 		_id: false,
 	})
 	greeting: {
-		image: Types.ObjectId
+		image: string
 		content: string
 	}
 
 	@Prop({
 		type: {
-			product: Types.ObjectId,
-			store: Types.ObjectId,
-			coupon: Types.ObjectId,
-			couponNotification: Types.ObjectId,
+			product: String,
+			store: String,
+			category: String,
+			coupon: String,
+			couponNotification: String,
 		},
+		default: memberAppDefault.defaultImages,
 	})
 	defaultImages: {
-		product: Types.ObjectId
-		store: Types.ObjectId
-		coupon: Types.ObjectId
-		couponNotification: Types.ObjectId
+		product: string
+		store: string
+		category: string
+		coupon: string
+		couponNotification: string
 	}
 
 	@Prop({
 		type: {
 			defaultDisplay: {
 				type: {
-					icon: Types.ObjectId,
+					icon: String,
 					color: String,
-					background: Types.ObjectId,
+					background: String,
 				},
 				_id: false,
 			},
@@ -69,9 +72,9 @@ export class MemberAppSetting {
 	})
 	memberRank: {
 		defaultDisplay: {
-			icon: Types.ObjectId
+			icon: string
 			color: string
-			background: Types.ObjectId
+			background: string
 		}
 	}
 }

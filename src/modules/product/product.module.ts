@@ -1,13 +1,13 @@
 import { MongooseModule } from '@nestjs/mongoose'
 import { Module } from '@nestjs/common'
 import { Product, ProductSchema } from './schemas/product.schema'
-import { ProductController } from './controllers/product.controller'
-import { CategoryController } from './controllers/category.controller'
-import { CategoryService } from './services/category.service'
-import { ProductService } from './services/product.service'
+import { ProductController } from './product.controller'
+import { ProductService } from './product.service'
 import { ConfigModule } from '@nestjs/config'
 import { DatabaseConnectionName } from '@/constants'
 import { PortalMulterModule } from '../file/file.module'
+import { CategoryModule } from '../category/category.module'
+import { SettingModule } from '../setting/setting.module'
 
 @Module({
 	imports: [
@@ -15,11 +15,13 @@ import { PortalMulterModule } from '../file/file.module'
 			[{ name: Product.name, schema: ProductSchema }],
 			DatabaseConnectionName.DATA
 		),
+		CategoryModule,
 		ConfigModule,
+		SettingModule,
 		PortalMulterModule,
 	],
-	controllers: [ProductController, CategoryController],
-	providers: [CategoryService, ProductService],
-	exports: [CategoryService, ProductService],
+	controllers: [ProductController],
+	providers: [ProductService],
+	exports: [ProductService],
 })
 export class ProductModule {}

@@ -60,4 +60,11 @@ export class MemberAppService {
 			.lean({ virtuals: true })
 			.exec()
 	}
+
+	async getDefaultImages(
+		name: 'product' | 'store' | 'category' | 'coupon' | 'couponNotification'
+	): Promise<string> {
+		const defaultImages = await this.get('defaultImages')
+		return defaultImages[name]?.toString()
+	}
 }

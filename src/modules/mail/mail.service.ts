@@ -10,7 +10,7 @@ export class MailService {
 		private templateService: TemplateService
 	) {}
 
-	async sendMail({ recipient, content }: MailInfoDto) {
+	async sendMail({ recipient, content }: MailInfoDto): Promise<boolean> {
 		try {
 			const info = await this.mailerService.sendMail({
 				to: recipient,

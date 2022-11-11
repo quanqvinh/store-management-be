@@ -15,19 +15,26 @@ import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express'
 import { Response } from 'express'
 import { ObjectIdValidatePine, ObjectIdListValidatePine } from '@/common/pipes'
 import { File } from '@/types'
+import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger'
+import { FileUploadDto, MultiFileUploadDto } from './dto/upload.dto'
 
 @Controller('file')
+@ApiTags('file')
 export class FileController {
 	constructor(private fileService: FileService) {}
 
 	@Post('multi-upload')
 	@UseInterceptors(FilesInterceptor('photos'))
+	@ApiConsumes('multipart/form-data')
+	@ApiBody({ type: MultiFileUploadDto })
 	multiUpload(@UploadedFiles() files: Array<File>) {
 		return files
 	}
 
 	@Post('upload')
 	@UseInterceptors(FileInterceptor('photo'))
+	@ApiConsumes('multipart/form-data')
+	@ApiBody({ type: FileUploadDto })
 	upload(@UploadedFile() file: File) {
 		return file
 	}
