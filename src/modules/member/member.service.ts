@@ -40,7 +40,7 @@ export class MemberService {
 			return await this.memberModel.create({
 				...dto,
 				dob,
-				memberInfo: { code, memberRank: memberRankId },
+				memberInfo: { code, rank: memberRankId },
 			})
 		} catch (err) {
 			if (DuplicateKeyException.check(err)) throw new DuplicateKeyException(err)

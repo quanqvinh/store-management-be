@@ -42,13 +42,16 @@ export class MemberAppSetting {
 		type: {
 			product: Types.ObjectId,
 			store: Types.ObjectId,
+			category: Types.ObjectId,
 			coupon: Types.ObjectId,
 			couponNotification: Types.ObjectId,
 		},
+		default: memberAppDefault.defaultImages,
 	})
 	defaultImages: {
 		product: Types.ObjectId
 		store: Types.ObjectId
+		category: Types.ObjectId
 		coupon: Types.ObjectId
 		couponNotification: Types.ObjectId
 	}

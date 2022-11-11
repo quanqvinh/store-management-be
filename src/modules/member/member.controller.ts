@@ -31,7 +31,10 @@ export class MemberController {
 
 		return {
 			head: {
-				greeting,
+				greeting: {
+					icon: appSetting.greeting.image,
+					content: greeting,
+				},
 				couponCount: homeData.couponCount,
 				notificationCount: homeData.notificationCount,
 			},
@@ -40,8 +43,8 @@ export class MemberController {
 				code: memberInfo.code,
 				point: memberInfo.currentPoint,
 				memberRank: {
-					name: memberRank.name,
-					...memberRank.display,
+					name: memberRank?.name,
+					...memberRank?.display,
 				},
 			},
 		}

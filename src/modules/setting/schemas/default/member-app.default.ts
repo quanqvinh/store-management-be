@@ -10,7 +10,14 @@ export const memberAppDefault: Partial<MemberAppSetting> = {
 		},
 	},
 	greeting: {
-		image: new Types.ObjectId('6362998afb902efd814ea1d1'),
+		image: new Types.ObjectId('636aa1004277123fb7e1f32b'),
 		content: '{{firstName}} ơi, Hi-Tea đi!',
+	},
+	defaultImages: {
+		product: new Types.ObjectId('636aa1004277123fb7e1f32b'),
+		store: new Types.ObjectId('636aa1004277123fb7e1f32b'),
+		category: new Types.ObjectId('636aa1004277123fb7e1f32b'),
+		coupon: new Types.ObjectId('636aa1004277123fb7e1f32b'),
+		couponNotification: new Types.ObjectId('636aa1004277123fb7e1f32b'),
 	},
 }

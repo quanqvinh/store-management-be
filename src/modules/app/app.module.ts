@@ -19,7 +19,7 @@ import { TransformInterceptor } from '@/common/interceptors/transform.intercepto
 import { ProductModule } from '@/modules/product/product.module'
 import { FileModule } from '@/modules/file/file.module'
 import { DatabaseConnectionName } from '@/constants'
-import { CleanerModule } from '@/modules/cleaner/cleaner.module'
+// import { CleanerModule } from '@/modules/cleaner/cleaner.module'
 import { StoreModule } from '@/modules/store/store.module'
 import { SettingModule } from '@/modules/setting/setting.module'
 import { MailModule } from '@/modules/mail/mail.module'
@@ -64,7 +64,7 @@ const THROTTLER_LIMIT = 10
 		FileModule,
 		StoreModule,
 		SettingModule,
-		CleanerModule,
+		// CleanerModule,
 		MailModule,
 		MemberRankModule,
 		CouponModule,
