@@ -26,8 +26,15 @@ async function bootstrap() {
 
 	// Swagger
 	const config = new DocumentBuilder()
+		.addBearerAuth()
 		.setTitle('Store Management OpenAPI')
-		.setDescription('SM System OpenAPI')
+		.setDescription(
+			`
+	=== NOTE ===
+	- If response data type is boolean, the actual response is { success: boolean }
+	- Otherwise, the response type is T, the actual response is { data: T }
+		`
+		)
 		.setVersion('1.0')
 		.build()
 	const document = SwaggerModule.createDocument(app, config)

@@ -1,12 +1,11 @@
+import { TestAccessTokenDto } from './dto/response/test-access-token.dto'
 import { Body, Controller, Get, UnauthorizedException } from '@nestjs/common'
-import { UseGuards, Post } from '@nestjs/common'
+import { Post } from '@nestjs/common'
 import {
-	LocalAdminGuard,
-	LocalSalespersonGuard,
-} from '@/common/guards/local-auth.guard'
-import {
+	EmployeeAuth,
 	JwtAccessTokenGuard,
 	JwtRefreshTokenGuard,
+	MemberAuth,
 	User,
 } from '@/common/decorators'
 import { TokenService } from '../token/services/token.service'
@@ -23,10 +22,12 @@ import { expireTimeFormats } from '@/utils'
 import { MemberLoginDto, MemberLoginDtoSchema } from './dto/request'
 import { MemberVerifyLoginDto, MemberVerifyLoginDtoSchema } from './dto/request'
 import { MemberAccountIdentifyDto } from './dto/response/member-account-identify.dto'
-import { CreateMemberDto, CreateMemberDtoSchema } from '../member/dto'
+import { CreateMemberDto, CreateMemberDtoSchema } from '../member/dto/request'
 import { MemberRankService } from '../member-rank/member-rank.service'
+import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger'
 
 @Controller('auth')
+@ApiTags('auth')
 export class AuthController {
 	constructor(
 		private tokenService: TokenService,
@@ -39,17 +40,17 @@ export class AuthController {
 		private memberRankService: MemberRankService
 	) {}
 
-	@Post('admin/login')
-	@UseGuards(LocalAdminGuard)
-	async adminLogin(@User() user): Promise<TokenPairDto> {
-		return await this.tokenService.generateTokenPair(user)
-	}
+	// @Post('admin/login')
+	// @UseGuards(LocalAdminGuard)
+	// async adminLogin(@User() user): Promise<TokenPairDto> {
+	// 	return await this.tokenService.generateTokenPair(user)
+	// }
 
-	@Post('salesperson/login')
-	@UseGuards(LocalSalespersonGuard)
-	async salespersonLogin(@User() user): Promise<TokenPairDto> {
-		return await this.tokenService.generateTokenPair(user)
-	}
+	// @Post('salesperson/login')
+	// @UseGuards(LocalSalespersonGuard)
+	// async salespersonLogin(@User() user): Promise<TokenPairDto> {
+	// 	return await this.tokenService.generateTokenPair(user)
+	// }
 
 	@Post('member/login')
 	async loginMail(
@@ -82,6 +83,7 @@ export class AuthController {
 	}
 
 	@Post('member/sign-up')
+	// @ApiResponse({ type: TokenPairDto })
 	async memberSignUp(
 		@Body(new JoiValidatePine(CreateMemberDtoSchema))
 		createMemberDto: CreateMemberDto
@@ -125,9 +127,10 @@ export class AuthController {
 		return this.tokenService.generateTokenPair(member)
 	}
 
-	@Get('profile')
+	@Get('test-access-token')
 	@JwtAccessTokenGuard()
-	profile(@User() user) {
+	@ApiResponse({ type: TestAccessTokenDto })
+	profile(@User() user: MemberAuth | EmployeeAuth): TestAccessTokenDto {
 		return user
 	}
 }

@@ -5,8 +5,11 @@ import { MemberService } from './member.service'
 import { TemplateService } from '../template/services/template.service'
 import { MemberRankService } from '../member-rank/member-rank.service'
 import { MemberRank } from '../member-rank/schemas/member-rank.schema'
+import { ApiTags } from '@nestjs/swagger'
+import { HomeDataDto } from './dto/response/home-data.dto'
 
 @Controller('member')
+@ApiTags('member')
 export class MemberController {
 	constructor(
 		private memberAppSettingService: MemberAppService,
@@ -17,7 +20,7 @@ export class MemberController {
 
 	@Get('home')
 	@JwtAccessTokenGuard()
-	async getHomeData(@User() member: MemberAuth) {
+	async getHomeData(@User() member: MemberAuth): Promise<HomeDataDto> {
 		const appSetting = await this.memberAppSettingService.get('greeting')
 		const homeData = await this.memberService.getMemberDataInHome(member.id)
 

@@ -1,28 +1,16 @@
 import * as coreJoi from 'joi'
 import * as joiDate from '@joi/date'
 import { namePattern, mobilePattern } from '@/common/validators'
-import { ApiProperty } from '@nestjs/swagger'
 import { Gender } from '@/constants'
 
 const Joi = coreJoi.extend(joiDate.default(coreJoi)) as typeof coreJoi
 
 export class CreateMemberDto {
-	@ApiProperty()
 	email: string
-
-	@ApiProperty()
 	mobile: string
-
-	@ApiProperty()
 	firstName: string
-
-	@ApiProperty()
 	lastName: string
-
-	@ApiProperty()
 	dob: string
-
-	@ApiProperty()
 	gender: Gender
 }
 

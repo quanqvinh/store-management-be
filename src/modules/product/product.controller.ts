@@ -14,8 +14,7 @@ import {
 	CreateProductDtoSchema,
 } from './dto/request/create-product.dto'
 import { File } from '@/types'
-import { LackOfImageException } from '@/common/exceptions/http'
-import { Product } from './schemas/product.schema'
+import { ApiConsumes, ApiTags } from '@nestjs/swagger'
 
 @Controller('product')
 export class ProductController {
@@ -42,8 +41,10 @@ export class ProductController {
 		return await this.productService.getAll()
 	}
 
+	@ApiTags('product')
 	@Post('create')
 	@UseInterceptors(FileFieldsInterceptor([{ name: 'images', maxCount: 4 }]))
+	@ApiConsumes('multipart/form-data')
 	async create(
 		@UploadedFiles()
 		{

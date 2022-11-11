@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 
-export type Size = {
+export class Size {
 	key: string
 	name: string
 	fee: number
@@ -12,7 +12,7 @@ const SizeSchema = {
 	fee: { type: Number, required: true },
 }
 
-export type Topping = {
+export class Topping {
 	name: string
 	fee: number
 }

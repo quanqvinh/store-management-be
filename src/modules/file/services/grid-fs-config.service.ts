@@ -10,6 +10,7 @@ import { InjectConnection } from '@nestjs/mongoose'
 import { Connection, mongo } from 'mongoose'
 import { ConfigService } from '@nestjs/config'
 import { DatabaseConnectionName } from '@/constants'
+import { NotImageFileException } from '@/common/exceptions/http'
 
 const CHUNK_SIZE = 512 * 1024
 const FILE_SIZE_MAX = 2 * 1024 * 1024
@@ -49,7 +50,7 @@ export class GridFsConfigService implements MulterOptionsFactory {
 			bucketName: 'photo',
 		})
 
-		this.storage.on('connection', () => {
+		this.storage.once('connection', () => {
 			Logger.debug('File storage server is opened!', 'Multer')
 		})
 
@@ -66,6 +67,11 @@ export class GridFsConfigService implements MulterOptionsFactory {
 		return {
 			storage: this.storage,
 			limits: { fileSize: FILE_SIZE_MAX },
+			fileFilter(req, file, callback) {
+				if (!file.mimetype.startsWith('image'))
+					callback(new NotImageFileException(file.mimetype), false)
+				callback(null, true)
+			},
 		}
 	}
 }

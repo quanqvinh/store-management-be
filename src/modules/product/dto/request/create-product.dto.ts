@@ -1,8 +1,11 @@
 import { Size, Topping } from '../../schemas/option.schema'
 import * as Joi from 'joi'
 import { objectIdPattern, sizeKeyPattern } from '@/common/validators'
+import { ApiPropertyMultiFiles } from '@/common/decorators/file-swagger.decorator'
 
 export class CreateProductDto {
+	@ApiPropertyMultiFiles()
+	images: any
 	name: string
 	category: string
 	originalPrice: number
