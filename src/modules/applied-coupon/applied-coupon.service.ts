@@ -11,6 +11,7 @@ import {
 	AppliedCouponDocument,
 } from './schemas/applied-coupon.schema'
 import { UpdateResult } from 'mongodb'
+import { Coupon } from '../coupon/schemas/coupon.schema'
 
 @Injectable()
 export class AppliedCouponService {
@@ -22,10 +23,7 @@ export class AppliedCouponService {
 		private couponService: CouponService
 	) {}
 
-	async create(
-		memberId: string,
-		dto: CreateAppliedCouponDto
-	): Promise<UpdateResult> {
+	async create(dto: CreateAppliedCouponDto): Promise<UpdateResult> {
 		const coupon = await this.couponService.getById(dto.couponId)
 
 		dto.startTime = +dto.startTime
@@ -43,7 +41,7 @@ export class AppliedCouponService {
 		})
 
 		return await this.memberModel.updateOne(
-			{ _id: memberId },
+			{ _id: { $in: dto.memberIds } },
 			{ $push: { coupons: appliedCoupon } }
 		)
 	}
@@ -51,9 +49,10 @@ export class AppliedCouponService {
 	async getAllOfOne(memberId: string) {
 		const member = await this.memberModel
 			.findById(memberId)
+			.orFail(new NotFoundDataException('Member'))
+			.populate<{ 'coupons.coupon': Coupon }>('coupons.coupon')
 			.lean({ virtuals: true })
 			.exec()
-		if (!member) throw new NotFoundDataException('Member')
 		return member.coupons
 	}
 

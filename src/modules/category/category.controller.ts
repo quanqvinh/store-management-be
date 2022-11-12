@@ -7,8 +7,10 @@ import {
 	Post,
 	UseInterceptors,
 	UploadedFile,
+	Param,
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
+import { ApiConsumes, ApiTags } from '@nestjs/swagger'
 import { CategoryService } from './category.service'
 import {
 	CreateCategoryDto,
@@ -16,6 +18,7 @@ import {
 } from './dto/create-category.dto'
 
 @Controller('category')
+@ApiTags('category')
 export class CategoryController {
 	constructor(private categoryService: CategoryService) {}
 
@@ -24,8 +27,14 @@ export class CategoryController {
 		return await this.categoryService.getAll()
 	}
 
+	@Get(':id')
+	async getOneCategory(@Param('id') categoryId: string) {
+		return await this.categoryService.getOne(categoryId)
+	}
+
 	@Post()
 	@UseInterceptors(FileInterceptor('image'))
+	@ApiConsumes('multipart/form-data')
 	async createNew(
 		@UploadedFile() file: File,
 		@Body(new JoiValidatePine(CreateCategoryDtoSchema))

@@ -3,6 +3,7 @@ import { ApplyCouponType, CouponSource, CycleType } from '@/constants'
 import * as Joi from 'joi'
 
 export class CreateAppliedCouponDto {
+	memberIds: Array<string>
 	couponId: string
 	type: ApplyCouponType
 	cycleType?: CycleType
@@ -11,6 +12,10 @@ export class CreateAppliedCouponDto {
 }
 
 export const CreateAppliedCouponDtoSchema = Joi.object<CreateAppliedCouponDto>({
+	memberIds: Joi.array()
+		.items(Joi.string().pattern(objectIdPattern))
+		.min(1)
+		.required(),
 	couponId: Joi.string().pattern(objectIdPattern).required(),
 	type: Joi.string()
 		.valid(...Object.values(ApplyCouponType))
@@ -26,5 +31,5 @@ export const CreateAppliedCouponDtoSchema = Joi.object<CreateAppliedCouponDto>({
 		.valid(...Object.values(CouponSource))
 		.default(CouponSource.AUTO_SYSTEM)
 		.optional(),
-	startTime: Joi.number().min(0).required().custom((value, helpers): number => +value),
+	startTime: Joi.number().min(0).required(),
 })

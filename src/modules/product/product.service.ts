@@ -1,5 +1,5 @@
 import { CreateProductDto } from './dto/request/create-product.dto'
-import { Get, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Product, ProductDocument } from './schemas/product.schema'
 import { Model } from 'mongoose'
@@ -7,6 +7,7 @@ import { DatabaseConnectionName } from '@/constants'
 import { Category, CategoryDocument } from '../category/schemas/category.schema'
 import { CategoryService } from '../category/category.service'
 import { MemberAppService } from '../setting/services/member-app.service'
+import { ProductWithCategoryDto } from './dto/response/product-with-category.dto'
 
 @Injectable()
 export class ProductService {
@@ -48,44 +49,58 @@ export class ProductService {
 		})
 	}
 
-	async getAll() {
-		return this.productModel
-			.find()
-			.populate<{ category: Category }>('category')
-			.sort('category.hot category.order originalPrice -createdAt')
-			.select('-updatedAt')
-			.lean({ virtuals: true })
-			.exec()
+	async getAll(): Promise<ProductWithCategoryDto> {
+		const productsWithCategory = await this.productModel.aggregate([
+			{ $unwind: '$category' },
+			{ $group: { _id: '$category', products: { $push: '$$ROOT' } } },
+			{
+				$lookup: {
+					from: 'categories',
+					localField: '_id',
+					foreignField: '_id',
+					as: 'category',
+				},
+			},
+			{ $unwind: '$category' },
+			{
+				$sort: {
+					'category.hot': -1,
+					'category.order': 1,
+				},
+			},
+			{
+				$project: {
+					category: 1,
+					products: {
+						$map: {
+							input: '$products',
+							as: 'product',
+							in: {
+								$mergeObjects: [
+									'$$product',
+									{ mainImage: { $first: '$$product.images' } },
+								],
+							},
+						},
+					},
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					category: {
+						hot: 0,
+						type: 0,
+						order: 0,
+					},
+					products: {
+						category: 0,
+						createdAt: 0,
+						updatedAt: 0,
+					},
+				},
+			},
+		])
+		return productsWithCategory as unknown as ProductWithCategoryDto
 	}
-
-	// async create(
-	// 	createProductDto: CreateProductDto,
-	// 	categoryImage: Array<File>,
-	// 	productImages: Array<File>
-	// ) {
-	// 	let category
-	// 	if (createProductDto.category.isNew)
-	// 		category = {
-	// 			name: createProductDto.category.name,
-	// 			image: categoryImage[0].id,
-	// 		}
-	// 	else
-	// 		category = await this.categoryService.getOne(
-	// 			createProductDto.category.name
-	// 		)
-	// 	return this.productModel.create({
-	// 		name: createProductDto.name,
-	// 		images:
-	// 			productImages?.length > 0 && productImages[0].id
-	// 				? productImages.map(file => file.id)
-	// 				: [],
-	// 		originPrice: createProductDto.originalPrice,
-	// 		category,
-	// 		description: createProductDto.description,
-	// 		options: {
-	// 			size: createProductDto.size,
-	// 			topping: createProductDto.topping ?? [],
-	// 		},
-	// 	})
-	// }
 }

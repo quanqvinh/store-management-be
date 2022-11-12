@@ -10,6 +10,7 @@ import { randomString } from '@/utils'
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule)
+	app.setGlobalPrefix('api/v1')
 	const configService = app.get(ConfigService)
 	const nodeEnv = configService.get<string>('nodeEnv')
 

@@ -1,7 +1,10 @@
+import { ApiPropertyFile } from '@/common/decorators/file-swagger.decorator'
 import { CategoryType } from '@/constants'
 import * as Joi from 'joi'
 
 export class CreateCategoryDto {
+	@ApiPropertyFile()
+	image: any
 	name: string
 	type: CategoryType
 }
