@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Document, Types } from 'mongoose'
+import { Document } from 'mongoose'
 import { SettingType } from '@/constants'
 import { memberAppDefault } from './default/member-app.default'
 

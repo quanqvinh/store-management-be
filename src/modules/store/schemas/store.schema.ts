@@ -34,6 +34,11 @@ export class Address {
 	country: string
 }
 
+class StoreDescription {
+	icon: string
+	content: string
+}
+
 @Schema({ versionKey: false, timestamps: true })
 export class Store {
 	_id: ObjectId
@@ -75,13 +80,10 @@ export class Store {
 			},
 		},
 	])
-	description: Array<{
-		icon: string
-		content: string
-	}>
+	description: Array<StoreDescription>
 
-	@Prop([{ type: Types.ObjectId, ref: 'Product' }])
-	unavailableProduct: Array<ObjectId>
+	@Prop({ type: [Types.ObjectId], ref: 'Product' })
+	unavailableProducts: Array<ObjectId>
 
 	createdAt: Date
 	updatedAt: Date

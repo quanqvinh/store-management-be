@@ -5,10 +5,11 @@ import {
 	Post,
 	UploadedFiles,
 	UseInterceptors,
+	Param,
 } from '@nestjs/common'
 import { ProductService } from './product.service'
 import { FileFieldsInterceptor } from '@nestjs/platform-express'
-import { JoiValidatePine } from '@/common/pipes'
+import { JoiValidatePine, ObjectIdValidatePine } from '@/common/pipes'
 import {
 	CreateProductDto,
 	CreateProductDtoSchema,
@@ -23,7 +24,12 @@ export class ProductController {
 
 	@Get('category/all')
 	async getAll() {
-		return await this.productService.getAll()
+		return await this.productService.getAllOfStoreInMemberApp()
+	}
+
+	@Get('category/:storeId')
+	async getAllOfStore(@Param('storeId', ObjectIdValidatePine) storeId: string) {
+		return await this.productService.getAllOfStoreInMemberApp(storeId)
 	}
 
 	@Post('create')

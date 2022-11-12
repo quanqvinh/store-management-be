@@ -44,4 +44,12 @@ export class GeneralService {
 			.exec()
 		return appVariables?.variables
 	}
+
+	async get(project = ''): Promise<GeneralSetting> {
+		return await this.generalModel
+			.findOne()
+			.select(project + ' -_id')
+			.lean({ virtuals: true })
+			.exec()
+	}
 }

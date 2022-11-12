@@ -7,7 +7,12 @@ import { DatabaseConnectionName } from '@/constants'
 import { Category, CategoryDocument } from '../category/schemas/category.schema'
 import { CategoryService } from '../category/category.service'
 import { MemberAppService } from '../setting/services/member-app.service'
-import { ProductWithCategoryDto } from './dto/response/product-with-category.dto'
+// import { ProductWithCategoryDto } from './dto/response/product-with-category.dto'
+import { StoreService } from '../store/store.service'
+import {
+	CustomProduct,
+	ProductOfCategoryWithStatusDto,
+} from './dto/response/product-member-app.dto'
 
 @Injectable()
 export class ProductService {
@@ -17,14 +22,9 @@ export class ProductService {
 		@InjectModel(Category.name, DatabaseConnectionName.DATA)
 		private readonly categoryModel: Model<CategoryDocument>,
 		private categoryService: CategoryService,
-		private memberAppService: MemberAppService
+		private memberAppService: MemberAppService,
+		private storeService: StoreService
 	) {}
-
-	async getCategoryWithProduct() {
-		const categories = await this.categoryService.getAll()
-		const products = await this.getAll()
-		return { categories, products }
-	}
 
 	async create(
 		dto: CreateProductDto,
@@ -49,58 +49,76 @@ export class ProductService {
 		})
 	}
 
-	async getAll(): Promise<ProductWithCategoryDto> {
-		const productsWithCategory = await this.productModel.aggregate([
-			{ $unwind: '$category' },
-			{ $group: { _id: '$category', products: { $push: '$$ROOT' } } },
-			{
-				$lookup: {
-					from: 'categories',
-					localField: '_id',
-					foreignField: '_id',
-					as: 'category',
+	async getAllOfStoreInMemberApp(
+		storeId?: string
+	): Promise<ProductOfCategoryWithStatusDto> {
+		const unavailableProductIds = storeId
+			? await this.storeService.getUnavailableProductsOfStore(storeId)
+			: []
+
+		const [unavailableProducts, productsWithCategory] = await Promise.all([
+			this.productModel
+				.find({ _id: { $in: unavailableProductIds } })
+				.select('-category -createdAt -updatedAt')
+				.lean({ virtuals: ['mainImage'] })
+				.exec(),
+			this.productModel.aggregate([
+				{ $match: { _id: { $nin: unavailableProductIds } } },
+				{ $unwind: '$category' },
+				{ $group: { _id: '$category', products: { $push: '$$ROOT' } } },
+				{
+					$lookup: {
+						from: 'categories',
+						localField: '_id',
+						foreignField: '_id',
+						as: 'category',
+					},
 				},
-			},
-			{ $unwind: '$category' },
-			{
-				$sort: {
-					'category.hot': -1,
-					'category.order': 1,
+				{ $unwind: '$category' },
+				{
+					$sort: {
+						'category.hot': -1,
+						'category.order': 1,
+					},
 				},
-			},
-			{
-				$project: {
-					category: 1,
-					products: {
-						$map: {
-							input: '$products',
-							as: 'product',
-							in: {
-								$mergeObjects: [
-									'$$product',
-									{ mainImage: { $first: '$$product.images' } },
-								],
+				{
+					$project: {
+						category: 1,
+						products: {
+							$map: {
+								input: '$products',
+								as: 'product',
+								in: {
+									$mergeObjects: [
+										'$$product',
+										{ mainImage: { $first: '$$product.images' } },
+									],
+								},
 							},
 						},
 					},
 				},
-			},
-			{
-				$project: {
-					_id: 0,
-					category: {
-						hot: 0,
-						type: 0,
-						order: 0,
-					},
-					products: {
-						category: 0,
-						createdAt: 0,
-						updatedAt: 0,
+				{
+					$project: {
+						_id: 0,
+						category: {
+							hot: 0,
+							type: 0,
+							order: 0,
+						},
+						products: {
+							category: 0,
+							createdAt: 0,
+							updatedAt: 0,
+						},
 					},
 				},
-			},
+			]),
 		])
-		return productsWithCategory as unknown as ProductWithCategoryDto
+
+		return {
+			available: productsWithCategory,
+			unavailable: unavailableProducts as unknown as CustomProduct[],
+		}
 	}
 }

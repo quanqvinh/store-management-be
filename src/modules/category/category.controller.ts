@@ -1,4 +1,4 @@
-import { JoiValidatePine } from '@/common/pipes'
+import { JoiValidatePine, ObjectIdValidatePine } from '@/common/pipes'
 import { File } from '@/types'
 import {
 	Body,
@@ -28,7 +28,7 @@ export class CategoryController {
 	}
 
 	@Get(':id')
-	async getOneCategory(@Param('id') categoryId: string) {
+	async getOneCategory(@Param('id', ObjectIdValidatePine) categoryId: string) {
 		return await this.categoryService.getOne(categoryId)
 	}
 
