@@ -16,7 +16,7 @@ export class CategoryService {
 	) {}
 
 	async getAll(): Promise<Category[]> {
-		return await this.categoryModel.find().lean().sort('hot order').exec()
+		return await this.categoryModel.find().sort('-hot order').lean().exec()
 	}
 
 	async getOne(id: string): Promise<Category> {

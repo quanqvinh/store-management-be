@@ -24,8 +24,10 @@ import { FileInterceptor } from '@nestjs/platform-express'
 import { File } from '@/types'
 import { MemberAppService } from '../setting/services/member-app.service'
 import { FileService } from '../file/services/file.service'
+import { ApiTags } from '@nestjs/swagger'
 
 @Controller('coupon')
+@ApiTags('coupon')
 export class CouponController {
 	constructor(
 		private couponService: CouponService,

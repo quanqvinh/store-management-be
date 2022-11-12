@@ -9,19 +9,19 @@ export class DiscountType {
 		},
 		_id: false,
 	})
-	percentage: {
+	percentage?: {
 		amount: number
 		maxDecrease: number
 	}
 
 	@Prop({ type: Number })
-	decrease: number
+	decrease?: number
 
 	@Prop({ type: Number })
-	price: number
+	price?: number
 
 	@Prop({ type: Boolean })
-	freeMin: boolean
+	freeMin?: boolean
 }
 
 export const DiscountTypeSchema = SchemaFactory.createForClass(DiscountType)

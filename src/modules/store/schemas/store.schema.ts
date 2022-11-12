@@ -5,17 +5,28 @@ import mongooseDelete from 'mongoose-delete'
 
 export type StoreDocument = Store & Document
 
-export type Time = {
+export class Time {
 	hour: number
 	minute: number
 }
 
-export type DailyTime = {
+export class DailyTime {
 	open: Time
 	close: Time
 }
 
-export type Address = {
+export const DailyTimeSchema = {
+	open: {
+		hour: { type: Number, required: true },
+		minute: { type: Number, required: true },
+	},
+	close: {
+		hour: { type: Number, required: true },
+		minute: { type: Number, required: true },
+	},
+}
+
+export class Address {
 	street: string
 	ward: string
 	district: string
@@ -34,16 +45,7 @@ export class Store {
 	images: Array<string>
 
 	@Prop({
-		type: {
-			open: {
-				hour: { type: Number, required: true },
-				minute: { type: Number, required: true },
-			},
-			close: {
-				hour: { type: Number, required: true },
-				minute: { type: Number, required: true },
-			},
-		},
+		type: DailyTimeSchema,
 		_id: false,
 		required: true,
 	})

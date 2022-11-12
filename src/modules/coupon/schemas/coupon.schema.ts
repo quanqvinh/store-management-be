@@ -2,12 +2,17 @@ import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose'
 import { ObjectId, Document } from 'mongoose'
 import { DiscountType, DiscountTypeSchema } from './discount-type.schema'
 import { Condition, ConditionSchema } from './condition.schema'
-import { ApplyCouponType } from '@/constants'
 import {
 	NotificationContent,
 	NotificationContentPropertyDefine,
 } from '@/modules/notification/schemas/notification.schema'
 import mongooseDelete from 'mongoose-delete'
+import { ApiProperty } from '@nestjs/swagger'
+import {
+	DailyTime,
+	DailyTimeSchema,
+} from '@/modules/store/schemas/store.schema'
+import { setDailyTime } from '@/utils'
 
 export type CouponDocument = Coupon & Document
 
@@ -22,7 +27,8 @@ export class Coupon {
 	code: string
 
 	@Prop({ type: DiscountTypeSchema, required: true })
-	discount: Partial<DiscountType>
+	@ApiProperty()
+	discount: DiscountType
 
 	@Prop({ type: String })
 	image: string
@@ -30,8 +36,14 @@ export class Coupon {
 	@Prop({ type: String, default: 'No description' })
 	description: string
 
+	@Prop({
+		type: DailyTimeSchema,
+	})
+	applyHour?: DailyTime
+
 	@Prop({ type: ConditionSchema })
-	orderCondition: Partial<Condition>
+	@ApiProperty()
+	orderCondition: Condition
 
 	@Prop({ type: Number, default: 0 })
 	applyTime: number

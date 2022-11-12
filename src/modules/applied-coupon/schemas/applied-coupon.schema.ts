@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { ObjectId, Types } from 'mongoose'
-import { ApplyCouponType, CycleType } from '@/constants'
+import { ApplyCouponType, CouponSource, CycleType } from '@/constants'
 import mongooseLeanVirtuals from 'mongoose-lean-virtuals'
 
 export type AppliedCouponDocument = AppliedCoupon & Document
@@ -21,14 +21,18 @@ export class AppliedCoupon {
 	@Prop({ type: String, enum: Object.values(CycleType) })
 	cycleType?: CycleType
 
-	@Prop({ type: Date })
+	@Prop({ type: Date, expires: 0 })
 	expireAt: Date
 
 	@Prop({ type: Number, required: true })
 	startTime: number
 
-	@Prop({ type: String })
-	source: string
+	@Prop({
+		type: String,
+		enum: Object.values(CouponSource),
+		default: CouponSource.AUTO_SYSTEM,
+	})
+	source: CouponSource
 
 	createdAt: Date
 }
