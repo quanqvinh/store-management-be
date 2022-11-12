@@ -34,6 +34,10 @@ async function bootstrap() {
 	=== NOTE ===
 	- If response data type is boolean, the actual response is { success: boolean }
 	- Otherwise, the response type is T, the actual response is { data: T }
+	=== TOKEN 30 DAYS ===
+	19110499@student.hcmute.edu.vn
+	- Access token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MzZlODIzMWQ4NGZiNjhkNDJhODA2NTIiLCJpYXQiOjE2NjgyNjI5MTYsImV4cCI6MTY3MDg1NDkxNiwic3ViIjoiYWNjZXNzIn0.OyMpjcD0TBK2uXlAHH2DR6-CA7Rb0pAHseiRQlkP8w8
+	- Refresh token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MzZlODIzMWQ4NGZiNjhkNDJhODA2NTIiLCJpYXQiOjE2NjgyNjI5MTYsImV4cCI6MTY3MDg1NDkxNiwic3ViIjoicmVmcmVzaCJ9.fdBCZp3t0BpakEJJCPFcjtvT2ziofkHJpj1PU-F7G58
 		`
 		)
 		.setVersion('1.0')

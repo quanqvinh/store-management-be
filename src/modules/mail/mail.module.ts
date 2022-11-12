@@ -6,13 +6,12 @@ import { OAuth2Client } from 'google-auth-library'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import SMTPTransport from 'nodemailer/lib/smtp-transport'
 import { createTransport } from 'nodemailer'
-import { TemplateService } from '../template/services/template.service'
 import { TemplateModule } from '../template/template.module'
 
 function verifySMTPConnection(options: SMTPTransport.Options) {
 	const transporter = createTransport(options)
 	transporter.verify((err, _success) => {
-		if (err) Logger.error('SMTP connection failed', 'Nodemailer')
+		if (err) Logger.error('SMTP connection failed\n' + err, 'Nodemailer')
 		else Logger.debug('SMTP connect successfully', 'Nodemailer')
 	})
 }

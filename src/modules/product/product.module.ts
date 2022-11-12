@@ -8,6 +8,7 @@ import { DatabaseConnectionName } from '@/constants'
 import { PortalMulterModule } from '../file/file.module'
 import { CategoryModule } from '../category/category.module'
 import { SettingModule } from '../setting/setting.module'
+import { StoreModule } from '../store/store.module'
 
 @Module({
 	imports: [
@@ -18,6 +19,7 @@ import { SettingModule } from '../setting/setting.module'
 		CategoryModule,
 		ConfigModule,
 		SettingModule,
+		StoreModule,
 		PortalMulterModule,
 	],
 	controllers: [ProductController],

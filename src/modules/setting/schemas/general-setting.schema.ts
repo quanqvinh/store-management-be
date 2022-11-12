@@ -14,14 +14,18 @@ export type VirtualData = {
 
 export type GeneralSettingDocument = Document & GeneralSetting & VirtualData
 
-type Contact = {
+export class Contact {
 	name: string
-	type: string
+	type: ContactType
 	info: string
 }
 const ContactDefine = {
 	name: { type: String, required: true },
-	type: { type: String, enum: Object.keys(ContactType), default: 'other' },
+	type: {
+		type: String,
+		enum: Object.values(ContactType),
+		default: ContactType.OTHER,
+	},
 	info: { type: String, required: true },
 }
 
@@ -42,7 +46,10 @@ export class GeneralSetting {
 	@Prop({ type: String, default: generalDefault.country })
 	country: string
 
-	@Prop({ type: [ContactDefine] })
+	@Prop({ type: String, default: generalDefault.storeContact })
+	storeContact: string
+
+	@Prop({ type: [ContactDefine], default: generalDefault.contact })
 	contact: Array<Contact>
 }
 

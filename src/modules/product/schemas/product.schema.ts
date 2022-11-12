@@ -3,6 +3,7 @@ import { ObjectId, Document, Types } from 'mongoose'
 import { Option, OptionSchema } from './option.schema'
 import { mongooseLeanVirtuals } from 'mongoose-lean-virtuals'
 import slugGenerator from 'mongoose-slug-generator'
+import mongooseDelete from 'mongoose-delete'
 
 export type ProductDocument = Product & Document
 
@@ -45,6 +46,7 @@ export const ProductSchema = SchemaFactory.createForClass(Product)
 
 ProductSchema.plugin(slugGenerator)
 ProductSchema.plugin(mongooseLeanVirtuals)
+ProductSchema.plugin(mongooseDelete)
 
 ProductSchema.virtual('mainImage').get(function () {
 	return this.images.length > 0 ? this.images[0] : null

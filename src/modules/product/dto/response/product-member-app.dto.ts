@@ -9,7 +9,7 @@ class CustomCategory extends PickType(Category, [
 	'slug',
 ] as const) {}
 
-class CustomProduct extends OmitType(Product, [
+export class CustomProduct extends OmitType(Product, [
 	'category',
 	'createdAt',
 	'updatedAt',
@@ -17,7 +17,12 @@ class CustomProduct extends OmitType(Product, [
 	mainImage: string
 }
 
-export class ProductWithCategoryDto {
+class ProductOfCategoryDto {
 	category: CustomCategory
 	products: Array<CustomProduct>
+}
+
+export class ProductOfCategoryWithStatusDto {
+	available: Array<ProductOfCategoryDto>
+	unavailable: Array<CustomProduct>
 }
