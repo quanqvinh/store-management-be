@@ -1,4 +1,3 @@
-import { NotFoundDataException } from './../../common/exceptions/http/not-found.exception'
 import { CreateStoreDto } from './dto/create-store.dto'
 import { DatabaseConnectionName } from '@/constants'
 import { Injectable } from '@nestjs/common'
@@ -6,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types } from 'mongoose'
 import { Store, StoreDocument } from './schemas/store.schema'
 import { File } from '@/types'
+import { NotFoundDataException } from '@/common/exceptions/http'
 
 @Injectable()
 export class StoreService {

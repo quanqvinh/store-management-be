@@ -37,9 +37,9 @@ export class OtpService {
 		try {
 			const otpDocument = await this.otpModel
 				.findOneAndDelete({ email, value: otp })
+				.orFail(new UnauthorizedException('OTP token is invalid'))
 				.lean()
 				.exec()
-			if (!otpDocument) throw new UnauthorizedException()
 
 			return authenticator.check(otp, otpDocument.secret)
 		} catch (err) {

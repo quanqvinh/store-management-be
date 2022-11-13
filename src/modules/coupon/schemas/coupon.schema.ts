@@ -12,7 +12,6 @@ import {
 	DailyTime,
 	DailyTimeSchema,
 } from '@/modules/store/schemas/store.schema'
-import { setDailyTime } from '@/utils'
 
 export type CouponDocument = Coupon & Document
 

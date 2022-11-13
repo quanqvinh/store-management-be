@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document } from 'mongoose'
 import { ContactType, SettingType } from '@/constants'
 import mongooseLeanVirtuals from 'mongoose-lean-virtuals'
-import { generalDefault } from './default/general-setting.default'
+import { generalDefault } from '../default/general-setting.default'
 
 export type VirtualData = {
 	variables: {

@@ -1,0 +1,5 @@
+export * from './setting.schema'
+export * from './discriminators/general-setting.schema'
+export * from './discriminators/admin-app-setting.schema'
+export * from './discriminators/sale-app-setting.schema'
+export * from './discriminators/member-app-setting.schema'

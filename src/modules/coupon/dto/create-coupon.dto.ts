@@ -1,5 +1,5 @@
 import { objectIdPattern } from '@/common/validators/regex'
-import { OrderType } from '@/constants'
+import { OrderType, Size } from '@/constants'
 import { Condition, IncludeProduct } from './../schemas/condition.schema'
 import { DiscountType } from '../schemas/discount-type.schema'
 import * as Joi from 'joi'
@@ -38,7 +38,9 @@ export const CreateCouponDtoSchema = Joi.object<CreateCouponDto>({
 			.items(
 				Joi.object<IncludeProduct>({
 					product: Joi.string().pattern(objectIdPattern),
-					sizeKey: Joi.string().optional(),
+					size: Joi.string()
+						.valid(...Object.values(Size))
+						.optional(),
 					amount: Joi.number().min(1).default(1).optional(),
 				})
 			)
@@ -47,7 +49,9 @@ export const CreateCouponDtoSchema = Joi.object<CreateCouponDto>({
 			.items(
 				Joi.object<IncludeProduct>({
 					product: Joi.string().pattern(objectIdPattern),
-					sizeKey: Joi.string().optional(),
+					size: Joi.string()
+						.valid(...Object.values(Size))
+						.optional(),
 					amount: Joi.number().min(1).default(1).optional(),
 				})
 			)

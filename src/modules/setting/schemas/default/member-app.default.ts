@@ -1,4 +1,4 @@
-import { MemberAppSetting } from '../member-app-setting.schema'
+import { MemberAppSetting } from './..'
 
 export const memberAppDefault: Partial<MemberAppSetting> = {
 	memberRank: {

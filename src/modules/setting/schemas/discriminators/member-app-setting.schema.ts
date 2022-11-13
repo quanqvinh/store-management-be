@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document } from 'mongoose'
 import { SettingType } from '@/constants'
-import { memberAppDefault } from './default/member-app.default'
+import { memberAppDefault } from '../default/member-app.default'
 
 export type MemberAppSettingDocument = Document & MemberAppSetting
 

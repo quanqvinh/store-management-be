@@ -1,34 +1,33 @@
+import { Size } from '@/constants'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 
-export class Size {
-	key: string
-	name: string
+export class SizeOption {
+	size: Size
 	fee: number
 }
 
-const SizeSchema = {
-	key: { type: String },
-	name: { type: String, required: true },
+const SizeOptionSchema = {
+	size: { type: String, enum: Object.values(Size) },
 	fee: { type: Number, required: true },
 }
 
-export class Topping {
+export class ToppingOption {
 	name: string
 	fee: number
 }
 
-const ToppingSchema = {
+const ToppingOptionSchema = {
 	name: { type: String, required: true },
 	fee: { type: Number, required: true },
 }
 
 @Schema({ versionKey: false, _id: false })
 export class Option {
-	@Prop([{ type: SizeSchema }])
-	size: Array<Size>
+	@Prop([{ type: SizeOptionSchema }])
+	size: Array<SizeOption>
 
-	@Prop([{ type: ToppingSchema }])
-	topping: Array<Topping>
+	@Prop([{ type: ToppingOptionSchema }])
+	topping: Array<ToppingOption>
 }
 
 export const OptionSchema = SchemaFactory.createForClass(Option)

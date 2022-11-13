@@ -50,7 +50,7 @@ export enum CouponSource {
 
 export enum OrderType {
 	ON_PREMISE = 'on_premise',
-	PICK_UP = 'pick_up',
+	PICKUP = 'pickup',
 	DELIVERY = 'delivery',
 }
 
@@ -97,4 +97,23 @@ export enum CategoryType {
 	DRINK = 'drink',
 	FOOD = 'food',
 	ITEM = 'item',
+}
+
+export enum OrderStatus {
+	PENDING = 'pending',
+	PREPARING = 'preparing',
+	READY = 'ready',
+	DELIVERING = 'delivering',
+	DONE = 'done',
+}
+
+export enum Size {
+	SMALL = 'S',
+	MEDIUM = 'M',
+	LARGE = 'L',
+}
+
+export enum Buyer {
+	CUSTOMER = 'customer',
+	MEMBER = 'member',
 }

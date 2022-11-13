@@ -35,8 +35,11 @@ export class Product {
 	@Prop({ type: String, default: 'No description' })
 	description: string
 
-	@Prop({ Type: OptionSchema })
+	@Prop({ type: OptionSchema })
 	options: Option
+
+	@Prop({ type: Number, default: 0 })
+	numberOfLikes: number
 
 	createdAt: Date
 	updatedAt: Date

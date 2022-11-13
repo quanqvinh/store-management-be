@@ -1,10 +1,10 @@
-import { OrderType } from '@/constants'
+import { OrderType, Size } from '@/constants'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { ObjectId, Types } from 'mongoose'
 
 export class IncludeProduct {
 	product: ObjectId
-	sizeKey: string
+	size: Size
 	amount: number
 }
 

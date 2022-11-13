@@ -3,7 +3,7 @@ import { GeneralService } from '@/modules/setting/services/general.service'
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import { MailTemplateDocument } from '../schemas/mail-template.schema'
+import { MailTemplateDocument } from '../schemas/discriminators/mail-template.schema'
 import { TemplateService } from './template.service'
 
 @Injectable()
