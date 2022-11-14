@@ -103,14 +103,7 @@ export class MemberService {
 
 	async signUpAccount(email: string): Promise<Member | null> {
 		const updatedMember = await this.memberModel
-			.findOneAndUpdate(
-				{ email },
-				{
-					$set: {
-						unregistered: undefined,
-					},
-				}
-			)
+			.findOneAndUpdate({ email }, { $unset: { notVerified: 1 } })
 			.orFail(new NotCreatedDataException())
 			.exec()
 		if (!updatedMember) return null
