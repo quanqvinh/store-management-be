@@ -1,12 +1,12 @@
 import { Order, OrderSchema } from './schemas/order.schema'
 import { MongooseModule } from '@nestjs/mongoose'
 import { Module } from '@nestjs/common'
-import { DatabaseConnectionName, OrderType } from '@/constants'
-import {
-	PickupOrderSchema,
-	DeliveryOrderSchema,
-	OnPremiseOrderSchema,
-} from './schemas'
+import { DatabaseConnectionName, Buyer } from '@/constants'
+import { CustomerOrderSchema, MemberOrderSchema } from './schemas'
+import { OrderController } from './order.controller'
+import { OrderService } from './services'
+import { StoreModule } from '../store/store.module'
+import { ProductModule } from '../product/product.module'
 
 @Module({
 	imports: [
@@ -16,17 +16,18 @@ import {
 					name: Order.name,
 					schema: OrderSchema,
 					discriminators: [
-						{ name: OrderType.PICKUP, schema: PickupOrderSchema },
-						{ name: OrderType.DELIVERY, schema: DeliveryOrderSchema },
-						{ name: OrderType.ON_PREMISE, schema: OnPremiseOrderSchema },
+						{ name: Buyer.CUSTOMER, schema: CustomerOrderSchema },
+						{ name: Buyer.MEMBER, schema: MemberOrderSchema },
 					],
 				},
 			],
 			DatabaseConnectionName.DATA
 		),
+		StoreModule,
+		ProductModule,
 	],
-	controllers: [],
-	providers: [],
-	exports: [],
+	controllers: [OrderController],
+	providers: [OrderService],
+	exports: [OrderService],
 })
 export class OrderModule {}

@@ -1,4 +1,4 @@
-import { objectIdPattern } from '@/common/validators/regex'
+import { objectIdPattern } from '@/common/validators'
 import { OrderType } from '@/constants'
 import { Condition, IncludeProduct } from '../schemas/condition.schema'
 import { DiscountType } from '../schemas/discount-type.schema'

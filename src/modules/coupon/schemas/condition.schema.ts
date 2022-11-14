@@ -3,13 +3,13 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { ObjectId, Types } from 'mongoose'
 
 export class IncludeProduct {
-	product: ObjectId
+	product?: ObjectId
 	size: Size
 	amount: number
 }
 
 const IncludeProductSchema = {
-	product: { type: Types.ObjectId, required: true, ref: 'Product' },
+	product: { type: Types.ObjectId, ref: 'Product' },
 	sizeKey: { type: String },
 	amount: { type: Number, default: 1 },
 }
@@ -29,13 +29,13 @@ export class Condition {
 		type: [IncludeProductSchema],
 		_id: false,
 	})
-	includeOne?: [IncludeProduct]
+	includeOne?: Array<IncludeProduct>
 
 	@Prop({
 		type: [IncludeProductSchema],
 		_id: false,
 	})
-	includeAll?: [IncludeProduct]
+	includeAll?: Array<IncludeProduct>
 }
 
 export const ConditionSchema = SchemaFactory.createForClass(Condition)

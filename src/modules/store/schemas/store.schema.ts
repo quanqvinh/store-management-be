@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { ObjectId, Types, Document } from 'mongoose'
 import mongooseLeanVirtuals from 'mongoose-lean-virtuals'
 import mongooseDelete from 'mongoose-delete'
+import slugGenerator from 'mongoose-slug-generator'
 
 export type StoreDocument = Store & Document
 
@@ -46,6 +47,15 @@ export class Store {
 	@Prop({ type: String, required: true })
 	name: string
 
+	@Prop({
+		type: String,
+		slug: 'name',
+		unique: true,
+		slug_padding_size: 2,
+		index: true,
+	})
+	slug?: string
+
 	@Prop([{ type: String }])
 	images: Array<string>
 
@@ -59,7 +69,7 @@ export class Store {
 	@Prop({
 		type: {
 			street: { type: String, required: true },
-			ward: { type: String, required: true },
+			ward: { type: String },
 			district: { type: String, required: true },
 			city: { type: String, required: true },
 			country: { type: String, required: true },
@@ -97,11 +107,15 @@ StoreSchema.plugin(mongooseDelete, {
 	overrideMethods: 'all',
 	indexFields: 'all',
 })
-
-StoreSchema.virtual('addressName').get(function () {
-	return this.address.street
-})
+StoreSchema.plugin(slugGenerator)
 
 StoreSchema.virtual('mainImage').get(function () {
 	return this.images.length > 0 ? this.images[0] : null
+})
+
+StoreSchema.virtual('fullAddress').get(function () {
+	const { street, ward, district, city, country } = this.address
+	return [street, ward, district, city, country]
+		.filter(value => !!value)
+		.join(', ')
 })

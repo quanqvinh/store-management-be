@@ -9,6 +9,7 @@ import { JwtAccessTokenGuard, MemberAuth, User } from '@/common/decorators'
 import { NotFoundDataException } from '@/common/exceptions/http'
 import { ApiTags } from '@nestjs/swagger'
 import { CustomOwnCoupon, OwnCouponDto } from './dto/response/own-coupon.dto'
+import { SkipThrottle } from '@nestjs/throttler'
 
 @Controller('applied-coupon')
 @ApiTags('applied-coupon')
@@ -28,38 +29,31 @@ export class AppliedCouponController {
 	}
 
 	@Get()
+	@SkipThrottle()
 	@JwtAccessTokenGuard()
 	async getAllOfMember(@User() member: MemberAuth): Promise<OwnCouponDto> {
 		const appliedCouponData = await this.appliedCouponService.getAllOfOne(
 			member.id
 		)
-		const responseData = appliedCouponData
+		const responseData: Array<CustomOwnCoupon> = appliedCouponData
 			.filter(appliedCoupon => appliedCoupon['active'])
-			.map(appliedCoupon => ({
-				_id: appliedCoupon._id,
-				expireAt: appliedCoupon.expireAt,
-				startTime: appliedCoupon.startTime,
-				detail: {
-					_id: appliedCoupon.coupon['_id'].toString(),
-					title: appliedCoupon.coupon['title'].toString(),
-					description: appliedCoupon.coupon['description'].toString(),
-					image: appliedCoupon.coupon['image'].toString(),
-					applyHour: appliedCoupon.coupon['applyHour'].toString(),
-				},
-			}))
+			.map(appliedCoupon =>
+				this.appliedCouponService.transformForMemberApp(appliedCoupon)
+			)
 		const aboutExpireTime = 7 * 24 * 60 * 60 * 1000
 		const now = Date.now()
 		return {
 			aboutExpire: responseData.filter(
 				coupon => coupon.expireAt.getTime() - now <= aboutExpireTime
-			) as unknown as CustomOwnCoupon[],
+			),
 			others: responseData.filter(
 				coupon => coupon.expireAt.getTime() - now > aboutExpireTime
-			) as unknown as CustomOwnCoupon[],
+			),
 		}
 	}
 
 	@Get(':id')
+	@SkipThrottle()
 	@JwtAccessTokenGuard()
 	async getOne(
 		@User() member: MemberAuth,

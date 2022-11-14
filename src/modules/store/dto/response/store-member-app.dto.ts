@@ -10,5 +10,5 @@ export class StoreMemberAppDto extends PickType(Store, [
 	contact: string
 	brandName: string
 	mainImage: string
-	addressName: string
+	fullAddress: string
 }

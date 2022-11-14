@@ -100,7 +100,6 @@ export enum CategoryType {
 }
 
 export enum OrderStatus {
-	PENDING = 'pending',
 	PREPARING = 'preparing',
 	READY = 'ready',
 	DELIVERING = 'delivering',

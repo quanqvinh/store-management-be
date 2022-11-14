@@ -5,7 +5,10 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types } from 'mongoose'
 import { Store, StoreDocument } from './schemas/store.schema'
 import { File } from '@/types'
-import { NotFoundDataException } from '@/common/exceptions/http'
+import {
+	InvalidDataException,
+	NotFoundDataException,
+} from '@/common/exceptions/http'
 
 @Injectable()
 export class StoreService {
@@ -17,15 +20,21 @@ export class StoreService {
 	async getAllForMember(): Promise<Store[]> {
 		return await this.storeModel
 			.find()
-			.select('addressName mainImage images dailyTime address')
+			.select('mainImage fullAddress images dailyTime address')
 			.lean({ virtuals: true })
 	}
 
-	async getUnavailableProductsOfStore(
-		storeId: string
-	): Promise<Types.ObjectId[]> {
+	async getUnavailableProductsOfStore({
+		id,
+		slug,
+	}: {
+		id?: string
+		slug?: string
+	}): Promise<Types.ObjectId[]> {
+		if (!id && !slug) throw new InvalidDataException('ID or slug')
+
 		const store = await this.storeModel
-			.findById(storeId)
+			.findOne({ $or: [{ slug }, { _id: id }] })
 			.orFail(new NotFoundDataException('Store'))
 			.select('unavailableProducts')
 			.lean()
@@ -42,5 +51,20 @@ export class StoreService {
 			dailyTime: storeData.dailyTime,
 			address: storeData.address,
 		})
+	}
+
+	async getOne(
+		{ id, slug }: { id?: string; slug?: string },
+		select = ''
+	): Promise<Partial<Store>> {
+		const store = await this.storeModel
+			.findOne({ $or: [{ _id: id }, { slug }] })
+			.lean({ virtuals: true })
+			.exec()
+		const result = {}
+		select
+			.split(' ')
+			.forEach(field => Object.assign(result, { [field]: store[field] }))
+		return result
 	}
 }

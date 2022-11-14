@@ -9,13 +9,16 @@ import {
 } from '@nestjs/common'
 import { ProductService } from './product.service'
 import { FileFieldsInterceptor } from '@nestjs/platform-express'
-import { JoiValidatePine, ObjectIdValidatePine } from '@/common/pipes'
+import { JoiValidatePine } from '@/common/pipes'
 import {
 	CreateProductDto,
 	CreateProductDtoSchema,
 } from './dto/request/create-product.dto'
 import { File } from '@/types'
 import { ApiConsumes, ApiTags } from '@nestjs/swagger'
+import { IdAndSlugValidatePine } from '@/common/pipes/id-and-slug-validate.pipe'
+import { checkObjectId } from '@/utils'
+import { SkipThrottle } from '@nestjs/throttler'
 
 @Controller('product')
 @ApiTags('product')
@@ -23,13 +26,21 @@ export class ProductController {
 	constructor(private productService: ProductService) {}
 
 	@Get('category/all')
+	@SkipThrottle()
 	async getAll() {
-		return await this.productService.getAllOfStoreInMemberApp()
+		return await this.productService.getAllOfStoreInMemberApp({})
 	}
 
 	@Get('category/:storeId')
-	async getAllOfStore(@Param('storeId', ObjectIdValidatePine) storeId: string) {
-		return await this.productService.getAllOfStoreInMemberApp(storeId)
+	@SkipThrottle()
+	async getAllOfStore(
+		@Param('storeId', IdAndSlugValidatePine) storeId: string
+	) {
+		console.log(storeId)
+		console.log(checkObjectId(storeId))
+		return await this.productService.getAllOfStoreInMemberApp(
+			checkObjectId(storeId) ? { id: storeId } : { slug: storeId }
+		)
 	}
 
 	@Post('create')

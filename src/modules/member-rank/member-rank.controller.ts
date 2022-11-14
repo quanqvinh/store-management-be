@@ -13,8 +13,10 @@ import {
 } from './dto/create-member-rank.dto'
 import { MemberRankService } from './member-rank.service'
 import { File } from '@/types'
+import { ApiTags } from '@nestjs/swagger'
 
 @Controller('member-rank')
+@ApiTags('member-rank')
 export class MemberRankController {
 	constructor(private memberRankService: MemberRankService) {}
 

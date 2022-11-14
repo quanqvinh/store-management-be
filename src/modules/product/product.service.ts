@@ -32,7 +32,7 @@ export class ProductService {
 	): Promise<Product> {
 		const [defaultProductImage, _category] = await Promise.all([
 			this.memberAppService.getDefaultImages('product'),
-			this.categoryService.getOne(dto.category),
+			this.categoryService.getOne({ id: dto.category }),
 		])
 		const images = imageIds?.length ? imageIds : [defaultProductImage]
 
@@ -49,22 +49,26 @@ export class ProductService {
 		})
 	}
 
-	async getAllOfStoreInMemberApp(
-		storeId?: string
-	): Promise<ProductOfCategoryWithStatusDto> {
-		const unavailableProductIds = storeId
-			? await this.storeService.getUnavailableProductsOfStore(storeId)
-			: []
+	async getAllOfStoreInMemberApp({
+		id,
+		slug,
+	}: {
+		id?: string
+		slug?: string
+	}): Promise<ProductOfCategoryWithStatusDto> {
+		const unavailableProductIds =
+			id || slug
+				? await this.storeService.getUnavailableProductsOfStore({ id, slug })
+				: []
 
 		const [unavailableProducts, productsWithCategory] = await Promise.all([
 			this.productModel
 				.find({ _id: { $in: unavailableProductIds } })
-				.select('-category -createdAt -updatedAt')
+				.select('-category -createdAt')
 				.lean({ virtuals: ['mainImage'] })
 				.exec(),
 			this.productModel.aggregate([
 				{ $match: { _id: { $nin: unavailableProductIds } } },
-				{ $unwind: '$category' },
 				{ $group: { _id: '$category', products: { $push: '$$ROOT' } } },
 				{
 					$lookup: {
@@ -120,5 +124,14 @@ export class ProductService {
 			available: productsWithCategory,
 			unavailable: unavailableProducts as unknown as CustomProduct[],
 		}
+	}
+
+	async getForMemberApp(listId: Array<string>): Promise<CustomProduct[]> {
+		const products = await this.productModel
+			.find({ _id: { $in: listId } })
+			.select('-category -createdAt')
+			.lean({ virtuals: ['mainImage'] })
+			.exec()
+		return products as unknown as CustomProduct[]
 	}
 }

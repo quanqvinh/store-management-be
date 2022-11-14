@@ -8,12 +8,13 @@ export type AppliedCouponDocument = AppliedCoupon & Document
 @Schema({
 	versionKey: false,
 	timestamps: { createdAt: true, updatedAt: false },
+	collection: 'applied_coupons',
 })
 export class AppliedCoupon {
-	_id: ObjectId
+	_id?: ObjectId
 
 	@Prop({ type: Types.ObjectId, required: true, ref: 'Coupon' })
-	coupon: ObjectId
+	coupon: ObjectId | string
 
 	@Prop({ type: String, enum: Object.keys(ApplyCouponType), required: true })
 	type: ApplyCouponType
@@ -34,7 +35,7 @@ export class AppliedCoupon {
 	})
 	source: CouponSource
 
-	createdAt: Date
+	createdAt?: Date
 }
 
 export const AppliedCouponSchema = SchemaFactory.createForClass(AppliedCoupon)

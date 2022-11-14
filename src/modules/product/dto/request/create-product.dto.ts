@@ -1,8 +1,11 @@
 import * as Joi from 'joi'
-import { objectIdPattern, sizeKeyPattern } from '@/common/validators'
+import { objectIdPattern } from '@/common/validators'
 import { ApiPropertyMultiFiles } from '@/common/decorators/file-swagger.decorator'
 import { SizeOption, ToppingOption } from '../../schemas/option.schema'
 import { Size } from '@/constants'
+import { PickType } from '@nestjs/swagger'
+
+class CustomToppingOption extends PickType(ToppingOption, ['name', 'cost']) {}
 
 export class CreateProductDto {
 	@ApiPropertyMultiFiles()
@@ -12,7 +15,7 @@ export class CreateProductDto {
 	originalPrice: number
 	description: string
 	size: Array<SizeOption>
-	topping: Array<ToppingOption>
+	topping: Array<CustomToppingOption>
 }
 
 export const CreateProductDtoSchema = Joi.object<CreateProductDto>({
@@ -26,7 +29,7 @@ export const CreateProductDtoSchema = Joi.object<CreateProductDto>({
 				size: Joi.string()
 					.valid(...Object.values(Size))
 					.required(),
-				fee: Joi.number().required(),
+				cost: Joi.number().required(),
 			})
 		)
 		.optional(),
@@ -34,7 +37,7 @@ export const CreateProductDtoSchema = Joi.object<CreateProductDto>({
 		.items(
 			Joi.object<ToppingOption>({
 				name: Joi.string().required(),
-				fee: Joi.number().required(),
+				cost: Joi.number().required(),
 			})
 		)
 		.optional(),

@@ -1,5 +1,6 @@
-import { JoiValidatePine, ObjectIdValidatePine } from '@/common/pipes'
+import { JoiValidatePine, IdAndSlugValidatePine } from '@/common/pipes'
 import { File } from '@/types'
+import { checkObjectId } from '@/utils'
 import {
 	Body,
 	Controller,
@@ -11,6 +12,7 @@ import {
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { ApiConsumes, ApiTags } from '@nestjs/swagger'
+import { SkipThrottle } from '@nestjs/throttler'
 import { CategoryService } from './category.service'
 import {
 	CreateCategoryDto,
@@ -23,13 +25,17 @@ export class CategoryController {
 	constructor(private categoryService: CategoryService) {}
 
 	@Get('all')
+	@SkipThrottle()
 	async getAllCategories() {
 		return await this.categoryService.getAll()
 	}
 
 	@Get(':id')
-	async getOneCategory(@Param('id', ObjectIdValidatePine) categoryId: string) {
-		return await this.categoryService.getOne(categoryId)
+	@SkipThrottle()
+	async getOneCategory(@Param('id', IdAndSlugValidatePine) categoryId: string) {
+		return await this.categoryService.getOne(
+			checkObjectId(categoryId) ? { id: categoryId } : { slug: categoryId }
+		)
 	}
 
 	@Post()

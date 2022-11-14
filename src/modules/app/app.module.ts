@@ -26,6 +26,8 @@ import { MailModule } from '@/modules/mail/mail.module'
 import { MemberRankModule } from '@/modules/member-rank/member-rank.module'
 import { CouponModule } from '../coupon/coupon.module'
 import { AppliedCouponModule } from '../applied-coupon/applied-coupon.module'
+import { CartModule } from '../cart/cart.module'
+import { OrderModule } from '../order/order.module'
 
 const THROTTLER_TTL = 60
 const THROTTLER_LIMIT = 10
@@ -69,6 +71,8 @@ const THROTTLER_LIMIT = 10
 		MemberRankModule,
 		CouponModule,
 		AppliedCouponModule,
+		CartModule,
+		OrderModule,
 		ThrottlerModule.forRoot({
 			ttl: THROTTLER_TTL,
 			limit: THROTTLER_LIMIT,

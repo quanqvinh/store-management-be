@@ -1,7 +1,6 @@
 import { Controller } from '@nestjs/common'
 // import { CategoryService } from '@/modules/product/services/category.service'
 import { ProductService } from '@/modules/product/product.service'
-import { Get } from '@nestjs/common/decorators/http/request-mapping.decorator'
 import { FileService } from '../file/services/file.service'
 import { StoreService } from '../store/store.service'
 
@@ -15,6 +14,7 @@ export class CleanerController {
 	) {}
 
 	// @Get('files')
+	// @SkipThrottle()
 	// async cleanUnusedFiles() {
 	// 	try {
 	// 		const categoryImages = (await this.categoryService.getAll()).map(

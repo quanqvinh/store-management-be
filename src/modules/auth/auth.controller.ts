@@ -9,7 +9,6 @@ import {
 	User,
 } from '@/common/decorators'
 import { TokenService } from '../token/services/token.service'
-import { TokenPairDto } from '../token/dto/token-pair.dto'
 import { JoiValidatePine } from '@/common/pipes'
 import { MemberService } from '../member/member.service'
 import { OtpService } from '../token/services/otp.service'
@@ -24,7 +23,8 @@ import { MemberVerifyLoginDto, MemberVerifyLoginDtoSchema } from './dto/request'
 import { MemberAccountIdentifyDto } from './dto/response/member-account-identify.dto'
 import { CreateMemberDto, CreateMemberDtoSchema } from '../member/dto/request'
 import { MemberRankService } from '../member-rank/member-rank.service'
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { ApiResponse, ApiTags } from '@nestjs/swagger'
+import { SkipThrottle } from '@nestjs/throttler'
 
 @Controller('auth')
 @ApiTags('auth')
@@ -56,6 +56,9 @@ export class AuthController {
 	async loginMail(
 		@Body(new JoiValidatePine(MemberLoginDtoSchema)) loginDto: MemberLoginDto
 	) {
+		const member = await this.memberService.findByEmail(loginDto.email)
+		if (!member) return false
+
 		const otpExpireTime = this.configService.get<string>('otp.expire')
 
 		const status = await this.transactionService.execute({
@@ -83,7 +86,6 @@ export class AuthController {
 	}
 
 	@Post('member/sign-up')
-	// @ApiResponse({ type: TokenPairDto })
 	async memberSignUp(
 		@Body(new JoiValidatePine(CreateMemberDtoSchema))
 		createMemberDto: CreateMemberDto
@@ -94,30 +96,62 @@ export class AuthController {
 			firstMemberRank._id.toString()
 		)
 		if (!member) throw new NotCreatedDataException()
-		return this.tokenService.generateTokenPair(member)
+
+		const otpExpireTime = this.configService.get<string>('otp.expire')
+
+		const status = await this.transactionService.execute({
+			writeCb: async session => {
+				const otp = await this.otpService.generate(
+					createMemberDto.email,
+					session
+				)
+				if (!otp) throw new NotCreatedDataException()
+
+				const mailTemplateData = await this.mailTemplateService.getOtpMailData()
+				Object.assign(mailTemplateData.data, {
+					otpValue: otp.value,
+					otpTime: expireTimeFormats(otpExpireTime).text,
+				})
+
+				const mailRes = await this.mailService.sendMail({
+					recipient: createMemberDto.email,
+					content: mailTemplateData,
+				})
+
+				return mailRes
+			},
+		})
+
+		if (status.error) throw status.error
+		return status.result
 	}
 
 	@Post('member/otp-verify')
 	async verifyLogin(
 		@Body(new JoiValidatePine(MemberVerifyLoginDtoSchema))
 		memberVerifyLoginDto: MemberVerifyLoginDto
-	): Promise<MemberAccountIdentifyDto> {
+	) {
 		const { email, otp } = memberVerifyLoginDto
 
 		const isValidOtp = await this.otpService.verify(email, otp)
 		if (!isValidOtp) throw new UnauthorizedException()
+		const signUpMember = await this.memberService.signUpAccount(email)
+		if (!signUpMember) throw new NotCreatedDataException()
 
-		const member = await this.memberService.findByEmail(
-			memberVerifyLoginDto.email
-		)
-		const isNewAccount = !member
-		return {
-			isNewAccount,
-			email: isNewAccount ? email : undefined,
-			tokens: !isNewAccount
-				? await this.tokenService.generateTokenPair(member)
-				: undefined,
-		}
+		return await this.tokenService.generateTokenPair(signUpMember)
+
+		// const member = await this.memberService.findByEmail(
+		// 	memberVerifyLoginDto.email
+		// )
+
+		// const isNewAccount = !member
+		// return {
+		// 	isNewAccount,
+		// 	email: isNewAccount ? email : undefined,
+		// 	tokens: !isNewAccount
+		// 		? await this.tokenService.generateTokenPair(member)
+		// 		: undefined,
+		// }
 	}
 
 	@Post('refresh')
@@ -128,6 +162,7 @@ export class AuthController {
 	}
 
 	@Get('test-access-token')
+	@SkipThrottle()
 	@JwtAccessTokenGuard()
 	@ApiResponse({ type: TestAccessTokenDto })
 	profile(@User() user: MemberAuth | EmployeeAuth): TestAccessTokenDto {

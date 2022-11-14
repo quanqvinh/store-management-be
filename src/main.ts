@@ -7,10 +7,12 @@ import morgan from 'morgan'
 import helmet from 'helmet'
 import cookieParser from 'cookie-parser'
 import { randomString } from '@/utils'
+import compression from 'compression'
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule)
 	app.setGlobalPrefix('api/v1')
+	app.use(compression())
 	const configService = app.get(ConfigService)
 	const nodeEnv = configService.get<string>('nodeEnv')
 
@@ -36,8 +38,8 @@ async function bootstrap() {
 	- Otherwise, the response type is T, the actual response is { data: T }
 	=== TOKEN 30 DAYS ===
 	19110499@student.hcmute.edu.vn
-	- Access token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MzZlODIzMWQ4NGZiNjhkNDJhODA2NTIiLCJpYXQiOjE2NjgyNjI5MTYsImV4cCI6MTY3MDg1NDkxNiwic3ViIjoiYWNjZXNzIn0.OyMpjcD0TBK2uXlAHH2DR6-CA7Rb0pAHseiRQlkP8w8
-	- Refresh token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MzZlODIzMWQ4NGZiNjhkNDJhODA2NTIiLCJpYXQiOjE2NjgyNjI5MTYsImV4cCI6MTY3MDg1NDkxNiwic3ViIjoicmVmcmVzaCJ9.fdBCZp3t0BpakEJJCPFcjtvT2ziofkHJpj1PU-F7G58
+	- Access token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MzZlOGRiNWMzMTJiOGFkOTgwNGFlZWQiLCJpYXQiOjE2NjgyNjI5MTYsImV4cCI6MTY3MDg1NDkxNiwic3ViIjoiYWNjZXNzIn0.sGaBtE-TPmI5xvdApdWuU38LGplvqlf_tdNAXFYpuQ8
+	- Refresh token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MzZlOGRiNWMzMTJiOGFkOTgwNGFlZWQiLCJpYXQiOjE2NjgyNjI5MTYsImV4cCI6MTY3MDg1NDkxNiwic3ViIjoicmVmcmVzaCJ9.UvETWNk6V8od78FBcpFfke5QOMWlQxzEeBuLwfGUWi4
 		`
 		)
 		.setVersion('1.0')

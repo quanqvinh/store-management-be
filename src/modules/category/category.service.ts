@@ -19,9 +19,15 @@ export class CategoryService {
 		return await this.categoryModel.find().sort('-hot order').lean().exec()
 	}
 
-	async getOne(id: string): Promise<Category> {
+	async getOne({
+		id,
+		slug,
+	}: {
+		id?: string
+		slug?: string
+	}): Promise<Category> {
 		return await this.categoryModel
-			.findById(id)
+			.findOne({ $or: [{ slug }, { _id: id }] })
 			.orFail(new NotFoundDataException('Category'))
 			.lean()
 			.exec()

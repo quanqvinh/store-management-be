@@ -1,5 +1,4 @@
 export * from './order.schema'
 export * from './order-item.schema'
-export * from './discriminators/delivery-order.schema'
-export * from './discriminators/pickup-order.schema'
-export * from './discriminators/on-premise-order.schema'
+export * from './discriminators/customer-order.schema'
+export * from './discriminators/member-order.schema'

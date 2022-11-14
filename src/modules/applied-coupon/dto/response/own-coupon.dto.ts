@@ -3,18 +3,20 @@ import { PickType } from '@nestjs/swagger'
 import { AppliedCoupon } from '../../schemas/applied-coupon.schema'
 
 class CustomCoupon extends PickType(Coupon, [
-	'_id',
+	'code',
 	'title',
 	'description',
 	'image',
+	'applyHour',
+	'_id',
 ]) {}
 
 export class CustomOwnCoupon extends PickType(AppliedCoupon, [
-	'_id',
 	'expireAt',
-	'startTime',
+	'_id',
 ] as const) {
 	detail: CustomCoupon
+	startTime: Date
 }
 
 export class OwnCouponDto {

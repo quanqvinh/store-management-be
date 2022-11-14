@@ -22,7 +22,13 @@ export class Coupon {
 	@Prop({ type: String, required: true })
 	title: string
 
-	@Prop({ type: String, required: true, unique: true, index: 1 })
+	@Prop({
+		type: String,
+		required: true,
+		unique: true,
+		index: 1,
+		set: (v: string) => v.toUpperCase(),
+	})
 	code: string
 
 	@Prop({ type: DiscountTypeSchema, required: true })

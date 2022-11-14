@@ -18,6 +18,6 @@ import { StoreService } from './store.service'
 	],
 	controllers: [StoreController],
 	providers: [StoreService],
-	exports: [StoreService],
+	exports: [StoreService, MongooseModule],
 })
 export class StoreModule {}

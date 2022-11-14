@@ -1,47 +1,36 @@
-import { ToppingOption } from './../../product/schemas/option.schema'
+import {
+	SizeOptionSchema,
+	ToppingOption,
+	ToppingOptionSchema,
+} from './../../product/schemas/option.schema'
 import { SizeOption } from '@/modules/product/schemas/option.schema'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Types } from 'mongoose'
 
-class ProductInShort {
-	_id: Types.ObjectId
-	name: string
-	originalPrice: number
-}
-
-class OrderItemOption {
-	size?: SizeOption
-	topping?: Array<ToppingOption>
-}
-
 @Schema({ versionKey: false, _id: false })
 export class OrderItem {
-	@Prop({
-		type: {
-			_id: { type: Types.ObjectId, required: true },
-			name: { type: Types.ObjectId, required: true },
-			originalPrice: { type: Number, required: true },
-		},
-		required: true,
-	})
-	product: ProductInShort
+	@Prop({ type: Types.ObjectId, required: true })
+	productId: Types.ObjectId
 
-	@Prop({
-		type: {
-			size: { type: String, enum: Object.values(SizeOption) },
-			topping: [{ type: String, enum: Object.values(ToppingOption) }],
-		},
-		default: {},
-	})
-	option: OrderItemOption
+	@Prop({ type: String, required: true })
+	name: string
+
+	@Prop({ type: Types.ObjectId, required: true })
+	originalPrice: number
+
+	@Prop({ type: SizeOptionSchema, required: true })
+	size: SizeOption
+
+	@Prop({ type: [ToppingOptionSchema] })
+	topping: Array<ToppingOption>
 
 	@Prop({ type: Number, required: true, min: 0, default: 1 })
 	amount: number
 
 	@Prop({ type: Number, min: 0 })
-	price: number
+	sumPrice: number
 
-	@Prop({ type: String })
+	@Prop({ type: String, maxlength: 50 })
 	note: string
 }
 

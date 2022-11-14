@@ -14,6 +14,7 @@ import { CreateStoreDto, CreateStoreDtoSchema } from './dto/create-store.dto'
 import { GeneralService } from '../setting/services/general.service'
 import { StoreMemberAppDto } from './dto/response/store-member-app.dto'
 import { ApiConsumes, ApiTags } from '@nestjs/swagger'
+import { SkipThrottle } from '@nestjs/throttler'
 
 @Controller('store')
 @ApiTags('store')
@@ -24,7 +25,8 @@ export class StoreController {
 	) {}
 
 	@Get('/member-app/all')
-	async getAllStoresInMemberApp(): Promise<StoreMemberAppDto> {
+	@SkipThrottle()
+	async getAllStoresInMemberApp(): Promise<StoreMemberAppDto[]> {
 		const generalSetting = await this.generalSetting.get(
 			'storeContact brandName'
 		)
@@ -34,7 +36,7 @@ export class StoreController {
 			id: undefined,
 			contact: generalSetting.storeContact,
 			brandName: generalSetting.brandName,
-		})) as unknown as StoreMemberAppDto
+		})) as unknown as StoreMemberAppDto[]
 	}
 
 	@Post('create')

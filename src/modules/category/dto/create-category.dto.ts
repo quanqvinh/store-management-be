@@ -4,7 +4,7 @@ import * as Joi from 'joi'
 
 export class CreateCategoryDto {
 	@ApiPropertyFile()
-	image: any
+	image?: any
 	name: string
 	type: CategoryType
 }

@@ -83,6 +83,9 @@ export class Member {
 
 	@Prop([{ type: NotificationSchema }])
 	notifications: Array<Notification>
+
+	@Prop({ type: Date, default: Date.now(), expires: '3m' })
+	unregistered: Date
 }
 
 export const MemberSchema = SchemaFactory.createForClass(Member)

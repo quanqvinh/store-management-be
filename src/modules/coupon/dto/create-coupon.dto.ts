@@ -1,15 +1,20 @@
-import { objectIdPattern } from '@/common/validators/regex'
+import { Percentage } from './../schemas/discount-type.schema'
+import { objectIdPattern } from '@/common/validators'
 import { OrderType, Size } from '@/constants'
 import { Condition, IncludeProduct } from './../schemas/condition.schema'
 import { DiscountType } from '../schemas/discount-type.schema'
 import * as Joi from 'joi'
+import { PartialType } from '@nestjs/swagger'
+
+export class PartialDiscountType extends PartialType(DiscountType) {}
+export class PartialCondition extends PartialType(Condition) {}
 
 export class CreateCouponDto {
 	title: string
 	code: string
-	discount: Partial<DiscountType>
+	discount: DiscountType
 	description?: string
-	orderCondition?: Partial<Condition>
+	orderCondition?: Condition
 	applyTime: number
 }
 
@@ -17,7 +22,7 @@ export const CreateCouponDtoSchema = Joi.object<CreateCouponDto>({
 	title: Joi.string().required(),
 	code: Joi.string().token().required(),
 	discount: Joi.object<DiscountType>({
-		percentage: Joi.object({
+		percentage: Joi.object<Percentage>({
 			amount: Joi.number().min(1).max(100).required(),
 			maxDecrease: Joi.number().min(1).optional(),
 		}).optional(),

@@ -12,7 +12,6 @@ class CustomCategory extends PickType(Category, [
 export class CustomProduct extends OmitType(Product, [
 	'category',
 	'createdAt',
-	'updatedAt',
 ]) {
 	mainImage: string
 }
