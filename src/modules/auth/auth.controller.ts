@@ -139,19 +139,6 @@ export class AuthController {
 		if (!signUpMember) throw new NotCreatedDataException()
 
 		return await this.tokenService.generateTokenPair(signUpMember)
-
-		// const member = await this.memberService.findByEmail(
-		// 	memberVerifyLoginDto.email
-		// )
-
-		// const isNewAccount = !member
-		// return {
-		// 	isNewAccount,
-		// 	email: isNewAccount ? email : undefined,
-		// 	tokens: !isNewAccount
-		// 		? await this.tokenService.generateTokenPair(member)
-		// 		: undefined,
-		// }
 	}
 
 	@Post('refresh')
