@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { compile } from 'handlebars'
 import { Model } from 'mongoose'
-import { MailTemplateDocument } from '../schemas/mail-template.schema'
+import { MailTemplateDocument } from '../schemas/discriminators/mail-template.schema'
 import { Template, TemplateDocument } from '../schemas/template.schema'
 
 @Injectable()

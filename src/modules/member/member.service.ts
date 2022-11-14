@@ -5,7 +5,10 @@ import { Member, MemberDocument } from './schemas/member.schema'
 import { CreateMemberDto, UpdateMemberInfoDto } from './dto/request'
 import { DuplicateKeyException } from '@/common/exceptions/mongo.exception'
 import { UpdateResult, DeleteResult } from 'mongodb'
-import { NotFoundDataException } from '@/common/exceptions/http'
+import {
+	NotCreatedDataException,
+	NotFoundDataException,
+} from '@/common/exceptions/http'
 import { DatabaseConnectionName } from '@/constants'
 import { stringToDate } from '@/utils'
 import { MemberRank } from '../member-rank/schemas/member-rank.schema'
@@ -96,5 +99,21 @@ export class MemberService {
 			couponCount,
 			notificationCount,
 		}
+	}
+
+	async signUpAccount(email: string): Promise<Member | null> {
+		const updatedMember = await this.memberModel
+			.findOneAndUpdate(
+				{ email },
+				{
+					$set: {
+						unregistered: undefined,
+					},
+				}
+			)
+			.orFail(new NotCreatedDataException())
+			.exec()
+		if (!updatedMember) return null
+		return updatedMember
 	}
 }

@@ -29,14 +29,23 @@ export class Product {
 	@Prop({ type: Number, required: true })
 	originalPrice: number
 
-	@Prop({ type: Types.ObjectId, required: true, ref: 'Category' })
-	category: Types.ObjectId
+	@Prop({
+		type: Types.ObjectId,
+		required: true,
+		ref: 'Category',
+		index: 1,
+		set: id => new Types.ObjectId(id),
+	})
+	category: ObjectId
 
 	@Prop({ type: String, default: 'No description' })
 	description: string
 
-	@Prop({ Type: OptionSchema })
+	@Prop({ type: OptionSchema })
 	options: Option
+
+	@Prop({ type: Number, default: 0 })
+	numberOfLikes: number
 
 	createdAt: Date
 	updatedAt: Date

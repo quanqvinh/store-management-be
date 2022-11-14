@@ -1,11 +1,11 @@
-import { GeneralSettingDocument } from '@/modules/setting/schemas/general-setting.schema'
+import { GeneralSettingDocument } from '@/modules/setting/schemas'
 import { DuplicateKeyException } from '@/common/exceptions/mongo.exception'
 import { DatabaseConnectionName, SettingType } from '@/constants'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { Setting, SettingDocument } from '../schemas/setting.schema'
-import { MemberAppSettingDocument } from '../schemas/member-app-setting.schema'
+import { MemberAppSettingDocument } from '../schemas'
 
 @Injectable()
 export class SettingService {

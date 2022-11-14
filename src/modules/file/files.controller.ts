@@ -17,6 +17,7 @@ import { ObjectIdValidatePine, ObjectIdListValidatePine } from '@/common/pipes'
 import { File } from '@/types'
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger'
 import { FileUploadDto, MultiFileUploadDto } from './dto/upload.dto'
+import { SkipThrottle } from '@nestjs/throttler'
 
 @Controller('file')
 @ApiTags('file')
@@ -40,6 +41,7 @@ export class FileController {
 	}
 
 	@Get('render/:id')
+	@SkipThrottle()
 	async renderFile(
 		@Param('id', ObjectIdValidatePine) fileId: string,
 		@Res() res: Response
@@ -48,6 +50,7 @@ export class FileController {
 	}
 
 	@Get('info/multi')
+	@SkipThrottle()
 	async getInfoMulti(
 		@Query('id', ObjectIdListValidatePine) fileIds: Array<string>
 	) {
@@ -55,11 +58,13 @@ export class FileController {
 	}
 
 	@Get('info/all')
+	@SkipThrottle()
 	async getInfoAll() {
 		return this.fileService.getMany()
 	}
 
 	@Get('info/:id')
+	@SkipThrottle()
 	async getInfo(@Param('id', ObjectIdValidatePine) fileId: string) {
 		return await this.fileService.getOne(fileId)
 	}

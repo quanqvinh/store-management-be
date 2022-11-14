@@ -25,6 +25,7 @@ import { File } from '@/types'
 import { MemberAppService } from '../setting/services/member-app.service'
 import { FileService } from '../file/services/file.service'
 import { ApiTags } from '@nestjs/swagger'
+import { SkipThrottle } from '@nestjs/throttler'
 
 @Controller('coupon')
 @ApiTags('coupon')
@@ -36,11 +37,13 @@ export class CouponController {
 	) {}
 
 	@Get('all')
+	@SkipThrottle()
 	async getAllCoupon() {
 		return await this.couponService.getAll()
 	}
 
 	@Get(':id')
+	@SkipThrottle()
 	async getOneCoupon(@Param('id', ObjectIdValidatePine) couponId: string) {
 		return await this.couponService.getById(couponId)
 	}

@@ -1,34 +1,36 @@
+import { Size } from '@/constants'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import slugGenerator from 'mongoose-slug-generator'
 
-export class Size {
-	key: string
+export class SizeOption {
+	size: Size
+	cost: number
+}
+
+export const SizeOptionSchema = {
+	size: { type: String, enum: Object.values(Size) },
+	cost: { type: Number, required: true },
+}
+
+export class ToppingOption {
 	name: string
-	fee: number
+	cost: number
 }
 
-const SizeSchema = {
-	key: { type: String },
+export const ToppingOptionSchema = {
 	name: { type: String, required: true },
-	fee: { type: Number, required: true },
-}
-
-export class Topping {
-	name: string
-	fee: number
-}
-
-const ToppingSchema = {
-	name: { type: String, required: true },
-	fee: { type: Number, required: true },
+	cost: { type: Number, required: true },
 }
 
 @Schema({ versionKey: false, _id: false })
 export class Option {
-	@Prop([{ type: SizeSchema }])
-	size: Array<Size>
+	@Prop([{ type: SizeOptionSchema }])
+	size: Array<SizeOption>
 
-	@Prop([{ type: ToppingSchema }])
-	topping: Array<Topping>
+	@Prop([{ type: ToppingOptionSchema }])
+	topping: Array<ToppingOption>
 }
 
 export const OptionSchema = SchemaFactory.createForClass(Option)
+
+OptionSchema.plugin(slugGenerator)

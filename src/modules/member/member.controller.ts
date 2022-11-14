@@ -7,6 +7,7 @@ import { MemberRankService } from '../member-rank/member-rank.service'
 import { MemberRank } from '../member-rank/schemas/member-rank.schema'
 import { ApiTags } from '@nestjs/swagger'
 import { HomeDataDto } from './dto/response/home-data.dto'
+import { SkipThrottle } from '@nestjs/throttler'
 
 @Controller('member')
 @ApiTags('member')
@@ -19,6 +20,7 @@ export class MemberController {
 	) {}
 
 	@Get('home')
+	@SkipThrottle()
 	@JwtAccessTokenGuard()
 	async getHomeData(@User() member: MemberAuth): Promise<HomeDataDto> {
 		const appSetting = await this.memberAppSettingService.get('greeting')

@@ -24,7 +24,7 @@ export const CreateStoreDtoSchema = Joi.object<CreateStoreDto>({
 	}).required(),
 	address: Joi.object<Address>({
 		street: Joi.string().required(),
-		ward: Joi.string().required(),
+		ward: Joi.string().optional(),
 		district: Joi.string().required(),
 		city: Joi.string().required(),
 		country: Joi.string().required(),

@@ -3,6 +3,7 @@ import { Controller, Get, UseInterceptors } from '@nestjs/common'
 import { AppService } from './app.service'
 import { LoggingInterceptor } from '@/common/interceptors/logging.interceptor'
 import { ApiTags } from '@nestjs/swagger'
+import { SkipThrottle } from '@nestjs/throttler'
 
 @ApiTags('app')
 @Controller()
@@ -10,6 +11,7 @@ export class AppController {
 	constructor(private readonly appService: AppService) {}
 
 	@Get()
+	@SkipThrottle()
 	@UseInterceptors(LoggingInterceptor)
 	getHello(@Cookie() cookies, @SignedCookie() signedCookies): string {
 		console.log('Check cookies:', cookies)

@@ -12,7 +12,6 @@ import {
 	DailyTime,
 	DailyTimeSchema,
 } from '@/modules/store/schemas/store.schema'
-import { setDailyTime } from '@/utils'
 
 export type CouponDocument = Coupon & Document
 
@@ -23,7 +22,13 @@ export class Coupon {
 	@Prop({ type: String, required: true })
 	title: string
 
-	@Prop({ type: String, required: true, unique: true, index: 1 })
+	@Prop({
+		type: String,
+		required: true,
+		unique: true,
+		index: 1,
+		set: (v: string) => v.toUpperCase(),
+	})
 	code: string
 
 	@Prop({ type: DiscountTypeSchema, required: true })

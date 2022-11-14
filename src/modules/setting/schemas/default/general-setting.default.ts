@@ -1,5 +1,5 @@
 import { ContactType } from '@/constants'
-import { GeneralSetting } from '../general-setting.schema'
+import { GeneralSetting } from './..'
 
 export const generalDefault: Partial<GeneralSetting> = {
 	brandName: 'The Coder House',

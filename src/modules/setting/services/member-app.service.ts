@@ -3,10 +3,7 @@ import { DatabaseConnectionName, SettingType } from '@/constants'
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import {
-	MemberAppSetting,
-	MemberAppSettingDocument,
-} from '../schemas/member-app-setting.schema'
+import { MemberAppSetting, MemberAppSettingDocument } from '../schemas'
 import { SettingService } from './setting.service'
 
 @Injectable()

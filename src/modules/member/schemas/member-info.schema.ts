@@ -3,7 +3,12 @@ import { ObjectId, Types } from 'mongoose'
 
 @Schema({ versionKey: false, _id: false })
 export class MemberInfo {
-	@Prop({ type: String, required: true, unique: true })
+	@Prop({
+		type: String,
+		required: true,
+		unique: true,
+		set: (v: string) => v.toUpperCase(),
+	})
 	code: string
 
 	@Prop({ type: Number, default: 0 })

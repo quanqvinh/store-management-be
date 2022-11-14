@@ -1,64 +1,44 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { ObjectId, Types, Document } from 'mongoose'
-import { OrderType, PaymentType, StoreSatisfaction } from '@/constants'
-import { DetailOrder, DetailOrderSchema } from './detail-order.schema'
-import { Coupon, CouponSchema } from '@/modules/coupon/schemas/coupon.schema'
+import { Buyer, PaymentType } from '@/constants'
+import { OrderItem, OrderItemSchema } from './order-item.schema'
 import mongooseLeanVirtuals from 'mongoose-lean-virtuals'
 
 export type OrderDocument = Order & Document
 
-@Schema({ versionKey: false, timestamps: { createdAt: true } })
+export class StoreInShort {
+	id: ObjectId | string
+	name: string
+	address: string
+}
+
+@Schema({
+	versionKey: false,
+	timestamps: { createdAt: true, updatedAt: false },
+	discriminatorKey: 'buyer',
+})
 export class Order {
-	_id: ObjectId
+	_id?: ObjectId
+
+	@Prop({ type: String, enum: Object.values(Buyer), required: true })
+	buyer: Buyer
 
 	@Prop({
 		type: {
-			id: { type: Types.ObjectId, required: true },
+			_id: { type: Types.ObjectId, required: true },
 			name: { type: String, required: true },
-			avatar: { type: String },
-		},
-		required: true,
-	})
-	member: {
-		id: ObjectId
-		name: string
-		avatar: string
-	}
-
-	@Prop({
-		type: {
-			id: { type: Types.ObjectId, required: true },
-			name: { type: String, required: true },
-			image: { type: String, required: true },
 			address: { type: String, required: true },
 		},
 		required: true,
+		_id: false,
 	})
-	store: {
-		id: ObjectId
-		name: string
-		image: string
-		address: string
-	}
+	store: StoreInShort
 
-	@Prop({
-		type: String,
-		enum: Object.values(OrderType),
-		default: OrderType.ON_PREMISE,
-	})
-	type: OrderType
-
-	@Prop({ type: DetailOrderSchema, required: true })
-	detail: DetailOrder
+	@Prop({ type: [OrderItemSchema], required: true })
+	items: Array<OrderItem>
 
 	@Prop({ type: Number, min: 0, required: true })
 	totalPrice: number
-
-	@Prop({ type: CouponSchema })
-	coupon?: Coupon
-
-	@Prop({ type: Number, min: 0, default: 0 })
-	earnedPoint: number
 
 	@Prop({
 		type: String,
@@ -67,31 +47,7 @@ export class Order {
 	})
 	payment: PaymentType
 
-	@Prop({
-		type: {
-			rate: { type: Number, required: true },
-			content: { type: String },
-		},
-	})
-	productReview?: {
-		rate: number
-		content: string
-	}
-
-	@Prop({
-		type: {
-			rate: { type: Number, required: true },
-			satisfied: [{ type: String, enum: Object.values(StoreSatisfaction) }],
-			content: { type: String },
-		},
-	})
-	storeReview?: {
-		rate: number
-		satisfied: Array<StoreSatisfaction>
-		content: string
-	}
-
-	createdAt: Date
+	createdAt?: Date
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order)

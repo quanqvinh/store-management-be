@@ -1,4 +1,4 @@
-import { Setting } from './setting.schema'
+import { Setting } from '../setting.schema'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document } from 'mongoose'
 import { SettingType } from '@/constants'

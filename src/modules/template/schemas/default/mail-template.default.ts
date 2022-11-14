@@ -1,4 +1,4 @@
-import { MailTemplate } from './../mail-template.schema'
+import { MailTemplate } from '../discriminators/mail-template.schema'
 
 export const mailTemplateDefault: Partial<MailTemplate> = {
 	otp: {
