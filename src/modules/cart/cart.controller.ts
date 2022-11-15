@@ -1,6 +1,6 @@
 import { JwtAccessTokenGuard, MemberAuth, User } from '@/common/decorators'
 import { JoiValidatePine } from '@/common/pipes'
-import { Body, Controller, Post } from '@nestjs/common'
+import { Controller, Get, Query } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { CartService } from './cart.service'
 import { CartDtoSchema, CartDto } from './dto/request/cart.dto'
@@ -10,11 +10,11 @@ import { CartDtoSchema, CartDto } from './dto/request/cart.dto'
 export class CartController {
 	constructor(private cartService: CartService) {}
 
-	@Post('load')
+	@Get('load')
 	@JwtAccessTokenGuard()
 	async loadMemberCartData(
 		@User() member: MemberAuth,
-		@Body(new JoiValidatePine(CartDtoSchema)) cartDto: CartDto
+		@Query(new JoiValidatePine(CartDtoSchema)) cartDto: CartDto
 	) {
 		return await this.cartService.loadCartData(member.id, cartDto)
 	}

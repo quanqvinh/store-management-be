@@ -57,14 +57,18 @@ export class AppliedCouponService {
 		memberId: string,
 		appliedCouponId: string
 	): Promise<AppliedCoupon> {
-		const coupons = (
-			await this.memberModel
-				.findOne({ _id: memberId, 'coupons.startTime': { $lt: Date.now() } })
-				.populate<{ 'coupons.coupon': Coupon }>('coupons.coupon')
-				.select('coupons')
-				.lean({ virtuals: true })
-				.exec()
-		).coupons
+		const member = await this.memberModel
+			.findOne({ _id: memberId })
+			.orFail(new NotFoundDataException('Member'))
+			.populate<{ 'coupons.coupon': Coupon }>('coupons.coupon')
+			.select('coupons')
+			.lean({ virtuals: true })
+			.exec()
+		const now = Date.now()
+		const coupons = member.coupons.filter(
+			appliedCoupon =>
+				appliedCoupon.startTime <= now && appliedCoupon.expireAt.getTime() > now
+		)
 		return coupons.find(coupon => coupon._id.toString() === appliedCouponId)
 	}
 

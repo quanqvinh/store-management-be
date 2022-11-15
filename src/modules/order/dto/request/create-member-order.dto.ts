@@ -5,14 +5,15 @@ import { objectIdPattern } from '@/common/validators'
 
 export class CreateMemberOrderDto extends CreateOrderDto {
 	type: OrderType
-	memberId: string
 	appliedCouponId?: string
 	deliveryAddress?: any
 }
 
 export const CreateMemberOrderDtoSchema = Joi.object<CreateMemberOrderDto>({
 	...CreateOrderDtoSchema,
-	type: Joi.string().valid(OrderType).required(),
+	type: Joi.string()
+		.valid(...Object.values(OrderType))
+		.required(),
 	appliedCouponId: Joi.string().pattern(objectIdPattern).optional(),
 	deliveryAddress: Joi.any().when('type', {
 		is: OrderType.DELIVERY,
