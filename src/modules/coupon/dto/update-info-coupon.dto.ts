@@ -1,6 +1,10 @@
 import { objectIdPattern } from '@/common/validators'
 import { OrderType } from '@/constants'
-import { Condition, IncludeProduct } from '../schemas/condition.schema'
+import {
+	Condition,
+	IncludeCategoryCondition,
+	IncludeProductCondition,
+} from '../schemas/condition.schema'
 import { DiscountType } from '../schemas/discount-type.schema'
 import * as Joi from 'joi'
 import { Size } from '@/constants'
@@ -35,25 +39,47 @@ export const UpdateInfoCouponDtoSchema = Joi.object<UpdateInfoCouponDto>({
 		orderType: Joi.string()
 			.valid(...Object.values(OrderType))
 			.optional(),
-		includeOne: Joi.array()
+		includeOneCategoryIn: Joi.array()
 			.items(
-				Joi.object<IncludeProduct>({
-					product: Joi.string().pattern(objectIdPattern),
-					size: Joi.string()
+				Joi.object<IncludeCategoryCondition>({
+					category: Joi.string().pattern(objectIdPattern).required(),
+					size: Joi.number()
 						.valid(...Object.values(Size))
 						.optional(),
-					amount: Joi.number().optional(),
+					amount: Joi.number().min(1).default(1).optional(),
 				})
 			)
 			.optional(),
-		includeAll: Joi.array()
+		includeAllCategoryIn: Joi.array()
 			.items(
-				Joi.object<IncludeProduct>({
-					product: Joi.string().pattern(objectIdPattern),
-					size: Joi.string()
+				Joi.object<IncludeCategoryCondition>({
+					category: Joi.string().pattern(objectIdPattern).required(),
+					size: Joi.number()
 						.valid(...Object.values(Size))
 						.optional(),
-					amount: Joi.number().optional(),
+					amount: Joi.number().min(1).default(1).optional(),
+				})
+			)
+			.optional(),
+		includeOneProductIn: Joi.array()
+			.items(
+				Joi.object<IncludeProductCondition>({
+					product: Joi.string().pattern(objectIdPattern).optional(),
+					size: Joi.number()
+						.valid(...Object.values(Size))
+						.optional(),
+					amount: Joi.number().min(1).default(1).optional(),
+				})
+			)
+			.optional(),
+		includeAllProductIn: Joi.array()
+			.items(
+				Joi.object<IncludeProductCondition>({
+					product: Joi.string().pattern(objectIdPattern).optional(),
+					size: Joi.number()
+						.valid(...Object.values(Size))
+						.optional(),
+					amount: Joi.number().min(1).default(1).optional(),
 				})
 			)
 			.optional(),

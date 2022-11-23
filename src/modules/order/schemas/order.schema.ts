@@ -25,7 +25,7 @@ export class Order {
 
 	@Prop({
 		type: {
-			_id: { type: Types.ObjectId, required: true },
+			id: { type: Types.ObjectId, required: true },
 			name: { type: String, required: true },
 			address: { type: String, required: true },
 		},

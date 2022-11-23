@@ -7,6 +7,8 @@ import { OrderController } from './order.controller'
 import { OrderService } from './services'
 import { StoreModule } from '../store/store.module'
 import { ProductModule } from '../product/product.module'
+import { MemberModule } from '../member/member.module'
+import { SettingModule } from '../setting/setting.module'
 
 @Module({
 	imports: [
@@ -25,6 +27,8 @@ import { ProductModule } from '../product/product.module'
 		),
 		StoreModule,
 		ProductModule,
+		MemberModule,
+		SettingModule,
 	],
 	controllers: [OrderController],
 	providers: [OrderService],

@@ -14,7 +14,7 @@ export class AppliedCoupon {
 	_id?: ObjectId
 
 	@Prop({ type: Types.ObjectId, required: true, ref: 'Coupon' })
-	coupon: ObjectId | string
+	coupon: Types.ObjectId | string
 
 	@Prop({ type: String, enum: Object.keys(ApplyCouponType), required: true })
 	type: ApplyCouponType
@@ -22,7 +22,7 @@ export class AppliedCoupon {
 	@Prop({ type: String, enum: Object.values(CycleType) })
 	cycleType?: CycleType
 
-	@Prop({ type: Date, expires: 0 })
+	@Prop({ type: Date, index: { expireAfterSeconds: 0, index: true } })
 	expireAt: Date
 
 	@Prop({ type: Number, required: true })

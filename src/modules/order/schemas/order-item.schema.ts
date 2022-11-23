@@ -16,19 +16,22 @@ export class OrderItem {
 	name: string
 
 	@Prop({ type: Types.ObjectId, required: true })
+	categoryId: Types.ObjectId
+
+	@Prop({ type: Types.ObjectId, required: true })
 	originalPrice: number
 
-	@Prop({ type: SizeOptionSchema, required: true })
-	size: SizeOption
+	@Prop({ type: SizeOptionSchema, _id: false })
+	size?: SizeOption
 
 	@Prop({ type: [ToppingOptionSchema] })
-	topping: Array<ToppingOption>
+	toppings?: Array<ToppingOption>
 
 	@Prop({ type: Number, required: true, min: 0, default: 1 })
 	amount: number
 
 	@Prop({ type: Number, min: 0 })
-	sumPrice: number
+	itemPrice: number
 
 	@Prop({ type: String, maxlength: 50 })
 	note: string

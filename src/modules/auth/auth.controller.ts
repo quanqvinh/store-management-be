@@ -144,7 +144,6 @@ export class AuthController {
 	@Post('refresh')
 	@JwtRefreshTokenGuard()
 	async memberRefresh(@User() member) {
-		console.log(member)
 		return this.tokenService.generateTokenPair(member)
 	}
 

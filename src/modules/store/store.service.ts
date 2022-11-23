@@ -3,7 +3,7 @@ import { DatabaseConnectionName } from '@/constants'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types } from 'mongoose'
-import { Store, StoreDocument } from './schemas/store.schema'
+import { Store, StoreDocument, VirtualOrderData } from './schemas/store.schema'
 import { File } from '@/types'
 import {
 	InvalidDataException,
@@ -56,9 +56,10 @@ export class StoreService {
 	async getOne(
 		{ id, slug }: { id?: string; slug?: string },
 		select = ''
-	): Promise<Partial<Store>> {
+	): Promise<Partial<Store & VirtualOrderData>> {
 		const store = await this.storeModel
 			.findOne({ $or: [{ _id: id }, { slug }] })
+			.orFail(new NotFoundDataException('Store'))
 			.lean({ virtuals: true })
 			.exec()
 		const result = {}
