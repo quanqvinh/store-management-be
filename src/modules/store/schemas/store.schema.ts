@@ -109,6 +109,11 @@ StoreSchema.plugin(mongooseDelete, {
 })
 StoreSchema.plugin(slugGenerator)
 
+export type VirtualOrderData = {
+	mainImage: string
+	fullAddress: string
+}
+
 StoreSchema.virtual('mainImage').get(function () {
 	return this.images.length > 0 ? this.images[0] : null
 })

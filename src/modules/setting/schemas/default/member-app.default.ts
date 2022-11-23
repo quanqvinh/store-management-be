@@ -19,4 +19,10 @@ export const memberAppDefault: Partial<MemberAppSetting> = {
 		coupon: '636aa1004277123fb7e1f32b',
 		couponNotification: '636aa1004277123fb7e1f32b',
 	},
+	point: {
+		pointName: 'BEAN',
+		startMilestone: 5000,
+		pointPerUnit: 6,
+		unitStep: 10000,
+	},
 }

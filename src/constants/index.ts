@@ -107,9 +107,9 @@ export enum OrderStatus {
 }
 
 export enum Size {
-	SMALL = 'S',
-	MEDIUM = 'M',
-	LARGE = 'L',
+	SMALL,
+	MEDIUM,
+	LARGE,
 }
 
 export enum Buyer {

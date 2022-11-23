@@ -9,10 +9,7 @@ class CustomCategory extends PickType(Category, [
 	'slug',
 ] as const) {}
 
-export class CustomProduct extends OmitType(Product, [
-	'category',
-	'createdAt',
-]) {
+export class CustomProduct extends OmitType(Product, ['createdAt']) {
 	mainImage: string
 }
 

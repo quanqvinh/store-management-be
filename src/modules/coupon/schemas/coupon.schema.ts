@@ -51,7 +51,7 @@ export class Coupon {
 	orderCondition: Condition
 
 	@Prop({ type: Number, default: 0 })
-	applyTime: number
+	amountApplyHour: number
 
 	@Prop({ type: NotificationContentPropertyDefine, _id: false })
 	notification: NotificationContent

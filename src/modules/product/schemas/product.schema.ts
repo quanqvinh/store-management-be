@@ -9,7 +9,7 @@ export type ProductDocument = Product & Document
 
 @Schema({ versionKey: false, timestamps: true })
 export class Product {
-	_id: ObjectId
+	_id: Types.ObjectId
 
 	@Prop({ type: String, required: true })
 	name: string

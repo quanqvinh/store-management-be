@@ -1,6 +1,6 @@
 import { JwtAccessTokenGuard, MemberAuth, User } from '@/common/decorators'
 import { JoiValidatePine } from '@/common/pipes'
-import { Body, Controller, Post } from '@nestjs/common'
+import { Body, Controller, Get, Post, Query } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import {
 	CreateMemberOrderDto,
@@ -24,5 +24,17 @@ export class OrderController {
 			member.id,
 			createMemberOrderDto
 		)
+	}
+
+	@Get('member/check-coupon')
+	@JwtAccessTokenGuard()
+	async checkCouponAfterUpdateCart(
+		@User() member: MemberAuth,
+		@Query(new JoiValidatePine(CreateMemberOrderDtoSchema))
+		checkCouponDto: CreateMemberOrderDto
+	) {
+		return (
+			await this.orderService.createMemberOrderInfo(member.id, checkCouponDto)
+		).coupon
 	}
 }

@@ -129,7 +129,7 @@ export class ProductService {
 	async getForMemberApp(listId: Array<string>): Promise<CustomProduct[]> {
 		const products = await this.productModel
 			.find({ _id: { $in: listId } })
-			.select('-category -createdAt')
+			.select('-createdAt')
 			.lean({ virtuals: ['mainImage'] })
 			.exec()
 		return products as unknown as CustomProduct[]

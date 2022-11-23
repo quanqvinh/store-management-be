@@ -3,7 +3,7 @@ import { ApplyCouponType, DatabaseConnectionName } from '@/constants'
 import { CouponService } from '@/modules/coupon/coupon.service'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import { Member, MemberDocument } from '../member/schemas/member.schema'
 import { CreateAppliedCouponDto } from './dto/create-applied-coupon.dto'
 import { AppliedCoupon } from './schemas/applied-coupon.schema'
@@ -27,16 +27,16 @@ export class AppliedCouponService {
 		if (dto.startTime === 0) dto.startTime = Date.now()
 
 		const appliedCoupon: AppliedCoupon = {
-			coupon: dto.couponId,
+			coupon: new Types.ObjectId(dto.couponId),
 			type: dto.type,
 			cycleType:
 				dto.type === ApplyCouponType.PERIODIC ? dto.cycleType : undefined,
-			expireAt: new Date(dto.startTime + coupon.applyTime),
+			expireAt: new Date(dto.startTime + coupon.amountApplyHour * 3600000),
 			startTime: dto.startTime,
 			source: dto.source,
 		}
 
-		return await this.memberModel.updateOne(
+		return await this.memberModel.updateMany(
 			{ _id: { $in: dto.memberIds } },
 			{ $push: { coupons: appliedCoupon } }
 		)
@@ -49,7 +49,6 @@ export class AppliedCouponService {
 			.populate<{ 'coupons.coupon': Coupon }>('coupons.coupon')
 			.lean({ virtuals: true })
 			.exec()
-		console.log(member)
 		return member.coupons
 	}
 
@@ -57,14 +56,18 @@ export class AppliedCouponService {
 		memberId: string,
 		appliedCouponId: string
 	): Promise<AppliedCoupon> {
-		const coupons = (
-			await this.memberModel
-				.findOne({ _id: memberId, 'coupons.startTime': { $lt: Date.now() } })
-				.populate<{ 'coupons.coupon': Coupon }>('coupons.coupon')
-				.select('coupons')
-				.lean({ virtuals: true })
-				.exec()
-		).coupons
+		const member = await this.memberModel
+			.findOne({ _id: memberId })
+			.orFail(new NotFoundDataException('Member'))
+			.populate<{ 'coupons.coupon': Coupon }>('coupons.coupon')
+			.select('coupons')
+			.lean({ virtuals: true })
+			.exec()
+		const now = Date.now()
+		const coupons = member.coupons.filter(
+			appliedCoupon =>
+				appliedCoupon.startTime <= now && appliedCoupon.expireAt.getTime() > now
+		)
 		return coupons.find(coupon => coupon._id.toString() === appliedCouponId)
 	}
 

@@ -15,14 +15,18 @@ export class MemberAppSetting {
 	@Prop({
 		type: {
 			pointName: { type: String },
+			startMilestone: { type: Number, min: 1 },
 			pointPerUnit: { type: Number, min: 1 },
-			unitCost: { type: Number, min: 1 },
+			unitStep: { type: Number, min: 1 },
 		},
+		default: memberAppDefault.point,
+		_id: false,
 	})
 	point: {
 		pointName: string
+		startMilestone: number
 		pointPerUnit: number
-		unitCost: number
+		unitStep: number
 	}
 
 	@Prop({
@@ -47,6 +51,7 @@ export class MemberAppSetting {
 			couponNotification: String,
 		},
 		default: memberAppDefault.defaultImages,
+		_id: false,
 	})
 	defaultImages: {
 		product: string

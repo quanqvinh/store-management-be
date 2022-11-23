@@ -25,9 +25,7 @@ export class CartService {
 			this.productService.getForMemberApp(dto.itemIds),
 			this.appliedCouponService.getOne(memberId, dto.appliedCouponId),
 		])
-		console.log(store)
-		console.log(items)
-		console.log(coupon)
+
 		return {
 			store: store
 				? {
@@ -37,7 +35,9 @@ export class CartService {
 				  }
 				: undefined,
 			items: items as unknown as Array<CustomProduct>,
-			coupon: this.appliedCouponService.transformForMemberApp(coupon),
+			coupon: coupon
+				? this.appliedCouponService.transformForMemberApp(coupon)
+				: null,
 		}
 	}
 }

@@ -36,8 +36,6 @@ export class ProductController {
 	async getAllOfStore(
 		@Param('storeId', IdAndSlugValidatePine) storeId: string
 	) {
-		console.log(storeId)
-		console.log(checkObjectId(storeId))
 		return await this.productService.getAllOfStoreInMemberApp(
 			checkObjectId(storeId) ? { id: storeId } : { slug: storeId }
 		)
