@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { MemberService } from '../member/member.service'
 import { EmployeeService } from '../employee/employee.service'
 import { HashService } from '@/common/providers/hash.service'
-import { EmployeeRole, IdentifierType } from '@/constants/index'
+import { EmployeeRole } from '@/constants/index'
 
 @Injectable()
 export class AuthService {
@@ -22,7 +22,7 @@ export class AuthService {
 				username,
 				role,
 			})
-			.select('auth email role')
+			.select('auth role')
 			.lean()
 			.exec()
 		if (
