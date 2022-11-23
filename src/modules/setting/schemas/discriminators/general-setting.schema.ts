@@ -49,7 +49,7 @@ export class GeneralSetting {
 	@Prop({ type: String, default: generalDefault.storeContact })
 	storeContact: string
 
-	@Prop({ type: [ContactDefine], default: generalDefault.contact })
+	@Prop({ type: [ContactDefine], _id: false, default: generalDefault.contact })
 	contact: Array<Contact>
 }
 

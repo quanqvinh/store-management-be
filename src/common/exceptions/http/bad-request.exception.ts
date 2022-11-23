@@ -38,3 +38,9 @@ export class NotImageFileException extends BadRequestException {
 		)
 	}
 }
+
+export class CannotUseCouponException extends BadRequestException {
+	constructor(reason?: string) {
+		super(`Cannot use coupon` + (reason ? ` (${reason})` : ''))
+	}
+}

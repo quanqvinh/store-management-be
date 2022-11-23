@@ -1,7 +1,12 @@
+import { AppliedCoupon } from '@/modules/applied-coupon/schemas/applied-coupon.schema'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
-import { Member, MemberDocument } from './schemas/member.schema'
+import { Model, Types } from 'mongoose'
+import {
+	Member,
+	MemberDocument,
+	VirtualMemberData,
+} from './schemas/member.schema'
 import { CreateMemberDto, UpdateMemberInfoDto } from './dto/request'
 import { DuplicateKeyException } from '@/common/exceptions/mongo.exception'
 import { UpdateResult, DeleteResult } from 'mongodb'
@@ -12,23 +17,21 @@ import {
 import { DatabaseConnectionName } from '@/constants'
 import { stringToDate } from '@/utils'
 import { MemberRank } from '../member-rank/schemas/member-rank.schema'
+import { Coupon } from '../coupon/schemas/coupon.schema'
 
 @Injectable()
 export class MemberService {
 	constructor(
 		@InjectModel(Member.name, DatabaseConnectionName.DATA)
-		public memberModel: Model<MemberDocument>
+		public memberModel: Model<MemberDocument & VirtualMemberData>
 	) {}
 
 	async findAll(): Promise<Member[]> {
 		return await this.memberModel.find({ role: Member.name }).lean().exec()
 	}
 
-	async findById(id: string): Promise<Member> {
-		return await this.memberModel
-			.findOne({ role: Member.name, _id: id })
-			.lean()
-			.exec()
+	async findById(id: string): Promise<Member & VirtualMemberData> {
+		return await this.memberModel.findById(id).lean({ virtuals: true }).exec()
 	}
 
 	async findByEmail(email: string): Promise<Member> {
@@ -108,5 +111,37 @@ export class MemberService {
 			.exec()
 		if (!updatedMember) return null
 		return updatedMember
+	}
+
+	async checkCoupon(
+		memberId: string,
+		couponId: string
+	): Promise<AppliedCoupon> {
+		const member = await this.memberModel
+			.findById(memberId)
+			.orFail(new NotFoundDataException('Member'))
+			.populate<{ 'coupons.coupon': Coupon }>('coupons.coupon')
+			.select('coupons')
+			.lean()
+			.exec()
+		const coupon = member.coupons.find(appliedCoupon => {
+			return appliedCoupon.coupon['_id'].toString() === couponId
+		})
+		if (!coupon) throw new NotFoundDataException('This own coupon')
+		return coupon
+	}
+
+	async deleteAppliedCoupon(
+		memberId: string,
+		couponId: string
+	): Promise<UpdateResult> {
+		return this.memberModel.updateOne(
+			{ _id: memberId },
+			{
+				$pull: {
+					coupons: { coupon: new Types.ObjectId(couponId.toString()) },
+				},
+			}
+		)
 	}
 }

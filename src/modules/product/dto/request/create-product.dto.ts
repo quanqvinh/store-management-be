@@ -26,7 +26,7 @@ export const CreateProductDtoSchema = Joi.object<CreateProductDto>({
 	size: Joi.array()
 		.items(
 			Joi.object<SizeOption>({
-				size: Joi.string()
+				size: Joi.number()
 					.valid(...Object.values(Size))
 					.required(),
 				cost: Joi.number().required(),

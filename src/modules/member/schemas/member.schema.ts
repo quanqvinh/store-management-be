@@ -17,7 +17,12 @@ import {
 import mongooseDelete from 'mongoose-delete'
 import mongooseLeanVirtuals from 'mongoose-lean-virtuals'
 
-export type MemberDocument = Member & Document
+export type VirtualMemberData = {
+	fullName: string
+	variable: Record<string, string | number | boolean>
+}
+
+export type MemberDocument = Member & Document & VirtualMemberData
 
 @Schema({ versionKey: false, timestamps: { createdAt: 'joinedAt' } })
 export class Member {

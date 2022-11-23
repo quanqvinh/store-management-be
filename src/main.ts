@@ -38,8 +38,7 @@ async function bootstrap() {
 	- Otherwise, the response type is T, the actual response is { data: T }
 	=== TOKEN 30 DAYS ===
 	19110499@student.hcmute.edu.vn
-	- Access token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MzZlOGRiNWMzMTJiOGFkOTgwNGFlZWQiLCJpYXQiOjE2NjgyNjI5MTYsImV4cCI6MTY3MDg1NDkxNiwic3ViIjoiYWNjZXNzIn0.sGaBtE-TPmI5xvdApdWuU38LGplvqlf_tdNAXFYpuQ8
-	- Refresh token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MzZlOGRiNWMzMTJiOGFkOTgwNGFlZWQiLCJpYXQiOjE2NjgyNjI5MTYsImV4cCI6MTY3MDg1NDkxNiwic3ViIjoicmVmcmVzaCJ9.UvETWNk6V8od78FBcpFfke5QOMWlQxzEeBuLwfGUWi4
+	- Access token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MzcyMGI5MWIwMTY2NjIyYzE3NjlmZDAiLCJpYXQiOjE2Njg3MDAyNDEsImV4cCI6MTY3MDg1NDkxNiwic3ViIjoiYWNjZXNzIn0.Mz08I0MpwXkquzSzSxppS8Cii4VD54agNC3IkNRHKzI
 		`
 		)
 		.setVersion('1.0')

@@ -4,22 +4,23 @@ import {
 	DiscountTypeSchema,
 } from '@/modules/coupon/schemas/discount-type.schema'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Document, Types } from 'mongoose'
+import { Document, ObjectId, Types } from 'mongoose'
 
 export type MemberOrderDocument = MemberOrder & Document
 
 class MemberInShort {
-	_id: Types.ObjectId
+	id: ObjectId
 	name: string
 	email: string
 	mobile: string
 }
 
-class CouponInShort {
-	_id: Types.ObjectId
+export class CouponInShort {
+	id: ObjectId
 	title: string
 	code: string
 	discount: DiscountType
+	discountAmount: number
 }
 
 class OrderReview {
@@ -31,7 +32,7 @@ class OrderReview {
 
 @Schema({ versionKey: false })
 export class MemberOrder {
-	buyer: Buyer.MEMBER
+	buyer: Buyer
 
 	@Prop({
 		type: String,
@@ -50,16 +51,19 @@ export class MemberOrder {
 			email: { type: String, required: true },
 			mobile: { type: String, required: true },
 		},
+		_id: false,
 	})
 	member: MemberInShort
 
 	@Prop({
 		type: {
-			_id: { type: Types.ObjectId, required: true },
+			id: { type: Types.ObjectId, required: true },
 			title: { type: String, required: true },
 			code: { type: String, required: true },
 			discount: { type: DiscountTypeSchema, required: true },
+			discountAmount: { type: Number, required: true },
 		},
+		_id: false,
 	})
 	coupon?: CouponInShort
 
@@ -80,6 +84,7 @@ export class MemberOrder {
 			content: { type: String, maxlength: 500 },
 			likeItems: [{ type: Number, min: 0 }],
 		},
+		_id: false,
 	})
 	review?: OrderReview
 }

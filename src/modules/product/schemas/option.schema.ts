@@ -8,7 +8,7 @@ export class SizeOption {
 }
 
 export const SizeOptionSchema = {
-	size: { type: String, enum: Object.values(Size) },
+	size: { type: Number, enum: Object.values(Size) },
 	cost: { type: Number, required: true },
 }
 
