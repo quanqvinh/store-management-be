@@ -22,7 +22,7 @@ export class AuthService {
 				username,
 				role,
 			})
-			.select('auth role')
+			.select('auth store role')
 			.lean()
 			.exec()
 		if (

@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt'
 import { ConfigService } from '@nestjs/config'
 import { Employee } from '@/modules/employee/schemas/employee.schema'
 import { Member } from '@/modules/member/schemas/member.schema'
-import { TokenSubject } from '@/constants'
+import { EmployeeRole, TokenSubject } from '@/constants'
 import { RefreshService } from './refresh.service'
 import { NotCreatedDataException } from '@/common/exceptions/http'
 import { TokenPairDto } from '../dto/token-pair.dto'
@@ -23,6 +23,8 @@ export class TokenService {
 		const payload = {
 			aud: (user as Employee)._id?.toString() ?? (user as EmployeeAuth).id,
 			role: user['role'] ?? undefined,
+			store:
+				user['role'] === EmployeeRole.SALESPERSON ? user['store'] : undefined,
 		}
 		const tokenPair = {
 			access_token: this.jwtService.sign(payload, {

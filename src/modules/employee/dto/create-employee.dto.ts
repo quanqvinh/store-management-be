@@ -1,4 +1,4 @@
-import { objectIdPattern } from '@/common/validators'
+import { objectIdPattern, usernamePattern } from '@/common/validators'
 import { EmployeeRole } from '@/constants'
 import * as Joi from 'joi'
 
@@ -9,7 +9,10 @@ export class CreateEmployeeDto {
 }
 
 export const CreateEmployeeDtoSchema = Joi.object<CreateEmployeeDto>({
-	username: Joi.string().required(),
+	username: Joi.string()
+		.pattern(usernamePattern.normal)
+		.pattern(usernamePattern.hasLetter)
+		.required(),
 	role: Joi.string()
 		.valid(...Object.values(EmployeeRole))
 		.required(),

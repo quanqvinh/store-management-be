@@ -8,6 +8,7 @@ export type MemberAuth = {
 export type EmployeeAuth = {
 	id: string
 	role?: EmployeeRole
+	store?: string
 }
 
 export const User = createParamDecorator(

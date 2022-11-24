@@ -10,7 +10,7 @@ export class CustomerOrder {
 
 	type: OrderType.ON_PREMISE
 
-	status: Exclude<OrderStatus, OrderStatus.DELIVERING | OrderStatus.READY>
+	status: OrderStatus
 }
 
 export const CustomerOrderSchema = SchemaFactory.createForClass(CustomerOrder)

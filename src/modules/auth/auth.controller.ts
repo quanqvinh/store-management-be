@@ -1,5 +1,11 @@
 import { TestAccessTokenDto } from './dto/response/test-access-token.dto'
-import { Body, Controller, Get, UnauthorizedException } from '@nestjs/common'
+import {
+	Body,
+	Controller,
+	Get,
+	UnauthorizedException,
+	UseGuards,
+} from '@nestjs/common'
 import { Post } from '@nestjs/common'
 import {
 	EmployeeAuth,
@@ -20,11 +26,19 @@ import { NotCreatedDataException } from '@/common/exceptions/http'
 import { expireTimeFormats } from '@/utils'
 import { MemberLoginDto, MemberLoginDtoSchema } from './dto/request'
 import { MemberVerifyLoginDto, MemberVerifyLoginDtoSchema } from './dto/request'
-import { MemberAccountIdentifyDto } from './dto/response/member-account-identify.dto'
 import { CreateMemberDto, CreateMemberDtoSchema } from '../member/dto/request'
 import { MemberRankService } from '../member-rank/member-rank.service'
 import { ApiResponse, ApiTags } from '@nestjs/swagger'
 import { SkipThrottle } from '@nestjs/throttler'
+import { TokenPairDto } from '../token/dto/token-pair.dto'
+import {
+	LocalAdminGuard,
+	LocalSalespersonGuard,
+} from '@/common/guards/local-auth.guard'
+import {
+	EmployeeLoginDto,
+	EmployeeLoginDtoSchema,
+} from './dto/request/employee-login.dto'
 
 @Controller('auth')
 @ApiTags('auth')
@@ -40,17 +54,25 @@ export class AuthController {
 		private memberRankService: MemberRankService
 	) {}
 
-	// @Post('admin/login')
-	// @UseGuards(LocalAdminGuard)
-	// async adminLogin(@User() user): Promise<TokenPairDto> {
-	// 	return await this.tokenService.generateTokenPair(user)
-	// }
+	@Post('admin/login')
+	@UseGuards(LocalAdminGuard)
+	async adminLogin(
+		@User() user,
+		@Body(new JoiValidatePine(EmployeeLoginDtoSchema))
+		_loginDto: EmployeeLoginDto
+	): Promise<TokenPairDto> {
+		return await this.tokenService.generateTokenPair(user)
+	}
 
-	// @Post('salesperson/login')
-	// @UseGuards(LocalSalespersonGuard)
-	// async salespersonLogin(@User() user): Promise<TokenPairDto> {
-	// 	return await this.tokenService.generateTokenPair(user)
-	// }
+	@Post('salesperson/login')
+	@UseGuards(LocalSalespersonGuard)
+	async salespersonLogin(
+		@User() user,
+		@Body(new JoiValidatePine(EmployeeLoginDtoSchema))
+		_loginDto: EmployeeLoginDto
+	): Promise<TokenPairDto> {
+		return await this.tokenService.generateTokenPair(user)
+	}
 
 	@Post('member/login')
 	async loginMail(

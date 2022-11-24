@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { ObjectId, Types, Document } from 'mongoose'
-import { Buyer, PaymentType } from '@/constants'
+import { Buyer, OrderStatus, PaymentType } from '@/constants'
 import { OrderItem, OrderItemSchema } from './order-item.schema'
 import mongooseLeanVirtuals from 'mongoose-lean-virtuals'
 
@@ -39,6 +39,13 @@ export class Order {
 
 	@Prop({ type: Number, min: 0, required: true })
 	totalPrice: number
+
+	@Prop({
+		type: String,
+		enum: Object.values(OrderStatus),
+		default: OrderStatus.PROCESSING,
+	})
+	status?: OrderStatus
 
 	@Prop({
 		type: String,
