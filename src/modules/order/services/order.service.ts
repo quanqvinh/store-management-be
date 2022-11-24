@@ -1,5 +1,8 @@
 import { MemberAppService } from './../../setting/services/member-app.service'
-import { CannotUseCouponException } from '@/common/exceptions/http'
+import {
+	CannotUseCouponException,
+	NotFoundDataException,
+} from '@/common/exceptions/http'
 import { Buyer, DatabaseConnectionName, OrderType } from '@/constants'
 import { Coupon } from '@/modules/coupon/schemas/coupon.schema'
 import { MemberService } from '@/modules/member/member.service'
@@ -7,11 +10,17 @@ import { ProductService } from '@/modules/product/product.service'
 import { StoreService } from '@/modules/store/store.service'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import e from 'express'
 import { Model, Types } from 'mongoose'
 import { CreateMemberOrderDto } from '../dto/request/create-member-order.dto'
 import { CartItem } from '../dto/request/create-order.dto'
-import { MemberOrder, MemberOrderDocument, Order, OrderItem } from '../schemas'
+import {
+	MemberOrder,
+	MemberOrderDocument,
+	Order,
+	OrderDocument,
+	OrderItem,
+} from '../schemas'
+import { UpdateOrderStatusDto } from '../dto/request/update-order-status.dto'
 
 type ItemDictionary = Record<string, Omit<CartItem, 'itemId'>>
 
@@ -20,6 +29,8 @@ export class OrderService {
 	constructor(
 		@InjectModel(Buyer.MEMBER, DatabaseConnectionName.DATA)
 		private readonly memberOrderModel: Model<MemberOrderDocument>,
+		@InjectModel(Order.name, DatabaseConnectionName.DATA)
+		private readonly orderModel: Model<OrderDocument>,
 		private storeService: StoreService,
 		private productService: ProductService,
 		private memberService: MemberService,
@@ -242,5 +253,41 @@ export class OrderService {
 			return 0
 		}
 		return pointPerUnit * (Math.floor(temp / unitStep) + 1)
+	}
+
+	async getOrdersOfStore(storeId: string) {
+		const orders = await this.orderModel
+			.aggregate([
+				{ $match: { 'store.id': new Types.ObjectId(storeId) } },
+				{
+					$group: {
+						_id: '$status',
+						orders: { $push: '$$ROOT' },
+					},
+				},
+			])
+			.exec()
+		return orders
+	}
+
+	async updateStatus(
+		storeId: string,
+		{ orderId, status }: UpdateOrderStatusDto
+	) {
+		// console.log(await this.orderModel)
+		const updateStatus = await this.orderModel
+			.updateOne(
+				{
+					_id: orderId,
+					'store.id': storeId,
+				},
+				{
+					status,
+				}
+			)
+			.orFail(new NotFoundDataException('Data not change or order'))
+			.exec()
+		// console.log(updateStatus)
+		return !!updateStatus.modifiedCount
 	}
 }

@@ -100,9 +100,8 @@ export enum CategoryType {
 }
 
 export enum OrderStatus {
-	PREPARING = 'preparing',
-	READY = 'ready',
-	DELIVERING = 'delivering',
+	PROCESSING = 'processing',
+	CANCELLED = 'cancelled',
 	DONE = 'done',
 }
 

@@ -31,7 +31,7 @@ export class JwtAccessStrategy extends PassportStrategy(
 	}
 
 	async validate(payload: JwtPayload) {
-		const { aud: uid, iat: issuedAt, role } = payload
+		const { aud: uid, iat: issuedAt, role, store } = payload
 		const auth: Partial<Auth> = {}
 		if (role) {
 			const employee = await this.employeeService.employeeModel
@@ -54,7 +54,7 @@ export class JwtAccessStrategy extends PassportStrategy(
 		if (auth?.validTokenTime) {
 			if (auth.validTokenTime > issuedAt * 1000)
 				throw new DetectedAbnormalLoginException()
-			return { id: uid, role: role }
+			return { id: uid, role, store }
 		}
 		throw new NotFoundDataException('user')
 	}
