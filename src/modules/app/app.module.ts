@@ -28,7 +28,6 @@ import { CouponModule } from '../coupon/coupon.module'
 import { AppliedCouponModule } from '../applied-coupon/applied-coupon.module'
 import { CartModule } from '../cart/cart.module'
 import { OrderModule } from '../order/order.module'
-import { RolesGuard } from '@/common/guards/roles.guard'
 
 const THROTTLER_TTL = 60
 const THROTTLER_LIMIT = 10
