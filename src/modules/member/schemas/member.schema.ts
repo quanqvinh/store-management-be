@@ -5,7 +5,11 @@ import {
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose'
 import { Document, ObjectId, Types } from 'mongoose'
 import { Gender } from '@/constants'
-import { MemberInfo, MemberInfoSchema } from './member-info.schema'
+import {
+	MemberInfo,
+	MemberInfoSchema,
+	MemberInfoVirtual,
+} from './member-info.schema'
 import {
 	MemberHistoryDay,
 	MemberHistoryDaySchema,
@@ -17,12 +21,13 @@ import {
 import mongooseDelete from 'mongoose-delete'
 import mongooseLeanVirtuals from 'mongoose-lean-virtuals'
 
-export type VirtualMemberData = {
+export type MemberVirtual = {
 	fullName: string
 	variable: Record<string, string | number | boolean>
+	memberInfo: MemberInfoVirtual
 }
 
-export type MemberDocument = Member & Document & VirtualMemberData
+export type MemberDocument = Member & Document & MemberVirtual
 
 @Schema({ versionKey: false, timestamps: { createdAt: 'joinedAt' } })
 export class Member {
