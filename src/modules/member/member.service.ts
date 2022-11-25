@@ -1,4 +1,3 @@
-import { AppliedCoupon } from '@/modules/applied-coupon/schemas/applied-coupon.schema'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types } from 'mongoose'
@@ -16,14 +15,18 @@ import {
 } from '@/common/exceptions/http'
 import { DatabaseConnectionName } from '@/constants'
 import { stringToDate } from '@/utils'
-import { MemberRank } from '../member-rank/schemas/member-rank.schema'
-import { Coupon } from '../coupon/schemas/coupon.schema'
+import { MemberRankService } from '../member-rank/member-rank.service'
+import { PopulatedMemberInfo } from './schemas/populate/member.populate'
+import { PopulatedAppliedCoupon } from '../applied-coupon/schemas/populate/applied-coupon.populate'
+import { MemberAppService } from '../setting/services/member-app.service'
 
 @Injectable()
 export class MemberService {
 	constructor(
 		@InjectModel(Member.name, DatabaseConnectionName.DATA)
-		public memberModel: Model<MemberDocument & VirtualMemberData>
+		public memberModel: Model<MemberDocument & VirtualMemberData>,
+		private memberRankService: MemberRankService,
+		private memberAppService: MemberAppService
 	) {}
 
 	async findAll(): Promise<Member[]> {
@@ -31,7 +34,11 @@ export class MemberService {
 	}
 
 	async findById(id: string): Promise<Member & VirtualMemberData> {
-		return await this.memberModel.findById(id).lean({ virtuals: true }).exec()
+		return await this.memberModel
+			.findById(id)
+			.orFail(new NotFoundDataException('Member'))
+			.lean({ virtuals: true })
+			.exec()
 	}
 
 	async findByEmail(email: string): Promise<Member> {
@@ -82,7 +89,7 @@ export class MemberService {
 	async getMemberDataInHome(memberId: string) {
 		const memberData = await this.memberModel
 			.findById(memberId)
-			.populate<{ 'memberInfo.rank': MemberRank }>('memberInfo.rank')
+			.populate<{ memberInfo: PopulatedMemberInfo }>('memberInfo.rank')
 			.orFail()
 			.select('firstName lastName coupons notifications memberInfo -_id')
 			.lean({ virtuals: true })
@@ -116,11 +123,11 @@ export class MemberService {
 	async checkCoupon(
 		memberId: string,
 		couponId: string
-	): Promise<AppliedCoupon> {
+	): Promise<PopulatedAppliedCoupon> {
 		const member = await this.memberModel
 			.findById(memberId)
 			.orFail(new NotFoundDataException('Member'))
-			.populate<{ 'coupons.coupon': Coupon }>('coupons.coupon')
+			.populate<{ coupons: Array<PopulatedAppliedCoupon> }>('coupons.coupon')
 			.select('coupons')
 			.lean()
 			.exec()
@@ -143,5 +150,40 @@ export class MemberService {
 				},
 			}
 		)
+	}
+
+	async getMemberInfo(memberId: string) {
+		const [{ memberInfo, ...member }, { point }] = await Promise.all([
+			this.memberModel
+				.findById(memberId)
+				.orFail(new NotFoundDataException('Member'))
+				.populate<{ memberInfo: PopulatedMemberInfo }>('memberInfo.rank')
+				.select({
+					firstName: 1,
+					lastName: 1,
+					memberInfo: 1,
+				})
+				.lean({ virtuals: true })
+				.exec(),
+			this.memberAppService.get('point'),
+		])
+		const currentRank = memberInfo.rank
+		delete memberInfo.rank
+
+		const nextRank =
+			(await this.memberRankService.getOne({
+				rank: currentRank.rank + 1,
+			})) ?? undefined
+		return {
+			setting: {
+				pointName: point.pointName,
+			},
+			memberInfo: {
+				fullName: member.fullName,
+				...memberInfo,
+			},
+			currentRank,
+			nextRank,
+		}
 	}
 }
