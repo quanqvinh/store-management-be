@@ -39,6 +39,12 @@ export class NotImageFileException extends BadRequestException {
 	}
 }
 
+export class DataNotChangeException extends BadRequestException {
+	constructor(field = 'data') {
+		super(`Data is not change or ${field} is not found`)
+	}
+}
+
 export class CannotUseCouponException extends BadRequestException {
 	constructor(reason?: string) {
 		super(`Cannot use coupon` + (reason ? ` (${reason})` : ''))
