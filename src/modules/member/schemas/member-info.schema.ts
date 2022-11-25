@@ -25,7 +25,3 @@ export class MemberInfo {
 }
 
 export const MemberInfoSchema = SchemaFactory.createForClass(MemberInfo)
-
-MemberInfoSchema.virtual('totalPoint').get(function () {
-	return this.usedPoint + this.expiredPoint + this.currentPoint
-})

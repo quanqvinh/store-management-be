@@ -54,11 +54,4 @@ export class MemberController {
 			},
 		}
 	}
-
-	@Get('rank')
-	@SkipThrottle()
-	@JwtAccessTokenGuard()
-	async getMemberRankInfo(@User() member: MemberAuth) {
-		return await this.memberService.getMemberInfo(member.id)
-	}
 }

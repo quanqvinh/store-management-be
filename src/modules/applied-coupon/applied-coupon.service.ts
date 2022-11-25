@@ -1,4 +1,3 @@
-import { PopulatedAppliedCoupon } from './schemas/populate/applied-coupon.populate'
 import { NotFoundDataException } from '@/common/exceptions/http'
 import { ApplyCouponType, DatabaseConnectionName } from '@/constants'
 import { CouponService } from '@/modules/coupon/coupon.service'
@@ -9,6 +8,7 @@ import { Member, MemberDocument } from '../member/schemas/member.schema'
 import { CreateAppliedCouponDto } from './dto/create-applied-coupon.dto'
 import { AppliedCoupon } from './schemas/applied-coupon.schema'
 import { UpdateResult } from 'mongodb'
+import { Coupon } from '../coupon/schemas/coupon.schema'
 import { CustomOwnCoupon } from './dto/response/own-coupon.dto'
 
 @Injectable()
@@ -46,7 +46,7 @@ export class AppliedCouponService {
 		const member = await this.memberModel
 			.findById(memberId)
 			.orFail(new NotFoundDataException('Member'))
-			.populate<{ coupons: Array<PopulatedAppliedCoupon> }>('coupons.coupon')
+			.populate<{ 'coupons.coupon': Coupon }>('coupons.coupon')
 			.lean({ virtuals: true })
 			.exec()
 		return member.coupons
@@ -55,11 +55,11 @@ export class AppliedCouponService {
 	async getOne(
 		memberId: string,
 		appliedCouponId: string
-	): Promise<PopulatedAppliedCoupon> {
+	): Promise<AppliedCoupon> {
 		const member = await this.memberModel
 			.findOne({ _id: memberId })
 			.orFail(new NotFoundDataException('Member'))
-			.populate<{ coupons: Array<PopulatedAppliedCoupon> }>('coupons.coupon')
+			.populate<{ 'coupons.coupon': Coupon }>('coupons.coupon')
 			.select('coupons')
 			.lean({ virtuals: true })
 			.exec()
@@ -71,9 +71,7 @@ export class AppliedCouponService {
 		return coupons.find(coupon => coupon._id.toString() === appliedCouponId)
 	}
 
-	transformForMemberApp(
-		appliedCoupon: AppliedCoupon | PopulatedAppliedCoupon
-	): CustomOwnCoupon {
+	transformForMemberApp(appliedCoupon: AppliedCoupon): CustomOwnCoupon {
 		return {
 			_id: appliedCoupon._id,
 			expireAt: appliedCoupon.expireAt,
