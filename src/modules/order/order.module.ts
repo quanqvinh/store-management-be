@@ -9,6 +9,7 @@ import { StoreModule } from '../store/store.module'
 import { ProductModule } from '../product/product.module'
 import { MemberModule } from '../member/member.module'
 import { SettingModule } from '../setting/setting.module'
+import { OrderStream } from './auto/order.stream'
 
 @Module({
 	imports: [
@@ -31,7 +32,7 @@ import { SettingModule } from '../setting/setting.module'
 		SettingModule,
 	],
 	controllers: [OrderController],
-	providers: [OrderService],
+	providers: [OrderService, OrderStream],
 	exports: [OrderService],
 })
 export class OrderModule {}
