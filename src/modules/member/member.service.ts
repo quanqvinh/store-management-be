@@ -1,11 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types } from 'mongoose'
-import {
-	Member,
-	MemberDocument,
-	VirtualMemberData,
-} from './schemas/member.schema'
+import { Member, MemberDocument, MemberVirtual } from './schemas/member.schema'
 import { CreateMemberDto, UpdateMemberInfoDto } from './dto/request'
 import { DuplicateKeyException } from '@/common/exceptions/mongo.exception'
 import { UpdateResult, DeleteResult } from 'mongodb'
@@ -24,7 +20,7 @@ import { MemberAppService } from '../setting/services/member-app.service'
 export class MemberService {
 	constructor(
 		@InjectModel(Member.name, DatabaseConnectionName.DATA)
-		public memberModel: Model<MemberDocument & VirtualMemberData>,
+		public memberModel: Model<MemberDocument & MemberVirtual>,
 		private memberRankService: MemberRankService,
 		private memberAppService: MemberAppService
 	) {}
@@ -33,7 +29,7 @@ export class MemberService {
 		return await this.memberModel.find({ role: Member.name }).lean().exec()
 	}
 
-	async findById(id: string): Promise<Member & VirtualMemberData> {
+	async findById(id: string): Promise<Member & MemberVirtual> {
 		return await this.memberModel
 			.findById(id)
 			.orFail(new NotFoundDataException('Member'))

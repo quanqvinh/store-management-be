@@ -26,6 +26,10 @@ export class MemberInfo {
 
 export const MemberInfoSchema = SchemaFactory.createForClass(MemberInfo)
 
+export interface MemberInfoVirtual {
+	totalPoint: number
+}
+
 MemberInfoSchema.virtual('totalPoint').get(function () {
 	return this.usedPoint + this.expiredPoint + this.currentPoint
 })
