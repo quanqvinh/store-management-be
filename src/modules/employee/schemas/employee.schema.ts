@@ -1,11 +1,15 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose'
 import { Document, ObjectId } from 'mongoose'
-import { Gender, EmployeeRole } from '@/constants'
+import { EmployeeRole } from '@/constants'
 import { Auth } from '@/modules/auth/schemas/auth.schema'
 
 export type EmployeeDocument = Employee & Document
 
-@Schema({ versionKey: false, timestamps: { createdAt: 'joinedAt' } })
+@Schema({
+	versionKey: false,
+	timestamps: { createdAt: 'joinedAt' },
+	discriminatorKey: 'role',
+})
 export class Employee {
 	_id: ObjectId
 
@@ -15,29 +19,11 @@ export class Employee {
 	@Prop({ type: Auth, required: true })
 	auth: Auth
 
-	@Prop({ type: String, required: true, unique: true })
-	email: string
-
 	@Prop({ type: String, enum: Object.values(EmployeeRole), required: true })
 	role: string
 
-	@Prop({ type: String })
-	avatar: string
-
-	@Prop({ type: String })
-	name: string
-
-	@Prop({ type: String })
-	mobile: string
-
-	@Prop({ type: String, enum: Object.values(Gender) })
-	gender: Gender
-
 	@Prop({ type: Date })
-	dob: Date
-
-	@Prop({ type: Date, expires: 0 })
-	joinedAt: Date
+	joinedAt?: Date
 }
 
 export const EmployeeSchema = SchemaFactory.createForClass(Employee)

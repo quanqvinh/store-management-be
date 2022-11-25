@@ -8,6 +8,7 @@ export type JwtPayload = {
 	exp: number
 	iat: number
 	role?: EmployeeRole
+	store?: string
 }
 
 export type ChangeFields<T, R> = Omit<T, keyof R> & R

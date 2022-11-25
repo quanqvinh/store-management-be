@@ -1,4 +1,4 @@
-import { Buyer, OrderStatus, OrderType, StoreSatisfaction } from '@/constants'
+import { Buyer, OrderType, StoreSatisfaction } from '@/constants'
 import {
 	DiscountType,
 	DiscountTypeSchema,
@@ -69,13 +69,6 @@ export class MemberOrder {
 
 	@Prop({ type: Number, min: 0, default: 0 })
 	earnedPoint: number
-
-	@Prop({
-		type: String,
-		enum: Object.values(OrderStatus),
-		default: OrderStatus.PREPARING,
-	})
-	status?: OrderStatus
 
 	@Prop({
 		type: {
