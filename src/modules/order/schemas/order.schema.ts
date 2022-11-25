@@ -54,12 +54,30 @@ export class Order {
 	})
 	payment: PaymentType
 
+	@Prop({
+		type: Number,
+		min: 0,
+		default: function () {
+			return this.totalPrice
+		},
+	})
+	paidAmount?: number
+
 	createdAt?: Date
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order)
 
 OrderSchema.plugin(mongooseLeanVirtuals)
+
 OrderSchema.virtual('variables').get(function () {
 	return {}
+})
+
+OrderSchema.path('paidAmount').validate(function (value) {
+	return this.totalPrice <= value
+})
+
+OrderSchema.virtual('excessCash').get(function () {
+	return this.paidAmount - this.totalPrice
 })

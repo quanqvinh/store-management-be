@@ -1,8 +1,4 @@
 import { Buyer, OrderType, StoreSatisfaction } from '@/constants'
-import {
-	DiscountType,
-	DiscountTypeSchema,
-} from '@/modules/coupon/schemas/discount-type.schema'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document, ObjectId, Types } from 'mongoose'
 
@@ -19,7 +15,6 @@ export class CouponInShort {
 	id: ObjectId
 	title: string
 	code: string
-	discount: DiscountType
 	discountAmount: number
 }
 
@@ -60,7 +55,6 @@ export class MemberOrder {
 			id: { type: Types.ObjectId, required: true },
 			title: { type: String, required: true },
 			code: { type: String, required: true },
-			discount: { type: DiscountTypeSchema, required: true },
 			discountAmount: { type: Number, required: true },
 		},
 		_id: false,

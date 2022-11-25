@@ -64,4 +64,10 @@ export class OrderController {
 	) {
 		return await this.orderService.updateStatus(employee.store, updateDto)
 	}
+
+	@Get('member')
+	@JwtAccessTokenGuard()
+	async getOrdersOfMember(@User() member: MemberAuth) {
+		return await this.orderService.getOrdersOfMember(member.id)
+	}
 }

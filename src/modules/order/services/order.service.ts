@@ -1,3 +1,4 @@
+import { OrderListByStatusDto } from './../dto/response/order-list-by-status.dto'
 import { MemberAppService } from './../../setting/services/member-app.service'
 import {
 	CannotUseCouponException,
@@ -134,7 +135,6 @@ export class OrderService {
 				id: coupon._id,
 				title: coupon.title,
 				code: coupon.code,
-				discount: coupon.discount,
 				discountAmount,
 			}
 		}
@@ -255,7 +255,7 @@ export class OrderService {
 		return pointPerUnit * (Math.floor(temp / unitStep) + 1)
 	}
 
-	async getOrdersOfStore(storeId: string) {
+	async getOrdersOfStore(storeId: string): Promise<OrderListByStatusDto[]> {
 		const orders = await this.orderModel
 			.aggregate([
 				{ $match: { 'store.id': new Types.ObjectId(storeId) } },
@@ -265,16 +265,27 @@ export class OrderService {
 						orders: { $push: '$$ROOT' },
 					},
 				},
+				{
+					$addFields: {
+						status: '$_id',
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						status: 1,
+						orders: 1,
+					},
+				},
 			])
 			.exec()
-		return orders
+		return orders as unknown as Array<OrderListByStatusDto>
 	}
 
 	async updateStatus(
 		storeId: string,
 		{ orderId, status }: UpdateOrderStatusDto
 	) {
-		// console.log(await this.orderModel)
 		const updateStatus = await this.orderModel
 			.updateOne(
 				{
@@ -287,7 +298,33 @@ export class OrderService {
 			)
 			.orFail(new NotFoundDataException('Data not change or order'))
 			.exec()
-		// console.log(updateStatus)
 		return !!updateStatus.modifiedCount
+	}
+
+	async getOrdersOfMember(memberId): Promise<OrderListByStatusDto[]> {
+		const orders = await this.orderModel
+			.aggregate([
+				{ $match: { 'member.id': new Types.ObjectId(memberId) } },
+				{
+					$group: {
+						_id: '$status',
+						orders: { $push: '$$ROOT' },
+					},
+				},
+				{
+					$addFields: {
+						status: '$_id',
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						status: 1,
+						orders: 1,
+					},
+				},
+			])
+			.exec()
+		return orders as unknown as Array<OrderListByStatusDto>
 	}
 }
