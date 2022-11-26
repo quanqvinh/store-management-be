@@ -1,3 +1,8 @@
+import { CreateOrderDto } from './dto/request/create-order.dto'
+import {
+	CreateOrderBySalespersonDto,
+	CreateOrderBySalespersonDtoSchema,
+} from './dto/request/create-order-by-salesperson.dto'
 import {
 	JwtAccessTokenGuard,
 	MemberAuth,
@@ -6,18 +11,26 @@ import {
 } from '@/common/decorators'
 import { Auth } from '@/common/decorators/auth.decorator'
 import { JoiValidatePine } from '@/common/pipes'
-import { EmployeeRole } from '@/constants'
-import { Body, Controller, Get, Patch, Post, Query } from '@nestjs/common'
+import { EmployeeRole, OrderType } from '@/constants'
+import {
+	Body,
+	Controller,
+	Get,
+	Param,
+	Patch,
+	Post,
+	Query,
+} from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import {
-	CreateMemberOrderDto,
-	CreateMemberOrderDtoSchema,
-} from './dto/request/create-member-order.dto'
-import {
-	UpdateOrderStatusDto,
-	UpdateOrderStatusDtoSchema,
-} from './dto/request/update-order-status.dto'
+	CreateOrderByMemberDto,
+	CreateOrderByMemberDtoSchema,
+} from './dto/request/create-order-by-member.dto'
 import { OrderService } from './services'
+import {
+	CheckCouponOnPremisesOrderDto,
+	CheckCouponOnPremisesOrderDtoSchema,
+} from './dto/request/check-coupon-on-premises-order.dto'
 
 @Controller('order')
 @ApiTags('order')
@@ -26,10 +39,10 @@ export class OrderController {
 
 	@Post('member')
 	@JwtAccessTokenGuard()
-	async createMemberOrder(
+	async createOrderByMember(
 		@User() member: MemberAuth,
-		@Body(new JoiValidatePine(CreateMemberOrderDtoSchema))
-		createMemberOrderDto: CreateMemberOrderDto
+		@Body(new JoiValidatePine(CreateOrderByMemberDtoSchema))
+		createMemberOrderDto: CreateOrderByMemberDto
 	) {
 		return await this.orderService.createMemberOrder(
 			member.id,
@@ -37,35 +50,82 @@ export class OrderController {
 		)
 	}
 
+	@Post('salesperson')
+	@Auth(EmployeeRole.SALESPERSON)
+	async createOrderBySalesperson(
+		@User() employee: EmployeeAuth,
+		@Body(new JoiValidatePine(CreateOrderBySalespersonDtoSchema))
+		createOrderBySalespersonDto: CreateOrderBySalespersonDto
+	) {
+		const createOrderDto: CreateOrderDto = {
+			storeId: employee.store,
+			items: createOrderBySalespersonDto.items,
+			payment: createOrderBySalespersonDto.payment,
+			paidAmount: createOrderBySalespersonDto.paidAmount,
+		}
+		if (!createOrderBySalespersonDto.memberId) {
+			return await this.orderService.createCustomerOrder(createOrderDto)
+		} else {
+			const createMemberOrderDto: CreateOrderByMemberDto = {
+				...createOrderDto,
+				type: OrderType.ON_PREMISES,
+				couponId: createOrderBySalespersonDto.couponId,
+			}
+			return await this.orderService.createMemberOrderInfo(
+				createOrderBySalespersonDto.memberId,
+				createMemberOrderDto
+			)
+		}
+	}
+
 	@Get('member/check-coupon')
 	@JwtAccessTokenGuard()
 	async checkCouponAfterUpdateCart(
 		@User() member: MemberAuth,
-		@Query(new JoiValidatePine(CreateMemberOrderDtoSchema))
-		checkCouponDto: CreateMemberOrderDto
+		@Query(new JoiValidatePine(CreateOrderByMemberDtoSchema))
+		checkCouponDto: CreateOrderByMemberDto
 	) {
 		return (
 			await this.orderService.createMemberOrderInfo(member.id, checkCouponDto)
 		).coupon
 	}
 
-	@Get('store')
+	@Post('salesperson/check-coupon')
+	@Auth(EmployeeRole.SALESPERSON)
+	async checkCouponBySalesperson(
+		@User() employee: EmployeeAuth,
+		@Body(new JoiValidatePine(CheckCouponOnPremisesOrderDtoSchema))
+		checkCouponDto: CheckCouponOnPremisesOrderDto
+	) {
+		const createMemberOrderDto: CreateOrderByMemberDto = {
+			...checkCouponDto,
+			storeId: employee.store,
+			type: OrderType.ON_PREMISES,
+		}
+		return (
+			await this.orderService.createMemberOrderInfo(
+				checkCouponDto.memberId,
+				createMemberOrderDto
+			)
+		).coupon
+	}
+
+	@Get('store/all')
 	@Auth(EmployeeRole.SALESPERSON)
 	async getOrdersOfStore(@User() employee: EmployeeAuth) {
 		return this.orderService.getOrdersOfStore(employee.store)
 	}
 
-	@Patch('update-status')
+	@Patch(':code/update-status')
 	@Auth(EmployeeRole.SALESPERSON)
 	async updateOrderStatus(
 		@User() employee: EmployeeAuth,
-		@Body(new JoiValidatePine(UpdateOrderStatusDtoSchema))
-		updateDto: UpdateOrderStatusDto
+		@Param('code') orderCode: string
 	) {
-		return await this.orderService.updateStatus(employee.store, updateDto)
+		return await this.orderService.updateStatus(employee.store, orderCode)
 	}
 
-	@Get('member')
+	@Get('member/all')
 	@JwtAccessTokenGuard()
 	async getOrdersOfMember(@User() member: MemberAuth) {
 		return await this.orderService.getOrdersOfMember(member.id)

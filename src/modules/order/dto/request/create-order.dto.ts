@@ -34,11 +34,7 @@ export const createOrderDtoSchemaObject = {
 		.min(1)
 		.required(),
 	payment: Joi.string().valid(...Object.values(PaymentType)),
-	paidAmount: Joi.number().when('payment', {
-		is: PaymentType.CASH,
-		then: Joi.required(),
-		otherwise: Joi.optional(),
-	}),
+	paidAmount: Joi.number().optional(),
 }
 
 export const CreateOrderDtoSchema = Joi.object<CreateOrderDto>(

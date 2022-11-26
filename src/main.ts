@@ -38,7 +38,10 @@ async function bootstrap() {
 	- Otherwise, the response type is T, the actual response is { data: T }
 	=== TOKEN 30 DAYS ===
 	19110499@student.hcmute.edu.vn
-	- Access token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MzcyMGI5MWIwMTY2NjIyYzE3NjlmZDAiLCJpYXQiOjE2Njg3MDAyNDEsImV4cCI6MTY3MDg1NDkxNiwic3ViIjoiYWNjZXNzIn0.Mz08I0MpwXkquzSzSxppS8Cii4VD54agNC3IkNRHKzI
+	- Access token - member: 
+	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MzcyMGI5MWIwMTY2NjIyYzE3NjlmZDAiLCJpYXQiOjE2Njg3MDAyNDEsImV4cCI6MTY3MDg1NDkxNiwic3ViIjoiYWNjZXNzIn0.Mz08I0MpwXkquzSzSxppS8Cii4VD54agNC3IkNRHKzI
+	- Access token - salesperson:
+	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MzdmODhkZDZkOGI2Yjg3ZDFhZmYwYzAiLCJyb2xlIjoic2FsZXNwZXJzb24iLCJzdG9yZSI6IjYzNjI5OThiZmI5MDJlZmQ4MTRlYTFkNyIsImlhdCI6MTY2OTQzNzc2MiwiZXhwIjoxNjcyMzMzMjAwLCJzdWIiOiJhY2Nlc3MifQ.4WfmVwQ6GiSnAgFAKmjF-FjCkKI5lCL5fyeXimBtuVA
 		`
 		)
 		.setVersion('1.0')

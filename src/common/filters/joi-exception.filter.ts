@@ -16,7 +16,10 @@ export class JoiExceptionFilter implements ExceptionFilter {
 
 		response.status(status).json({
 			statusCode: status,
-			message: exception.details.map(error => error.message),
+			message: exception.details.reduce(
+				(result, error) => result + error.message,
+				''
+			),
 			error: exception.name,
 			timestamp: new Date().toISOString(),
 		})

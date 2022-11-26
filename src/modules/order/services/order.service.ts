@@ -4,46 +4,57 @@ import {
 	CannotUseCouponException,
 	NotFoundDataException,
 } from '@/common/exceptions/http'
-import { Buyer, DatabaseConnectionName, OrderType } from '@/constants'
+import {
+	Buyer,
+	DatabaseConnectionName,
+	OrderStatus,
+	OrderType,
+} from '@/constants'
 import { Coupon } from '@/modules/coupon/schemas/coupon.schema'
 import { MemberService } from '@/modules/member/member.service'
 import { ProductService } from '@/modules/product/product.service'
 import { StoreService } from '@/modules/store/store.service'
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types } from 'mongoose'
-import { CreateMemberOrderDto } from '../dto/request/create-member-order.dto'
-import { CartItem } from '../dto/request/create-order.dto'
+import { CreateOrderByMemberDto } from '../dto/request/create-order-by-member.dto'
+import { CartItem, CreateOrderDto } from '../dto/request/create-order.dto'
 import {
+	CustomerOrderDocument,
 	MemberOrder,
 	MemberOrderDocument,
 	Order,
 	OrderDocument,
 	OrderItem,
+	OrderStatusItem,
 } from '../schemas'
-import { UpdateOrderStatusDto } from '../dto/request/update-order-status.dto'
+import { MemberRankService } from '@/modules/member-rank/member-rank.service'
 
 type ItemDictionary = Record<string, Omit<CartItem, 'itemId'>>
 
 @Injectable()
 export class OrderService {
 	constructor(
-		@InjectModel(Buyer.MEMBER, DatabaseConnectionName.DATA)
-		private readonly memberOrderModel: Model<MemberOrderDocument>,
 		@InjectModel(Order.name, DatabaseConnectionName.DATA)
 		private readonly orderModel: Model<OrderDocument>,
+		@InjectModel(Buyer.MEMBER, DatabaseConnectionName.DATA)
+		private readonly memberOrderModel: Model<MemberOrderDocument>,
+		@InjectModel(Buyer.CUSTOMER, DatabaseConnectionName.DATA)
+		private readonly customerOrderModel: Model<CustomerOrderDocument>,
 		private storeService: StoreService,
 		private productService: ProductService,
 		private memberService: MemberService,
-		private memberAppService: MemberAppService
+		private memberAppService: MemberAppService,
+		private memberRankService: MemberRankService
 	) {}
 
-	async createMemberOrder(memberId: string, dto: CreateMemberOrderDto) {
+	async createMemberOrder(memberId: string, dto: CreateOrderByMemberDto) {
 		const memberOrder = await this.createMemberOrderInfo(memberId, dto)
 		if (dto.couponId) {
 			const result = await Promise.all([
 				this.memberOrderModel.create(memberOrder),
-				this.memberService.deleteAppliedCoupon(memberId, dto.couponId),
+				// this.memberService.deleteAppliedCoupon(memberId, dto.couponId),
+				null,
 			])
 			return result[0]
 		} else {
@@ -51,10 +62,7 @@ export class OrderService {
 		}
 	}
 
-	async createMemberOrderInfo(
-		memberId: string,
-		dto: CreateMemberOrderDto
-	): Promise<MemberOrder> {
+	private async createOrderInfo(dto: CreateOrderDto, buyer: Buyer) {
 		const itemDictionary: ItemDictionary = dto.items.reduce((dic, item) => {
 			const { itemId, ...cartItemData } = item
 			Object.assign(dic, {
@@ -71,7 +79,7 @@ export class OrderService {
 			Object.keys(itemDictionary)
 		)
 		const baseOrder: Order = {
-			buyer: Buyer.MEMBER,
+			buyer: buyer,
 			store: {
 				id: store._id,
 				name: store.name,
@@ -101,6 +109,7 @@ export class OrderService {
 			}),
 			totalPrice: null,
 			payment: dto.payment,
+			paidAmount: dto.paidAmount ?? undefined,
 		}
 
 		let sumPrice = 0
@@ -116,8 +125,19 @@ export class OrderService {
 			sumPrice += sumPriceItem
 		})
 		baseOrder.totalPrice = sumPrice
+		return baseOrder
+	}
+
+	async createMemberOrderInfo(
+		memberId: string,
+		dto: CreateOrderByMemberDto
+	): Promise<MemberOrder> {
+		const baseOrder = await this.createOrderInfo(dto, Buyer.MEMBER)
 
 		const member = await this.memberService.findById(memberId)
+		const rank = await this.memberRankService.getOne({
+			id: member.memberInfo.rank.toString(),
+		})
 		const appliedCoupon = dto.couponId
 			? await this.memberService.checkCoupon(memberId, dto.couponId)
 			: undefined
@@ -141,14 +161,25 @@ export class OrderService {
 
 		const earnedPoint = await this.calculatePoint(baseOrder.totalPrice)
 
+		const { order: orderStatus } =
+			dto.type === OrderType.ON_PREMISES
+				? { order: undefined }
+				: await this.memberAppService.get('order')
+
 		return {
 			...baseOrder,
 			type: dto.type,
+			status: (orderStatus
+				? dto.type === OrderType.PICKUP
+					? orderStatus.pickupStatus
+					: orderStatus.deliveryStatus
+				: orderStatus) as OrderStatusItem[],
 			member: {
 				id: member._id,
 				name: member.fullName,
 				email: member.email,
 				mobile: member.mobile,
+				rankName: rank.name,
 			},
 			coupon: couponInfo,
 			earnedPoint,
@@ -222,12 +253,12 @@ export class OrderService {
 			const validItems = order.items
 				.filter(item => {
 					if (item.toppings && item.toppings.length > 0) return false
-					const inListProducts = !!coupon.discount.freeMin?.products.find(
+					const inListProducts = !!coupon.discount.freeMin?.products?.find(
 						productId => productId.toString() === item.productId.toString()
 					)
 					const isValidCategory =
 						item.categoryId.toString() ===
-						coupon.discount.freeMin?.category.toString()
+						coupon.discount.freeMin?.category?.toString()
 					return inListProducts || isValidCategory
 				})
 				.sort((a, b) => {
@@ -282,23 +313,25 @@ export class OrderService {
 		return orders as unknown as Array<OrderListByStatusDto>
 	}
 
-	async updateStatus(
-		storeId: string,
-		{ orderId, status }: UpdateOrderStatusDto
-	) {
-		const updateStatus = await this.orderModel
-			.updateOne(
-				{
-					_id: orderId,
-					'store.id': storeId,
-				},
-				{
-					status,
-				}
-			)
-			.orFail(new NotFoundDataException('Data not change or order'))
+	async updateStatus(storeId: string, orderCode: string) {
+		const order = await this.memberOrderModel
+			.findOne({ code: orderCode, 'store.id': storeId })
+			.orFail(new NotFoundDataException('Order'))
+			// .select('status')
 			.exec()
-		return !!updateStatus.modifiedCount
+
+		const nextStatusIndex = order.status.findIndex(
+			status => !status.checked && status.status !== OrderStatus.CANCELLED
+		)
+		if (nextStatusIndex < 0)
+			throw new BadRequestException("Cannot update order's status")
+
+		order.status[nextStatusIndex].checked = true
+		order.status[nextStatusIndex].time = new Date(Date.now())
+
+		const orderSaved = await order.save()
+
+		return orderSaved === order
 	}
 
 	async getOrdersOfMember(memberId): Promise<OrderListByStatusDto[]> {
@@ -326,5 +359,12 @@ export class OrderService {
 			])
 			.exec()
 		return orders as unknown as Array<OrderListByStatusDto>
+	}
+
+	async createCustomerOrder(dto: CreateOrderDto) {
+		const order = await this.createOrderInfo(dto, Buyer.CUSTOMER)
+		return await this.customerOrderModel.create({
+			...order,
+		})
 	}
 }

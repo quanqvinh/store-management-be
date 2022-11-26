@@ -1,3 +1,4 @@
+import { OrderStatus } from '@/constants'
 import { MemberAppSetting } from './..'
 
 export const memberAppDefault: Partial<MemberAppSetting> = {
@@ -24,5 +25,51 @@ export const memberAppDefault: Partial<MemberAppSetting> = {
 		startMilestone: 5000,
 		pointPerUnit: 6,
 		unitStep: 10000,
+	},
+	order: {
+		pickupStatus: [
+			{
+				status: OrderStatus.PENDING,
+				name: 'Chờ xác nhận',
+			},
+			{
+				status: OrderStatus.PROCESSING,
+				name: 'Đơn đang xử lý',
+			},
+			{
+				status: OrderStatus.DELIVERY,
+				name: 'Giao hàng',
+			},
+			{
+				status: OrderStatus.DONE,
+				name: 'Hoàn tất',
+			},
+			{
+				status: OrderStatus.CANCELLED,
+				name: 'Đã hủy đơn',
+			},
+		],
+		deliveryStatus: [
+			{
+				status: OrderStatus.PENDING,
+				name: 'Chờ xác nhận',
+			},
+			{
+				status: OrderStatus.PROCESSING,
+				name: 'Đơn đang xử lý',
+			},
+			{
+				status: OrderStatus.DELIVERY,
+				name: 'Giao hàng',
+			},
+			{
+				status: OrderStatus.DONE,
+				name: 'Hoàn tất',
+			},
+			{
+				status: OrderStatus.CANCELLED,
+				name: 'Đã hủy đơn',
+			},
+		],
 	},
 }

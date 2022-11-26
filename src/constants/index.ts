@@ -49,13 +49,14 @@ export enum CouponSource {
 }
 
 export enum OrderType {
-	ON_PREMISE = 'on_premise',
+	ON_PREMISES = 'on_premises',
 	PICKUP = 'pickup',
 	DELIVERY = 'delivery',
 }
 
 export enum PaymentType {
 	CASH = 'cash',
+	MOMO = 'momo',
 }
 
 export enum StoreSatisfaction {
@@ -100,7 +101,9 @@ export enum CategoryType {
 }
 
 export enum OrderStatus {
+	PENDING = 'pending',
 	PROCESSING = 'processing',
+	DELIVERY = 'delivery',
 	CANCELLED = 'cancelled',
 	DONE = 'done',
 }
