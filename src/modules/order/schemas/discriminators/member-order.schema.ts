@@ -8,11 +8,12 @@ import { Document, ObjectId, Types } from 'mongoose'
 
 export type MemberOrderDocument = MemberOrder & Document
 
-class MemberInShort {
+export class MemberInShort {
 	id: ObjectId
 	name: string
 	email: string
 	mobile: string
+	rankName: string
 }
 
 export class CouponInShort {

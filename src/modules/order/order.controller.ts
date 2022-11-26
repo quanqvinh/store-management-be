@@ -27,6 +27,10 @@ import {
 	CreateOrderByMemberDtoSchema,
 } from './dto/request/create-order-by-member.dto'
 import { OrderService } from './services'
+import {
+	CheckCouponOnPremisesOrderDto,
+	CheckCouponOnPremisesOrderDtoSchema,
+} from './dto/request/check-coupon-on-premises-order.dto'
 
 @Controller('order')
 @ApiTags('order')
@@ -83,6 +87,26 @@ export class OrderController {
 	) {
 		return (
 			await this.orderService.createMemberOrderInfo(member.id, checkCouponDto)
+		).coupon
+	}
+
+	@Post('salesperson/check-coupon')
+	@Auth(EmployeeRole.SALESPERSON)
+	async checkCouponBySalesperson(
+		@User() employee: EmployeeAuth,
+		@Body(new JoiValidatePine(CheckCouponOnPremisesOrderDtoSchema))
+		checkCouponDto: CheckCouponOnPremisesOrderDto
+	) {
+		const createMemberOrderDto: CreateOrderByMemberDto = {
+			...checkCouponDto,
+			storeId: employee.store,
+			type: OrderType.ON_PREMISES,
+		}
+		return (
+			await this.orderService.createMemberOrderInfo(
+				checkCouponDto.memberId,
+				createMemberOrderDto
+			)
 		).coupon
 	}
 

@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common'
+import { Controller, Get, Param } from '@nestjs/common'
 import { JwtAccessTokenGuard, MemberAuth, User } from '@/common/decorators'
 import { MemberAppService } from '../setting/services/member-app.service'
 import { MemberService } from './member.service'
@@ -8,6 +8,8 @@ import { MemberRank } from '../member-rank/schemas/member-rank.schema'
 import { ApiTags } from '@nestjs/swagger'
 import { HomeDataDto } from './dto/response/home-data.dto'
 import { SkipThrottle } from '@nestjs/throttler'
+import { Auth } from '@/common/decorators/auth.decorator'
+import { EmployeeRole } from '@/constants'
 
 @Controller('member')
 @ApiTags('member')
@@ -60,5 +62,12 @@ export class MemberController {
 	@JwtAccessTokenGuard()
 	async getMemberRankInfo(@User() member: MemberAuth) {
 		return await this.memberService.getMemberInfo(member.id)
+	}
+
+	@Get(':code/short')
+	@SkipThrottle()
+	@Auth(EmployeeRole.SALESPERSON)
+	async getMemberShortInfo(@Param('code') memberCode: string) {
+		return await this.memberService.getShortInfo({ code: memberCode })
 	}
 }

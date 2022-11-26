@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types } from 'mongoose'
 import { Member, MemberDocument, MemberVirtual } from './schemas/member.schema'
@@ -15,6 +15,7 @@ import { MemberRankService } from '../member-rank/member-rank.service'
 import { PopulatedMemberInfo } from './schemas/populate/member.populate'
 import { PopulatedAppliedCoupon } from '../applied-coupon/schemas/populate/applied-coupon.populate'
 import { MemberAppService } from '../setting/services/member-app.service'
+import { MemberInShort } from '../order/schemas'
 
 @Injectable()
 export class MemberService {
@@ -180,6 +181,30 @@ export class MemberService {
 			},
 			currentRank,
 			nextRank,
+		}
+	}
+
+	async getShortInfo({
+		id,
+		code,
+	}: {
+		id?: string
+		code?: string
+	}): Promise<MemberInShort> {
+		if (!id && !code)
+			throw new BadRequestException('Member ID or code is required')
+		const member = await this.memberModel
+			.findOne({ $or: [{ _id: id }, { code }] })
+			.orFail(new NotFoundDataException('Member'))
+			.populate<{ memberInfo: PopulatedMemberInfo }>('memberInfo.rank')
+			.lean({ virtuals: true })
+			.exec()
+		return {
+			id: member._id,
+			name: member.fullName,
+			email: member.email,
+			mobile: member.mobile,
+			rankName: member.memberInfo.rank.name,
 		}
 	}
 }

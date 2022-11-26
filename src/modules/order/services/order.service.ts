@@ -28,6 +28,7 @@ import {
 	OrderItem,
 	OrderStatusItem,
 } from '../schemas'
+import { MemberRankService } from '@/modules/member-rank/member-rank.service'
 
 type ItemDictionary = Record<string, Omit<CartItem, 'itemId'>>
 
@@ -43,7 +44,8 @@ export class OrderService {
 		private storeService: StoreService,
 		private productService: ProductService,
 		private memberService: MemberService,
-		private memberAppService: MemberAppService
+		private memberAppService: MemberAppService,
+		private memberRankService: MemberRankService
 	) {}
 
 	async createMemberOrder(memberId: string, dto: CreateOrderByMemberDto) {
@@ -133,6 +135,9 @@ export class OrderService {
 		const baseOrder = await this.createOrderInfo(dto, Buyer.MEMBER)
 
 		const member = await this.memberService.findById(memberId)
+		const rank = await this.memberRankService.getOne({
+			id: member.memberInfo.rank.toString(),
+		})
 		const appliedCoupon = dto.couponId
 			? await this.memberService.checkCoupon(memberId, dto.couponId)
 			: undefined
@@ -174,6 +179,7 @@ export class OrderService {
 				name: member.fullName,
 				email: member.email,
 				mobile: member.mobile,
+				rankName: rank.name,
 			},
 			coupon: couponInfo,
 			earnedPoint,
