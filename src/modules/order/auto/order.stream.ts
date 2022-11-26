@@ -30,15 +30,39 @@ export class OrderStream {
 			if (data.operationType === 'update') {
 				const updateStream = data as ChangeStreamUpdateDocument<OrderDocument>
 				const updatedFields = updateStream.updateDescription.updatedFields
-				if (updatedFields?.status) {
-					if (updatedFields.status === OrderStatus.DONE)
+				if (this.isUpdateStatus(updatedFields)) {
+					if (
+						await this.isDoneOrder(updatedFields, updateStream.documentKey._id)
+					) {
 						await this.accumulatePointMember(updateStream.documentKey._id)
+					}
 				}
 			}
 		})
 	}
 
-	async accumulatePointMember(orderId: ObjectId) {
+	private isUpdateStatus(updatedFields: Record<string, any>) {
+		return Object.keys(updatedFields).some(fieldName => {
+			return fieldName.match(new RegExp(/^status.[0-9]+.checked$/))
+		})
+	}
+
+	private async isDoneOrder(status: Record<string, any>, orderId: ObjectId) {
+		const { status: orderStatus } = await this.memberOrderModel
+			.findById(orderId)
+			.select('status')
+			.lean()
+			.exec()
+		const statusIndex = +Object.keys(status)
+			.find(key => key.match(new RegExp(/^status.[0-9]+.checked$/)))
+			.split('.')[1]
+		return (
+			orderStatus[statusIndex].status === OrderStatus.DONE &&
+			orderStatus[statusIndex].checked
+		)
+	}
+
+	private async accumulatePointMember(orderId: ObjectId) {
 		const order = await this.orderModel
 			.findById(orderId)
 			.select('buyer member.id totalPrice earnedPoint')

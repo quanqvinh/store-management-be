@@ -1,6 +1,7 @@
+import { generateUniqueNumber } from '@/utils'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { ObjectId, Types, Document } from 'mongoose'
-import { Buyer, OrderStatus, PaymentType } from '@/constants'
+import { Buyer, OrderType, PaymentType } from '@/constants'
 import { OrderItem, OrderItemSchema } from './order-item.schema'
 import mongooseLeanVirtuals from 'mongoose-lean-virtuals'
 
@@ -19,6 +20,22 @@ export class StoreInShort {
 })
 export class Order {
 	_id?: ObjectId
+
+	@Prop({
+		type: String,
+		unique: true,
+		default: function () {
+			return (
+				'O' +
+				((this.type as string) ?? OrderType.ON_PREMISES)
+					.split('_')
+					.reduce((res, word) => res + word[0], '')
+					.toUpperCase() +
+				generateUniqueNumber()
+			)
+		},
+	})
+	code?: string
 
 	@Prop({ type: String, enum: Object.values(Buyer), required: true })
 	buyer: Buyer
@@ -39,13 +56,6 @@ export class Order {
 
 	@Prop({ type: Number, min: 0, required: true })
 	totalPrice: number
-
-	@Prop({
-		type: String,
-		enum: Object.values(OrderStatus),
-		default: OrderStatus.PROCESSING,
-	})
-	status?: OrderStatus
 
 	@Prop({
 		type: String,
