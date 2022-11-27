@@ -29,7 +29,7 @@ export const DailyTimeSchema = {
 
 export class Address {
 	street: string
-	ward: string
+	ward?: string
 	district: string
 	city: string
 	country: string

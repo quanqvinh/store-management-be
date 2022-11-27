@@ -12,8 +12,8 @@ import { ConfigService } from '@nestjs/config'
 import { DatabaseConnectionName } from '@/constants'
 import { NotImageFileException } from '@/common/exceptions/http'
 
-const CHUNK_SIZE = 512 * 1024
-const FILE_SIZE_MAX = 2 * 1024 * 1024
+const CHUNK_SIZE = 0.5 * 1024 * 1024
+const FILE_SIZE_MAX = 4 * 1024 * 1024
 
 @Injectable()
 export class GridFsConfigService implements MulterOptionsFactory {
