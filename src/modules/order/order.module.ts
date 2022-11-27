@@ -10,6 +10,7 @@ import { ProductModule } from '../product/product.module'
 import { MemberModule } from '../member/member.module'
 import { SettingModule } from '../setting/setting.module'
 import { OrderStream } from './auto/order.stream'
+import { MemberRankModule } from '../member-rank/member-rank.module'
 
 @Module({
 	imports: [
@@ -30,6 +31,7 @@ import { OrderStream } from './auto/order.stream'
 		ProductModule,
 		MemberModule,
 		SettingModule,
+		MemberRankModule,
 	],
 	controllers: [OrderController],
 	providers: [OrderService, OrderStream],

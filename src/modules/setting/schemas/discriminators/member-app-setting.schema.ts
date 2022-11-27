@@ -1,9 +1,25 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document } from 'mongoose'
-import { SettingType } from '@/constants'
+import { OrderStatus, SettingType } from '@/constants'
 import { memberAppDefault } from '../default/member-app.default'
 
 export type MemberAppSettingDocument = Document & MemberAppSetting
+
+export class BookingOrderStatus {
+	status: OrderStatus
+	name: string
+	description?: string
+}
+
+export const bookingOrderStatusSchema = {
+	status: {
+		type: String,
+		enum: Object.values(OrderStatus),
+		required: true,
+	},
+	name: { type: String, required: true },
+	description: { type: String },
+}
 
 @Schema({ versionKey: false })
 export class MemberAppSetting {
@@ -81,6 +97,25 @@ export class MemberAppSetting {
 			color: string
 			background: string
 		}
+	}
+
+	@Prop({
+		type: {
+			pickupStatus: {
+				type: [bookingOrderStatusSchema],
+				_id: false,
+			},
+			deliveryStatus: {
+				type: [bookingOrderStatusSchema],
+				_id: false,
+			},
+		},
+		_id: false,
+		default: memberAppDefault.order,
+	})
+	order: {
+		deliveryStatus: Array<BookingOrderStatus>
+		pickupStatus: Array<BookingOrderStatus>
 	}
 }
 

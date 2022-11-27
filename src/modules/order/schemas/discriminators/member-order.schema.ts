@@ -1,14 +1,19 @@
 import { Buyer, OrderType, StoreSatisfaction } from '@/constants'
+import {
+	BookingOrderStatus,
+	bookingOrderStatusSchema,
+} from '@/modules/setting/schemas'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document, ObjectId, Types } from 'mongoose'
 
 export type MemberOrderDocument = MemberOrder & Document
 
-class MemberInShort {
+export class MemberInShort {
 	id: ObjectId
 	name: string
 	email: string
 	mobile: string
+	rankName: string
 }
 
 export class CouponInShort {
@@ -25,6 +30,17 @@ class OrderReview {
 	likeItems: Array<number>
 }
 
+export class OrderStatusItem extends BookingOrderStatus {
+	time?: Date
+	checked: boolean
+}
+
+const orderStatusItemSchema = {
+	...bookingOrderStatusSchema,
+	time: { type: Date, default: null },
+	checked: { type: Boolean, default: false },
+}
+
 @Schema({ versionKey: false })
 export class MemberOrder {
 	buyer: Buyer
@@ -36,8 +52,8 @@ export class MemberOrder {
 	})
 	type: OrderType
 
-	deliveryAddress?: any
-	timer?: any
+	@Prop({ type: [orderStatusItemSchema], _id: false })
+	status?: Array<OrderStatusItem>
 
 	@Prop({
 		type: {

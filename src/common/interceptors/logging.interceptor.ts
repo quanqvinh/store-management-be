@@ -16,8 +16,6 @@ export class LoggingInterceptor implements NestInterceptor {
 		const now = Date.now()
 		return next
 			.handle()
-			.pipe(
-				tap(() => console.log(`\nController executed in ${Date.now() - now}ms`))
-			)
+			.pipe(tap(() => console.log(`\nExecuted in ${Date.now() - now}ms`)))
 	}
 }
