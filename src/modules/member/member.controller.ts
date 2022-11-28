@@ -21,6 +21,13 @@ export class MemberController {
 		private memberRankService: MemberRankService
 	) {}
 
+	@Get('list')
+	@SkipThrottle()
+	@Auth(EmployeeRole.SALESPERSON, EmployeeRole.ADMIN)
+	async getListMember() {
+		return await this.memberService.findAll()
+	}
+
 	@Get('home')
 	@SkipThrottle()
 	@JwtAccessTokenGuard()

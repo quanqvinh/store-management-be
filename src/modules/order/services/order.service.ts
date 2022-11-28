@@ -29,6 +29,7 @@ import {
 	OrderStatusItem,
 } from '../schemas'
 import { MemberRankService } from '@/modules/member-rank/member-rank.service'
+import { memberAppDefault } from '@/modules/setting/schemas/default/member-app.default'
 
 type ItemDictionary = Record<string, Omit<CartItem, 'itemId'>>
 
@@ -161,19 +162,21 @@ export class OrderService {
 
 		const earnedPoint = await this.calculatePoint(baseOrder.totalPrice)
 
-		const { order: orderStatus } =
+		let { order: orderStatus } =
 			dto.type === OrderType.ON_PREMISES
 				? { order: undefined }
 				: await this.memberAppService.get('order')
 
+		if (orderStatus) {
+			orderStatus = memberAppDefault.order
+		}
+
 		return {
 			...baseOrder,
 			type: dto.type,
-			status: (orderStatus
-				? dto.type === OrderType.PICKUP
-					? orderStatus.pickupStatus
-					: orderStatus.deliveryStatus
-				: orderStatus) as OrderStatusItem[],
+			status: (dto.type === OrderType.PICKUP
+				? orderStatus.pickupStatus
+				: orderStatus.deliveryStatus) as OrderStatusItem[],
 			member: {
 				id: member._id,
 				name: member.fullName,
