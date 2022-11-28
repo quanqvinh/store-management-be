@@ -162,21 +162,27 @@ export class OrderService {
 
 		const earnedPoint = await this.calculatePoint(baseOrder.totalPrice)
 
-		let { order: orderStatus } =
+		let { order: orderStatusData } =
 			dto.type === OrderType.ON_PREMISES
 				? { order: undefined }
 				: await this.memberAppService.get('order')
 
-		if (orderStatus) {
-			orderStatus = memberAppDefault.order
+		if (orderStatusData) {
+			orderStatusData = memberAppDefault.order
 		}
+
+		const orderStatus = (
+			dto.type === OrderType.PICKUP
+				? orderStatusData.pickupStatus
+				: orderStatusData.deliveryStatus
+		) as OrderStatusItem[]
+		orderStatus[0].checked = true
+		orderStatus[0].time = new Date(Date.now())
 
 		return {
 			...baseOrder,
 			type: dto.type,
-			status: (dto.type === OrderType.PICKUP
-				? orderStatus.pickupStatus
-				: orderStatus.deliveryStatus) as OrderStatusItem[],
+			status: orderStatus,
 			member: {
 				id: member._id,
 				name: member.fullName,
