@@ -109,9 +109,9 @@ export enum OrderStatus {
 }
 
 export enum Size {
-	SMALL,
-	MEDIUM,
-	LARGE,
+	SMALL = 0,
+	MEDIUM = 1,
+	LARGE = 2,
 }
 
 export enum Buyer {

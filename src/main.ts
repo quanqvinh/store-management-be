@@ -37,10 +37,12 @@ async function bootstrap() {
 	- If response data type is boolean, the actual response is { success: boolean }
 	- Otherwise, the response type is T, the actual response is { data: T }
 	=== TOKEN 30 DAYS ===
-	19110499@student.hcmute.edu.vn
-	- Access token - member: 
+	
+	- 19110499@student.hcmute.edu.vn (member) - Access token: 
 	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MzcyMGI5MWIwMTY2NjIyYzE3NjlmZDAiLCJpYXQiOjE2Njg3MDAyNDEsImV4cCI6MTY3MDg1NDkxNiwic3ViIjoiYWNjZXNzIn0.Mz08I0MpwXkquzSzSxppS8Cii4VD54agNC3IkNRHKzI
-	- Access token - salesperson:
+	- phantrungtin01@gmail.com (member) - Access token:
+	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MzcyNWE0ZmI1YmZjNDQ4YmM5MTkxMzciLCJpYXQiOjE2Njg3MDAyNDEsImV4cCI6MTY3MDg1NDkxNiwic3ViIjoiYWNjZXNzIn0.Xa0sL5BM0_pFcPB9QSf8rns82JaN8ygvJLsawswxIX8
+	- salesman01 (employee) - Access token:
 	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MzdmODhkZDZkOGI2Yjg3ZDFhZmYwYzAiLCJyb2xlIjoic2FsZXNwZXJzb24iLCJzdG9yZSI6IjYzNjI5OThiZmI5MDJlZmQ4MTRlYTFkNyIsImlhdCI6MTY2OTQzNzc2MiwiZXhwIjoxNjcyMzMzMjAwLCJzdWIiOiJhY2Nlc3MifQ.4WfmVwQ6GiSnAgFAKmjF-FjCkKI5lCL5fyeXimBtuVA
 		`
 		)
