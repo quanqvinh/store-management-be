@@ -16,6 +16,7 @@ import { PopulatedMemberInfo } from './schemas/populate/member.populate'
 import { PopulatedAppliedCoupon } from '../applied-coupon/schemas/populate/applied-coupon.populate'
 import { MemberAppService } from '../setting/services/member-app.service'
 import { MemberInShort } from '../order/schemas'
+import { PopulatedMemberStaffView } from './schemas/populate/member.populate'
 
 @Injectable()
 export class MemberService {
@@ -26,8 +27,13 @@ export class MemberService {
 		private memberAppService: MemberAppService
 	) {}
 
-	async findAll(): Promise<Member[]> {
-		return await this.memberModel.find({ role: Member.name }).lean().exec()
+	async findAll(): Promise<Array<PopulatedMemberStaffView>> {
+		return await this.memberModel
+			.find({ role: Member.name })
+			.populate<{ memberInfo: PopulatedMemberInfo }>('memberInfo.rank')
+			.select(['-auth', '-deleted', '-favorite', '-coupons', '-notifications'])
+			.lean()
+			.exec()
 	}
 
 	async findById(id: string): Promise<Member & MemberVirtual> {

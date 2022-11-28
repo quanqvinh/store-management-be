@@ -19,6 +19,9 @@ import { ApiConsumes, ApiTags } from '@nestjs/swagger'
 import { IdAndSlugValidatePine } from '@/common/pipes/id-and-slug-validate.pipe'
 import { checkObjectId } from '@/utils'
 import { SkipThrottle } from '@nestjs/throttler'
+import { Auth } from '@/common/decorators/auth.decorator'
+import { EmployeeRole } from '@/constants'
+import { EmployeeAuth, User } from '@/common/decorators'
 
 @Controller('product')
 @ApiTags('product')
@@ -29,6 +32,14 @@ export class ProductController {
 	@SkipThrottle()
 	async getAll() {
 		return await this.productService.getAllOfStoreInMemberApp({})
+	}
+
+	@Get('category/store')
+	@Auth(EmployeeRole.SALESPERSON)
+	async getAllOfStoreByJwt(@User() employee: EmployeeAuth) {
+		return await this.productService.getAllOfStoreInMemberApp({
+			id: employee.store,
+		})
 	}
 
 	@Get('category/:storeId')

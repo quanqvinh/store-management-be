@@ -20,6 +20,7 @@ import {
 } from '@/modules/notification/schemas/notification.schema'
 import mongooseDelete from 'mongoose-delete'
 import mongooseLeanVirtuals from 'mongoose-lean-virtuals'
+import { OmitType } from '@nestjs/swagger'
 
 export type MemberVirtual = {
 	fullName: string

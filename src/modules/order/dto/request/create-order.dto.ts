@@ -1,9 +1,11 @@
 import { objectIdPattern } from '@/common/validators'
 import { PaymentType, Size } from '@/constants'
+import { ApiProperty } from '@nestjs/swagger'
 import * as Joi from 'joi'
 
 export class CartItem {
 	itemId: string
+	@ApiProperty({ type: 'number' })
 	size?: Size
 	toppings?: Array<string>
 	amount: number
