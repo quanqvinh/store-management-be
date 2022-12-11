@@ -5,7 +5,7 @@ import { mongooseLeanVirtuals } from 'mongoose-lean-virtuals'
 import slugGenerator from 'mongoose-slug-generator'
 import mongooseDelete from 'mongoose-delete'
 
-export type ProductDocument = Product & Document
+export type ProductDocument = ProductWithVirtuals & Document
 
 @Schema({ versionKey: false, timestamps: true })
 export class Product {
@@ -50,6 +50,9 @@ export class Product {
 	createdAt: Date
 	updatedAt: Date
 }
+export class ProductWithVirtuals extends Product {
+	mainImage: string
+}
 
 export const ProductSchema = SchemaFactory.createForClass(Product)
 
@@ -58,5 +61,5 @@ ProductSchema.plugin(mongooseLeanVirtuals)
 ProductSchema.plugin(mongooseDelete)
 
 ProductSchema.virtual('mainImage').get(function () {
-	return this.images.length > 0 ? this.images[0] : null
+	return this.images?.length > 0 ? this.images[0] : null
 })

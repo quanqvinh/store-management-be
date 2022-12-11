@@ -24,6 +24,8 @@ export class StoreService {
 			.lean({ virtuals: true })
 	}
 
+	// async getAllForAdmin(): Promise<
+
 	async getUnavailableProductsOfStore({
 		id,
 		slug,

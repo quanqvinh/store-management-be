@@ -6,6 +6,7 @@ import {
 	UploadedFiles,
 	UseInterceptors,
 	Param,
+	Query,
 } from '@nestjs/common'
 import { ProductService } from './product.service'
 import { FileFieldsInterceptor } from '@nestjs/platform-express'
@@ -22,6 +23,10 @@ import { SkipThrottle } from '@nestjs/throttler'
 import { Auth } from '@/common/decorators/auth.decorator'
 import { EmployeeRole } from '@/constants'
 import { EmployeeAuth, User } from '@/common/decorators'
+import {
+	GetProductListAdminFilterDto,
+	GetProductListAdminFilterDtoSchema,
+} from './dto/request/get-product-list-admin-filter.dto'
 
 @Controller('product')
 @ApiTags('product')
@@ -69,5 +74,15 @@ export class ProductController {
 			createProductDto,
 			images?.map(image => image.id)
 		)
+	}
+
+	@Get('admin/list')
+	@SkipThrottle()
+	// @Auth(EmployeeRole.ADMIN)
+	async getProductListForAdminApp(
+		@Query(new JoiValidatePine(GetProductListAdminFilterDtoSchema))
+		query: GetProductListAdminFilterDto
+	) {
+		return await this.productService.getListForAdminApp(query)
 	}
 }

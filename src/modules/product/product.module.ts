@@ -9,11 +9,15 @@ import { PortalMulterModule } from '../file/file.module'
 import { CategoryModule } from '../category/category.module'
 import { SettingModule } from '../setting/setting.module'
 import { StoreModule } from '../store/store.module'
+import { Order, OrderSchema } from '../order/schemas'
 
 @Module({
 	imports: [
 		MongooseModule.forFeature(
-			[{ name: Product.name, schema: ProductSchema }],
+			[
+				{ name: Product.name, schema: ProductSchema },
+				{ name: Order.name, schema: OrderSchema },
+			],
 			DatabaseConnectionName.DATA
 		),
 		CategoryModule,
