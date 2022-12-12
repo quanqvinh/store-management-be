@@ -7,7 +7,6 @@ import { DatabaseConnectionName } from '@/constants'
 import { Category, CategoryDocument } from '../category/schemas/category.schema'
 import { CategoryService } from '../category/category.service'
 import { MemberAppService } from '../setting/services/member-app.service'
-// import { ProductWithCategoryDto } from './dto/response/product-with-category.dto'
 import { StoreService } from '../store/store.service'
 import {
 	CustomProduct,
@@ -19,6 +18,13 @@ import {
 } from './dto/response/product-admin-app.dto'
 import { Order } from '../order/schemas'
 import { GetProductListAdminFilterDto } from './dto/request/get-product-list-admin-filter.dto'
+import { UpdateProductInfoDto } from './dto/request/update-product-info.dto'
+import { Option } from './schemas/option.schema'
+import {
+	NotFoundDataException,
+	NotModifiedDataException,
+} from '@/common/exceptions/http'
+import { FileService } from '../file/services/file.service'
 
 @Injectable()
 export class ProductService {
@@ -31,7 +37,8 @@ export class ProductService {
 		private readonly orderModel: Model<CategoryDocument>,
 		private categoryService: CategoryService,
 		private memberAppService: MemberAppService,
-		private storeService: StoreService
+		private storeService: StoreService,
+		private fileService: FileService
 	) {}
 
 	async create(
@@ -305,5 +312,55 @@ export class ProductService {
 			}),
 		}))
 		return res
+	}
+
+	async updateProductInfo(productId: string, dto: UpdateProductInfoDto) {
+		const options: Option = {
+			size: dto.size,
+			topping: dto.topping,
+		}
+		delete dto['size']
+		delete dto['topping']
+		const updateStatus = await this.productModel
+			.updateOne(
+				{ _id: productId },
+				{
+					...dto,
+					...(options.size ? { 'options.size': options.size } : {}),
+					...(options.topping ? { 'options.topping': options.topping } : {}),
+				}
+			)
+			.orFail(new NotModifiedDataException())
+			.exec()
+		return updateStatus.modifiedCount > 0
+	}
+
+	async updateProductImage(
+		productId: string,
+		newImages: Array<string>,
+		deletedImages: Array<string>
+	) {
+		const product = await this.productModel
+			.findById(productId)
+			.orFail(new NotFoundDataException('product'))
+			.select('images')
+			.lean()
+			.exec()
+		deletedImages = deletedImages.filter(image =>
+			product.images.includes(image)
+		)
+		const images = product.images
+			.filter(image => !deletedImages.includes(image))
+			.concat(newImages)
+		const [deleteImageStatus, updateStatus] = await Promise.all([
+			this.fileService.deleteMany(deletedImages),
+			this.productModel.updateOne(
+				{ _id: productId },
+				{
+					images,
+				}
+			),
+		])
+		return deleteImageStatus && updateStatus.modifiedCount === 1
 	}
 }

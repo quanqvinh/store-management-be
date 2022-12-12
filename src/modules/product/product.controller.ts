@@ -1,4 +1,8 @@
 import {
+	UpdateProductImageDto,
+	UpdateProductImageDtoSchema,
+} from './dto/request/update-product-image.dto'
+import {
 	Body,
 	Controller,
 	Get,
@@ -7,9 +11,13 @@ import {
 	UseInterceptors,
 	Param,
 	Query,
+	Patch,
 } from '@nestjs/common'
 import { ProductService } from './product.service'
-import { FileFieldsInterceptor } from '@nestjs/platform-express'
+import {
+	FileFieldsInterceptor,
+	FilesInterceptor,
+} from '@nestjs/platform-express'
 import { JoiValidatePine } from '@/common/pipes'
 import {
 	CreateProductDto,
@@ -27,6 +35,10 @@ import {
 	GetProductListAdminFilterDto,
 	GetProductListAdminFilterDtoSchema,
 } from './dto/request/get-product-list-admin-filter.dto'
+import {
+	UpdateProductInfoDto,
+	UpdateProductInfoDtoSchema,
+} from './dto/request/update-product-info.dto'
 
 @Controller('product')
 @ApiTags('product')
@@ -84,5 +96,36 @@ export class ProductController {
 		query: GetProductListAdminFilterDto
 	) {
 		return await this.productService.getListForAdminApp(query)
+	}
+
+	@Patch(':id/update-info')
+	// @Auth(EmployeeRole.ADMIN)
+	async updateProductInfo(
+		@Param('id') productId: string,
+		@Body(new JoiValidatePine(UpdateProductInfoDtoSchema))
+		updateProductInfoDto: UpdateProductInfoDto
+	) {
+		return await this.productService.updateProductInfo(
+			productId,
+			updateProductInfoDto
+		)
+	}
+
+	@Post(':id/update-image')
+	// @Auth(EmployeeRole.ADMIN)
+	@UseInterceptors(FilesInterceptor('newImages'))
+	@ApiConsumes('multipart/form-data')
+	async updateProductImage(
+		@Param('id') productId: string,
+		@UploadedFiles() newImages: Array<File>,
+		@Body(new JoiValidatePine(UpdateProductImageDtoSchema))
+		body: UpdateProductImageDto
+	) {
+		const newImageIds = newImages.map(file => '' + file.id.toString())
+		return await this.productService.updateProductImage(
+			productId,
+			newImageIds,
+			body.deletedImages
+		)
 	}
 }

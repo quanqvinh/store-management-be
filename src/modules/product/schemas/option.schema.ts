@@ -1,8 +1,14 @@
 import { Size } from '@/constants'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { ApiProperty } from '@nestjs/swagger'
 import slugGenerator from 'mongoose-slug-generator'
 
 export class SizeOption {
+	@ApiProperty({
+		type: 'number',
+		description: '0 is SMALL, 1 is MEDIUM,  2 is LARGE',
+		example: 0,
+	})
 	size: Size
 	cost: number
 }

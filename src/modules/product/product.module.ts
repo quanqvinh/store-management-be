@@ -5,7 +5,7 @@ import { ProductController } from './product.controller'
 import { ProductService } from './product.service'
 import { ConfigModule } from '@nestjs/config'
 import { DatabaseConnectionName } from '@/constants'
-import { PortalMulterModule } from '../file/file.module'
+import { FileModule, PortalMulterModule } from '../file/file.module'
 import { CategoryModule } from '../category/category.module'
 import { SettingModule } from '../setting/setting.module'
 import { StoreModule } from '../store/store.module'
@@ -24,6 +24,7 @@ import { Order, OrderSchema } from '../order/schemas'
 		ConfigModule,
 		SettingModule,
 		StoreModule,
+		FileModule,
 		PortalMulterModule,
 	],
 	controllers: [ProductController],
