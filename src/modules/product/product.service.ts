@@ -1,5 +1,5 @@
 import { CreateProductDto } from './dto/request/create-product.dto'
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Product, ProductDocument } from './schemas/product.schema'
 import { Model, Types } from 'mongoose'
@@ -25,6 +25,11 @@ import {
 	NotModifiedDataException,
 } from '@/common/exceptions/http'
 import { FileService } from '../file/services/file.service'
+import {
+	ProductActionName,
+	ProductActionTimer,
+	ProductActionTimerDocument,
+} from './schemas/product-action-timer.schema'
 
 @Injectable()
 export class ProductService {
@@ -35,6 +40,8 @@ export class ProductService {
 		private readonly categoryModel: Model<CategoryDocument>,
 		@InjectModel(Order.name, DatabaseConnectionName.DATA)
 		private readonly orderModel: Model<CategoryDocument>,
+		@InjectModel(ProductActionTimer.name, DatabaseConnectionName.DATA)
+		private readonly productActionTimerModel: Model<ProductActionTimerDocument>,
 		private categoryService: CategoryService,
 		private memberAppService: MemberAppService,
 		private storeService: StoreService,
@@ -362,5 +369,77 @@ export class ProductService {
 			),
 		])
 		return deleteImageStatus && updateStatus.modifiedCount === 1
+	}
+
+	async disable(id: string, isFlag = false): Promise<boolean> {
+		const updateResult = await this.productModel
+			.updateOne(
+				{
+					...(isFlag ? { disableFlagId: new Types.ObjectId(id) } : { _id: id }),
+				},
+				{
+					deleted: true,
+					deletedAt: new Date(),
+					$unset: { disableFlagId: 1 },
+				}
+			)
+			.orFail(new NotModifiedDataException())
+			.exec()
+		return updateResult.modifiedCount === 1
+	}
+
+	async addDisableFlag(productId: string, timer: number) {
+		await this.productModel
+			.findOne({ _id: productId })
+			.orFail(new NotFoundDataException('product'))
+			.exec()
+		const flagId = new Types.ObjectId()
+		const [flag, productUpdateStatus] = await Promise.all([
+			this.productActionTimerModel.create({
+				_id: flagId,
+				expireAt: timer,
+			}),
+			this.productModel
+				.updateOne(
+					{ _id: productId },
+					{
+						disableFlagId: flagId,
+					}
+				)
+				.orFail(new NotModifiedDataException())
+				.exec(),
+		])
+		return !!flag && productUpdateStatus.modifiedCount === 1
+	}
+
+	async enable(productId: string): Promise<boolean> {
+		const updateResult = await this.productModel
+			.updateOne(
+				{ _id: productId },
+				{
+					$set: { deleted: false },
+					$unset: { deletedAt: 1 },
+				}
+			)
+			.orFail(new NotModifiedDataException())
+			.exec()
+		return updateResult.modifiedCount === 1
+	}
+
+	async destroy(productId: string) {
+		const product = await this.productModel
+			.findOne({ _id: productId })
+			.lean()
+			.exec()
+		if (!product.deleted) {
+			throw new BadRequestException(
+				'Cannot destroy product, need to disable first'
+			)
+		}
+		const result = await this.productModel
+			.deleteOne({ _id: productId })
+			.lean()
+			.exec()
+		return result.deletedCount === 1
 	}
 }
