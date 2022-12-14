@@ -1,4 +1,8 @@
 import {
+	DisableProductDto,
+	DisableProductDtoSchema,
+} from './dto/request/disable-product.dto'
+import {
 	UpdateProductImageDto,
 	UpdateProductImageDtoSchema,
 } from './dto/request/update-product-image.dto'
@@ -12,13 +16,14 @@ import {
 	Param,
 	Query,
 	Patch,
+	Delete,
 } from '@nestjs/common'
 import { ProductService } from './product.service'
 import {
 	FileFieldsInterceptor,
 	FilesInterceptor,
 } from '@nestjs/platform-express'
-import { JoiValidatePine } from '@/common/pipes'
+import { JoiValidatePine, ObjectIdValidatePine } from '@/common/pipes'
 import {
 	CreateProductDto,
 	CreateProductDtoSchema,
@@ -101,7 +106,7 @@ export class ProductController {
 	@Patch(':id/update-info')
 	// @Auth(EmployeeRole.ADMIN)
 	async updateProductInfo(
-		@Param('id') productId: string,
+		@Param('id', ObjectIdValidatePine) productId: string,
 		@Body(new JoiValidatePine(UpdateProductInfoDtoSchema))
 		updateProductInfoDto: UpdateProductInfoDto
 	) {
@@ -116,7 +121,7 @@ export class ProductController {
 	@UseInterceptors(FilesInterceptor('newImages'))
 	@ApiConsumes('multipart/form-data')
 	async updateProductImage(
-		@Param('id') productId: string,
+		@Param('id', ObjectIdValidatePine) productId: string,
 		@UploadedFiles() newImages: Array<File>,
 		@Body(new JoiValidatePine(UpdateProductImageDtoSchema))
 		body: UpdateProductImageDto
@@ -127,5 +132,31 @@ export class ProductController {
 			newImageIds,
 			body.deletedImages
 		)
+	}
+
+	@Patch(':id/disable')
+	// @Auth(EmployeeRole.ADMIN)
+	async disableProduct(
+		@Param('id', ObjectIdValidatePine) productId: string,
+		@Query(new JoiValidatePine(DisableProductDtoSchema))
+		query: DisableProductDto
+	) {
+		if (query.instantly === 'true') {
+			return await this.productService.disable(productId)
+		} else {
+			return await this.productService.addDisableFlag(productId, query.timer)
+		}
+	}
+
+	@Patch(':id/enable')
+	// @Auth(EmployeeRole.ADMIN)
+	async enableProduct(@Param('id', ObjectIdValidatePine) productId: string) {
+		return await this.productService.enable(productId)
+	}
+
+	@Delete(':id/destroy')
+	// @Auth(EmployeeRole.ADMIN)
+	async destroyProduct(@Param('id', ObjectIdValidatePine) productId: string) {
+		return await this.productService.destroy(productId)
 	}
 }
