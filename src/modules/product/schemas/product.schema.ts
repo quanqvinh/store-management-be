@@ -14,7 +14,7 @@ export type ProductDocument = ProductWithVirtuals &
 export class Product {
 	_id: Types.ObjectId
 
-	@Prop({ type: String, required: true })
+	@Prop({ type: String, required: true, index: 'text' })
 	name: string
 
 	@Prop({
@@ -50,8 +50,8 @@ export class Product {
 	@Prop({ type: Number, default: 0 })
 	numberOfLikes: number
 
-	@Prop({ type: Types.ObjectId })
-	disableFlagId?: ObjectId
+	@Prop({ type: Types.ObjectId, ref: 'ProductActionTimer' })
+	disableFlag?: ObjectId
 
 	createdAt: Date
 	updatedAt: Date

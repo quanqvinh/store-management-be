@@ -1,4 +1,3 @@
-import { NotFoundDataException } from '@/common/exceptions/http'
 import {
 	ProductActionTimer,
 	ProductActionTimerDocument,
@@ -6,9 +5,9 @@ import {
 import { DatabaseConnectionName } from '@/constants'
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Model, ObjectId } from 'mongoose'
+import { Model } from 'mongoose'
 import { Product, ProductDocument } from '../schemas/product.schema'
-import { ChangeStreamDocument, ChangeStreamDeleteDocument } from 'mongodb'
+import { ChangeStreamDocument } from 'mongodb'
 import { ProductService } from '../product.service'
 
 @Injectable()

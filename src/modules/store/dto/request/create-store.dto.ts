@@ -1,6 +1,6 @@
 import { ApiPropertyMultiFiles } from '@/common/decorators/file-swagger.decorator'
 import * as Joi from 'joi'
-import { Address, DailyTime, Time } from '../schemas/store.schema'
+import { Address, DailyTime, Time } from '../../schemas/store.schema'
 
 export class CreateStoreDto {
 	@ApiPropertyMultiFiles()

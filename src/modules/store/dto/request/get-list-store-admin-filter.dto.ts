@@ -16,15 +16,15 @@ export enum SortOrder {
 	DESC = 'desc',
 }
 
-export class GetProductListAdminFilterDto {
+export class GetStoreListAdminFilterDto {
 	keyword?: string
 	category?: string
 	sortBy?: SortBy
 	sortOrder?: SortOrder
 }
 
-export const GetProductListAdminFilterDtoSchema =
-	Joi.object<GetProductListAdminFilterDto>({
+export const GetStoreListAdminFilterDtoSchema =
+	Joi.object<GetStoreListAdminFilterDto>({
 		keyword: Joi.string().min(1).optional(),
 		category: Joi.string().pattern(objectIdPattern).optional(),
 		sortBy: Joi.string()

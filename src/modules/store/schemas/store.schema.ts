@@ -35,10 +35,10 @@ export class Address {
 	country: string
 }
 
-class StoreDescription {
-	icon: string
-	content: string
-}
+// class StoreDescription {
+// 	icon: string
+// 	content: string
+// }
 
 @Schema({ versionKey: false, timestamps: true })
 export class Store {
@@ -82,21 +82,26 @@ export class Store {
 	@Prop({ type: Boolean, required: true, default: false })
 	openedStatus: boolean
 
-	@Prop([
-		{
-			type: {
-				icon: { type: String },
-				content: { type: String, required: true },
-			},
-		},
-	])
-	description: Array<StoreDescription>
+	@Prop({ type: Types.ObjectId })
+	disableFlag: ObjectId | string
+
+	// @Prop([
+	// 	{
+	// 		type: {
+	// 			icon: { type: String },
+	// 			content: { type: String, required: true },
+	// 		},
+	// 	},
+	// ])
+	// description: Array<StoreDescription>
 
 	@Prop({ type: [Types.ObjectId], ref: 'Product' })
-	unavailableProducts: Array<ObjectId>
+	unavailableProducts: Array<ObjectId | string>
 
-	createdAt: Date
-	updatedAt: Date
+	createdAt?: Date
+	updatedAt?: Date
+	deleted?: boolean
+	deletedAt?: Date
 }
 
 export const StoreSchema = SchemaFactory.createForClass(Store)
@@ -104,7 +109,6 @@ export const StoreSchema = SchemaFactory.createForClass(Store)
 StoreSchema.plugin(mongooseLeanVirtuals)
 StoreSchema.plugin(mongooseDelete, {
 	deletedAt: true,
-	overrideMethods: 'all',
 	indexFields: 'all',
 })
 StoreSchema.plugin(slugGenerator)
