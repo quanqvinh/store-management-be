@@ -1,3 +1,5 @@
+import { GetStoreListAdminFilterDto } from './dto/request/get-list-store-admin-filter.dto'
+import { GetStoreListAdminFilterDtoSchema } from './dto/request/get-list-store-admin-filter.dto'
 import {
 	UpdateStoreImageDto,
 	UpdateStoreImageDtoSchema,
@@ -63,8 +65,20 @@ export class StoreController {
 	@Get('admin-app/list')
 	@SkipThrottle()
 	// @Auth(EmployeeRole.ADMIN)
-	async getAllStoresInAdminApp() {
-		return await this.storeService.getAllForAdmin()
+	async getAllStoresInAdminApp(
+		@Query(new JoiValidatePine(GetStoreListAdminFilterDtoSchema))
+		query: GetStoreListAdminFilterDto
+	) {
+		return await this.storeService.getAllForAdmin(query)
+	}
+
+	@Get('admin-app/:id/detail')
+	@SkipThrottle()
+	// @Auth(EmployeeRole.ADMIN)
+	async getStoreDetailInAdminApp(
+		@Param('id', ObjectIdValidatePine) storeId: string
+	) {
+		return await this.storeService.getDetailForAdmin(storeId)
 	}
 
 	@Post('create')

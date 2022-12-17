@@ -3,7 +3,10 @@ import { PipelineStage } from 'mongoose'
 /**
  * Needed: createdAt. Result: week: -1 | 0 | 1
  */
-export const weekAnalyticPipeline: PipelineStage[] = [
+export const weekAnalyticPipeline = (
+	startTime1 = 7,
+	startTime2 = 14
+): PipelineStage[] => [
 	{
 		$addFields: {
 			today: {
@@ -25,14 +28,14 @@ export const weekAnalyticPipeline: PipelineStage[] = [
 				$dateSubtract: {
 					startDate: '$today',
 					unit: 'day',
-					amount: 7,
+					amount: startTime1,
 				},
 			},
 			twoWeekAgo: {
 				$dateSubtract: {
 					startDate: '$today',
 					unit: 'day',
-					amount: 14,
+					amount: startTime2,
 				},
 			},
 		},

@@ -1,3 +1,4 @@
+import { GetStoreListAdminFilterDto } from './dto/request/get-list-store-admin-filter.dto'
 import { FileService } from './../file/services/file.service'
 import { CreateStoreDto } from './dto/request/create-store.dto'
 import { DatabaseConnectionName } from '@/constants'
@@ -18,6 +19,13 @@ import {
 } from './schemas/store-action-timer.schema'
 import { Order, OrderDocument } from '../order/schemas'
 import { weekAnalyticPipeline } from '@/utils/week-analytic-pipeline'
+import { SortOrder } from './dto/request/get-list-store-admin-filter.dto'
+import { Product, ProductDocument } from '../product/schemas/product.schema'
+import { StoreDetailForAdminDto } from './dto/response/store-detail-admin-app.dto'
+import {
+	StoreItemForAdminDto,
+	StoreSaleData,
+} from './dto/response/store-sale.dto'
 
 @Injectable()
 export class StoreService {
@@ -28,6 +36,8 @@ export class StoreService {
 		private readonly storeActionTimerModel: Model<StoreActionTimerDocument>,
 		@InjectModel(Order.name, DatabaseConnectionName.DATA)
 		private readonly orderModel: Model<OrderDocument>,
+		@InjectModel(Product.name, DatabaseConnectionName.DATA)
+		private readonly productModel: Model<ProductDocument>,
 		private fileService: FileService
 	) {}
 
@@ -38,51 +48,179 @@ export class StoreService {
 			.lean({ virtuals: true })
 	}
 
-	async getAllForAdmin() {
-		const stores = await this.storeModel
-			.find()
-			.select('images mainImage fullAddress name address updatedAt')
-			.lean({ virtuals: true })
-		const temp = await this.orderModel.aggregate([
-			...weekAnalyticPipeline,
-			{
-				$unwind: '$items',
-			},
-			{
-				$group: {
-					_id: '$_id',
-					totalAmount: {
-						$sum: '$items.amount',
-					},
-					totalPrice: {
-						$first: '$totalPrice',
-					},
-					store: {
-						$first: '$store.id',
-					},
-					week: {
-						$first: '$week',
+	async getAllForAdmin(
+		query: GetStoreListAdminFilterDto
+	): Promise<StoreItemForAdminDto[]> {
+		const [sortBy, sortOrder] = [
+			query.sortBy ?? 'name',
+			query.sortOrder === SortOrder.DESC ? '-' : '',
+		]
+
+		const filter = {
+			...(query.keyword ? { $text: { $search: query.keyword } } : {}),
+			...(query.category
+				? { category: new Types.ObjectId(query.category) }
+				: {}),
+		}
+
+		const [stores, storesSale] = await Promise.all([
+			this.storeModel
+				.find(filter)
+				.select('images mainImage fullAddress name address updatedAt')
+				.sort(sortOrder + sortBy)
+				.lean({ virtuals: true })
+				.exec(),
+			this.orderModel.aggregate<StoreSaleData>([
+				...weekAnalyticPipeline(),
+				{
+					$unwind: '$items',
+				},
+				{
+					$group: {
+						_id: '$_id',
+						totalAmount: {
+							$sum: '$items.amount',
+						},
+						totalPrice: {
+							$first: '$totalPrice',
+						},
+						store: {
+							$first: '$store.id',
+						},
+						week: {
+							$first: '$week',
+						},
 					},
 				},
-			},
-			{
-				$group: {
-					_id: {
-						store: '$store',
-						week: '$week',
-					},
-					totalAmount: {
-						$sum: '$totalAmount',
-					},
-					totalPrice: {
-						$sum: '$totalPrice',
+				{
+					$group: {
+						_id: {
+							store: '$store',
+							week: '$week',
+						},
+						totalAmount: {
+							$sum: '$totalAmount',
+						},
+						totalPrice: {
+							$sum: '$totalPrice',
+						},
 					},
 				},
-			},
+				{
+					$match: {
+						'_id.week': {
+							$gte: 0,
+						},
+					},
+				},
+				{
+					$addFields: {
+						weekOne: {
+							$cond: {
+								if: {
+									$eq: ['$_id.week', 0],
+								},
+								then: {
+									totalAmount: '$totalAmount',
+									totalPrice: '$totalPrice',
+								},
+								else: {
+									totalAmount: 0,
+									totalPrice: 0,
+								},
+							},
+						},
+						weekTwo: {
+							$cond: {
+								if: {
+									$eq: ['$_id.week', 1],
+								},
+								then: {
+									totalAmount: '$totalAmount',
+									totalPrice: '$totalPrice',
+								},
+								else: {
+									totalAmount: 0,
+									totalPrice: 0,
+								},
+							},
+						},
+					},
+				},
+				{
+					$group: {
+						_id: '$_id.store',
+						weekOne_totalAmount: {
+							$sum: '$weekOne.totalAmount',
+						},
+						weekTwo_totalAmount: {
+							$sum: '$weekTwo.totalAmount',
+						},
+						weekOne_totalPrice: {
+							$sum: '$weekOne.totalPrice',
+						},
+						weekTwo_totalPrice: {
+							$sum: '$weekTwo.totalPrice',
+						},
+					},
+				},
+				{
+					$project: {
+						_id: 1,
+						weekOne: {
+							totalAmount: '$weekOne_totalAmount',
+							totalPrice: '$weekOne_totalPrice',
+						},
+						weekTwo: {
+							totalAmount: '$weekTwo_totalAmount',
+							totalPrice: '$weekTwo_totalPrice',
+						},
+					},
+				},
+			]),
 		])
+		const storeSaleMap = storesSale.reduce((res, store) => {
+			return Object.assign(res, {
+				[store._id]: {
+					saleAmountOfWeek: store.weekOne.totalAmount,
+					changeAmountOfWeek:
+						store.weekOne.totalAmount - store.weekTwo.totalAmount,
+					salePriceOfWeek: store.weekOne.totalPrice,
+					changePriceOfWeek:
+						store.weekOne.totalPrice - store.weekTwo.totalAmount,
+				},
+			})
+		}, {})
+		return stores.map(store => ({
+			_id: store._id,
+			mainImage: store['mainImage'],
+			fullAddress: store['fullAddress'],
+			name: store.name,
+			updatedAt: store.updatedAt,
+			sale: storeSaleMap[store._id.toString()]
+				? storeSaleMap[store._id.toString()]
+				: {
+						saleAmountOfWeek: 0,
+						changeAmountOfWeek: 0,
+						salePriceOfWeek: 0,
+						changePriceOfWeek: 0,
+				  },
+		}))
+	}
+
+	async getDetailForAdmin(storeId: string): Promise<StoreDetailForAdminDto> {
+		const storeDetail = await this.storeModel.findById(storeId).lean().exec()
+		const allProductsInShort = await this.productModel
+			.find()
+			.select('name images mainImage originalPrice')
+			.lean({ virtuals: ['mainImage'] })
+			.exec()
 		return {
-			temp,
-			stores,
+			storeDetail: storeDetail as Store,
+			allProductsInShort: allProductsInShort.map(product => {
+				delete product.images
+				return product
+			}),
 		}
 	}
 
