@@ -44,11 +44,20 @@ import {
 	UpdateProductInfoDto,
 	UpdateProductInfoDtoSchema,
 } from './dto/request/update-product-info.dto'
+import { CategoryService } from '../category/category.service'
+import {
+	CategoryInShort,
+	ProductDetailAdminDto,
+} from './dto/response/product-detail-admin.dto'
+import { Product } from './schemas/product.schema'
 
 @Controller('product')
 @ApiTags('product')
 export class ProductController {
-	constructor(private productService: ProductService) {}
+	constructor(
+		private productService: ProductService,
+		private categoryService: CategoryService
+	) {}
 
 	@Get('category/all')
 	@SkipThrottle()
@@ -103,6 +112,31 @@ export class ProductController {
 		return await this.productService.getListForAdminApp(query)
 	}
 
+	@Get('admin/:id')
+	@SkipThrottle()
+	// @Auth(EmployeeRole.ADMIN)
+	async getProductDetail(
+		@Param('id', ObjectIdValidatePine) productId: string
+	): Promise<ProductDetailAdminDto> {
+		const productDetail = await this.productService.getDetailForAdminApp(
+			productId
+		)
+		const allCategories: CategoryInShort[] = (
+			await this.categoryService.getAll()
+		)?.map(
+			category =>
+				({
+					_id: category._id.toString(),
+					name: category.name,
+					image: category.image,
+				} as unknown as CategoryInShort)
+		)
+		return {
+			productDetail,
+			allCategories,
+		}
+	}
+
 	@Patch(':id/update-info')
 	// @Auth(EmployeeRole.ADMIN)
 	async updateProductInfo(
@@ -116,7 +150,7 @@ export class ProductController {
 		)
 	}
 
-	@Post(':id/update-image')
+	@Patch(':id/update-image')
 	// @Auth(EmployeeRole.ADMIN)
 	@UseInterceptors(FilesInterceptor('newImages'))
 	@ApiConsumes('multipart/form-data')

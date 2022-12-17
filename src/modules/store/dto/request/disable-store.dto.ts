@@ -5,13 +5,13 @@ enum BooleanString {
 	FALSE = 'false',
 }
 
-export class DisableProductDto {
-	instantly?: BooleanString
+export class DisableStoreDto {
+	instantly: BooleanString
 	timer?: number
 }
 
-export const DisableProductDtoSchema = Joi.object({
-	instantly: Joi.boolean().default(true).optional(),
+export const DisableStoreDtoSchema = Joi.object({
+	instantly: Joi.boolean().default(true).required(),
 	timer: Joi.number()
 		.min(Date.now() + 60000)
 		.optional(),

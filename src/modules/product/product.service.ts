@@ -17,7 +17,10 @@ import {
 	ProductItemForAdmin,
 } from './dto/response/product-admin-app.dto'
 import { Order } from '../order/schemas'
-import { GetProductListAdminFilterDto } from './dto/request/get-product-list-admin-filter.dto'
+import {
+	GetProductListAdminFilterDto,
+	SortOrder,
+} from './dto/request/get-product-list-admin-filter.dto'
 import { UpdateProductInfoDto } from './dto/request/update-product-info.dto'
 import { Option } from './schemas/option.schema'
 import {
@@ -26,10 +29,10 @@ import {
 } from '@/common/exceptions/http'
 import { FileService } from '../file/services/file.service'
 import {
-	ProductActionName,
 	ProductActionTimer,
 	ProductActionTimerDocument,
 } from './schemas/product-action-timer.schema'
+import { weekAnalyticPipeline } from '@/utils/week-analytic-pipeline'
 
 @Injectable()
 export class ProductService {
@@ -160,93 +163,28 @@ export class ProductService {
 	async getListForAdminApp(
 		query: GetProductListAdminFilterDto
 	): Promise<ProductItemForAdmin[]> {
-		console.log(query)
+		const [sortBy, sortOrder] = [
+			query.sortBy ?? 'name',
+			query.sortOrder === SortOrder.DESC ? '-' : '',
+		]
+
+		const filter = {
+			...(query.keyword ? { $text: { $search: query.keyword } } : {}),
+			...(query.category
+				? { category: new Types.ObjectId(query.category) }
+				: {}),
+		}
+
 		const [productList, productInOrder] = await Promise.all([
 			this.productModel
-				.find(
-					query.category ? { category: new Types.ObjectId(query.category) } : {}
-				)
+				.find(filter)
 				.select('name originalPrice category updatedAt images')
 				.populate<{ category: Category }>('category')
-				.sort(query.sortBy ?? 'name')
+				.sort(sortOrder + sortBy)
 				.lean({ virtuals: ['mainImage'] })
 				.exec(),
 			this.orderModel.aggregate<ProductInOrders>([
-				{
-					$addFields: {
-						today: {
-							$dateFromString: {
-								dateString: {
-									$dateToString: {
-										date: '$$NOW',
-										format: '%Y-%m-%d',
-									},
-								},
-								format: '%Y-%m-%d',
-							},
-						},
-					},
-				},
-				{
-					$addFields: {
-						oneWeekAgo: {
-							$dateSubtract: {
-								startDate: '$today',
-								unit: 'day',
-								amount: 7,
-							},
-						},
-						twoWeekAgo: {
-							$dateSubtract: {
-								startDate: '$today',
-								unit: 'day',
-								amount: 14,
-							},
-						},
-					},
-				},
-				{
-					$project: {
-						items: 1,
-						today: 1,
-						createdAt: 1,
-						oneWeekAgo: 1,
-						twoWeekAgo: 1,
-					},
-				},
-				{
-					$addFields: {
-						isOneWeekAgo: {
-							$sum: [
-								{ $cmp: ['$createdAt', '$oneWeekAgo'] },
-								{ $cmp: ['$today', '$createdAt'] },
-							],
-						},
-						isTwoWeekAgo: {
-							$sum: [
-								{ $cmp: ['$createdAt', '$twoWeekAgo'] },
-								{ $cmp: ['$oneWeekAgo', '$createdAt'] },
-							],
-						},
-					},
-				},
-				{
-					$addFields: {
-						week: {
-							$cond: {
-								if: { $gt: ['$isOneWeekAgo', 0] },
-								then: 0,
-								else: {
-									$cond: {
-										if: { $gt: ['$isTwoWeekAgo', 0] },
-										then: 1,
-										else: -1,
-									},
-								},
-							},
-						},
-					},
-				},
+				...weekAnalyticPipeline,
 				{
 					$project: { week: 1, items: 1 },
 				},
@@ -321,6 +259,15 @@ export class ProductService {
 		return res
 	}
 
+	async getDetailForAdminApp(productId: string) {
+		const product = await this.productModel
+			.findById(productId)
+			.populate<{ disableFlag: ProductActionTimer }>('disableFlag')
+			.lean({ virtuals: true })
+			.exec()
+		return product
+	}
+
 	async updateProductInfo(productId: string, dto: UpdateProductInfoDto) {
 		const options: Option = {
 			size: dto.size,
@@ -375,12 +322,12 @@ export class ProductService {
 		const updateResult = await this.productModel
 			.updateOne(
 				{
-					...(isFlag ? { disableFlagId: new Types.ObjectId(id) } : { _id: id }),
+					...(isFlag ? { disableFlag: new Types.ObjectId(id) } : { _id: id }),
 				},
 				{
 					deleted: true,
 					deletedAt: new Date(),
-					$unset: { disableFlagId: 1 },
+					$unset: { disableFlag: 1 },
 				}
 			)
 			.orFail(new NotModifiedDataException())
@@ -403,7 +350,7 @@ export class ProductService {
 				.updateOne(
 					{ _id: productId },
 					{
-						disableFlagId: flagId,
+						disableFlag: flagId,
 					}
 				)
 				.orFail(new NotModifiedDataException())
@@ -418,7 +365,7 @@ export class ProductService {
 				{ _id: productId },
 				{
 					$set: { deleted: false },
-					$unset: { deletedAt: 1 },
+					$unset: { deletedAt: 1, disableFlag: 1 },
 				}
 			)
 			.orFail(new NotModifiedDataException())
