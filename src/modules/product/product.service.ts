@@ -184,7 +184,7 @@ export class ProductService {
 				.lean({ virtuals: ['mainImage'] })
 				.exec(),
 			this.orderModel.aggregate<ProductInOrders>([
-				...weekAnalyticPipeline,
+				...weekAnalyticPipeline(),
 				{
 					$project: { week: 1, items: 1 },
 				},

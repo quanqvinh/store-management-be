@@ -12,6 +12,7 @@ import { Store, StoreSchema } from './schemas/store.schema'
 import { StoreController } from './store.controller'
 import { StoreService } from './store.service'
 import { Order, OrderSchema } from '../order/schemas'
+import { Product, ProductSchema } from '../product/schemas/product.schema'
 
 @Module({
 	imports: [
@@ -19,6 +20,7 @@ import { Order, OrderSchema } from '../order/schemas'
 			[
 				{ name: Store.name, schema: StoreSchema },
 				{ name: Order.name, schema: OrderSchema },
+				{ name: Product.name, schema: ProductSchema },
 				{ name: StoreActionTimer.name, schema: StoreActionTimerSchema },
 			],
 			DatabaseConnectionName.DATA

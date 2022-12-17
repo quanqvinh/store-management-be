@@ -44,7 +44,7 @@ export class Address {
 export class Store {
 	_id: ObjectId
 
-	@Prop({ type: String, required: true })
+	@Prop({ type: String, required: true, index: 'text' })
 	name: string
 
 	@Prop({
@@ -68,11 +68,11 @@ export class Store {
 
 	@Prop({
 		type: {
-			street: { type: String, required: true },
-			ward: { type: String },
-			district: { type: String, required: true },
-			city: { type: String, required: true },
-			country: { type: String, required: true },
+			street: { type: String, required: true, index: 'text' },
+			ward: { type: String, index: 'text' },
+			district: { type: String, required: true, index: 'text' },
+			city: { type: String, required: true, index: 'text' },
+			country: { type: String, required: true, index: 'text' },
 		},
 		_id: false,
 		required: true,
