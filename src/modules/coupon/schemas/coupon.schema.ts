@@ -1,5 +1,5 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose'
-import { ObjectId, Document } from 'mongoose'
+import { ObjectId, Document, Types } from 'mongoose'
 import { DiscountType, DiscountTypeSchema } from './discount-type.schema'
 import { Condition, ConditionSchema } from './condition.schema'
 import {
@@ -55,8 +55,11 @@ export class Coupon {
 
 	@Prop({ type: NotificationContentPropertyDefine, _id: false })
 	notification: NotificationContent
+
+	deleted?: boolean
+	deletedAt?: Date
 }
 
 export const CouponSchema = SchemaFactory.createForClass(Coupon)
 
-CouponSchema.plugin(mongooseDelete)
+CouponSchema.plugin(mongooseDelete, { deletedAt: true })

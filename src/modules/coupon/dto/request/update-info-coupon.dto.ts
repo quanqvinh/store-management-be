@@ -4,8 +4,8 @@ import {
 	Condition,
 	IncludeCategoryCondition,
 	IncludeProductCondition,
-} from '../schemas/condition.schema'
-import { DiscountType } from '../schemas/discount-type.schema'
+} from '../../schemas/condition.schema'
+import { DiscountType } from '../../schemas/discount-type.schema'
 import * as Joi from 'joi'
 import { Size } from '@/constants'
 

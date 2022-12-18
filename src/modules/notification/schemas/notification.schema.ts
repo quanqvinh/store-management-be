@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { ObjectId, Document, Types } from 'mongoose'
 import { NotificationType } from '@/constants'
+import { PickType } from '@nestjs/swagger'
 
 export type NotificationDocument = Notification & Document
 
@@ -30,10 +31,11 @@ export class Notification {
 	createdAt: Date
 }
 
-export type NotificationContent = Pick<
-	Notification,
-	'title' | 'content' | 'image'
->
+export class NotificationContent extends PickType(Notification, [
+	'title',
+	'content',
+	'image',
+]) {}
 
 export const NotificationContentPropertyDefine = {
 	title: { type: String, required: true },

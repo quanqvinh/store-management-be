@@ -2,15 +2,15 @@ import {
 	FreeMinIn,
 	NewPriceDiscount,
 	Percentage,
-} from './../schemas/discount-type.schema'
+} from '../../schemas/discount-type.schema'
 import { objectIdPattern } from '@/common/validators'
 import { OrderType, Size } from '@/constants'
 import {
 	Condition,
 	IncludeCategoryCondition,
 	IncludeProductCondition,
-} from './../schemas/condition.schema'
-import { DiscountType } from '../schemas/discount-type.schema'
+} from '../../schemas/condition.schema'
+import { DiscountType } from '../../schemas/discount-type.schema'
 import * as Joi from 'joi'
 import { PartialType } from '@nestjs/swagger'
 
