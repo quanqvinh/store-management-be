@@ -1,12 +1,17 @@
 import { NotFoundDataException } from '@/common/exceptions/http'
-import { CreateCouponDto, CreateCouponDtoSchema } from './dto/create-coupon.dto'
+import {
+	CreateCouponDto,
+	CreateCouponDtoSchema,
+} from './dto/request/create-coupon.dto'
 import {
 	Body,
 	Controller,
+	Delete,
 	Get,
 	Param,
 	Patch,
 	Post,
+	Query,
 	UploadedFile,
 	UseInterceptors,
 } from '@nestjs/common'
@@ -15,17 +20,27 @@ import { JoiValidatePine, ObjectIdValidatePine } from '@/common/pipes'
 import {
 	UpdateInfoCouponDto,
 	UpdateInfoCouponDtoSchema,
-} from './dto/update-info-coupon.dto'
+} from './dto/request/update-info-coupon.dto'
 import {
 	UpdateNotificationCouponDto,
 	UpdateNotificationCouponDtoSchema,
-} from './dto/update-notification-coupon.dto'
+} from './dto/request/update-notification-coupon.dto'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { File } from '@/types'
 import { MemberAppService } from '../setting/services/member-app.service'
 import { FileService } from '../file/services/file.service'
 import { ApiTags } from '@nestjs/swagger'
 import { SkipThrottle } from '@nestjs/throttler'
+import {
+	GetCouponListAdminFilterDto,
+	GetCouponListAdminFilterDtoSchema,
+} from './dto/request/get-coupon-for-admin.dto'
+import { Auth } from '@/common/decorators/auth.decorator'
+import { EmployeeRole } from '@/constants'
+import {
+	DisableCouponDto,
+	DisableCouponDtoSchema,
+} from './dto/request/disable-coupon.dto'
 
 @Controller('coupon')
 @ApiTags('coupon')
@@ -86,7 +101,7 @@ export class CouponController {
 		@UploadedFile() image: File,
 		@Param('id', ObjectIdValidatePine) couponId: string,
 		@Body(new JoiValidatePine(UpdateNotificationCouponDtoSchema))
-		updateNotificationCouponDto: UpdateNotificationCouponDto
+		body: UpdateNotificationCouponDto
 	) {
 		const isExist = await this.couponService.checkExist(couponId)
 		if (!isExist) {
@@ -97,14 +112,47 @@ export class CouponController {
 		const defaultImages = (await this.memberSettingService.get('defaultImages'))
 			.defaultImages
 
-		Object.assign(updateNotificationCouponDto.notification, {
+		const notification = {
 			image: image.id ?? defaultImages.couponNotification ?? undefined,
-		})
+			title: body.title,
+			content: body.content,
+		}
 
-		const result = await this.couponService.update(
-			couponId,
-			updateNotificationCouponDto
-		)
+		const result = await this.couponService.update(couponId, { notification })
 		return result.matchedCount === 1 && result.modifiedCount === 1
+	}
+
+	@Get('admin/all')
+	@SkipThrottle()
+	async getAllForAdmin(
+		@Query(new JoiValidatePine(GetCouponListAdminFilterDtoSchema))
+		query: GetCouponListAdminFilterDto
+	) {
+		return await this.couponService.getListForAdmin(query)
+	}
+
+	@Patch(':id/disable')
+	// @Auth(EmployeeRole.ADMIN)
+	async disableCoupon(
+		@Param('id', ObjectIdValidatePine) couponId: string,
+		@Query(new JoiValidatePine(DisableCouponDtoSchema)) query: DisableCouponDto
+	) {
+		if (query.instantly === 'true') {
+			return await this.couponService.disable(couponId)
+		} else {
+			return await this.couponService.addDisableFlag(couponId, query.timer)
+		}
+	}
+
+	@Patch(':id/enable')
+	// @Auth(EmployeeRole.ADMIN)
+	async enableCoupon(@Param('id', ObjectIdValidatePine) couponId: string) {
+		return await this.couponService.enable(couponId)
+	}
+
+	@Delete(':id/destroy')
+	// @Auth(EmployeeRole.ADMIN)
+	async delete(@Param('id', ObjectIdValidatePine) couponId: string) {
+		return await this.couponService.enable(couponId)
 	}
 }
