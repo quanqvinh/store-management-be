@@ -36,14 +36,20 @@ async function bootstrap() {
 	=== NOTE ===
 	- If response data type is boolean, the actual response is { success: boolean }
 	- Otherwise, the response type is T, the actual response is { data: T }
-	=== TOKEN 30 DAYS ===
+	
+	=== TESTING ACCESS TOKEN ===
 	
 	- 19110499@student.hcmute.edu.vn (member) - Access token: 
-	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MzcyMGI5MWIwMTY2NjIyYzE3NjlmZDAiLCJpYXQiOjE2Njg3MDAyNDEsImV4cCI6MTY3MDg1NDkxNiwic3ViIjoiYWNjZXNzIn0.Mz08I0MpwXkquzSzSxppS8Cii4VD54agNC3IkNRHKzI
+	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MzcyMGI5MWIwMTY2NjIyYzE3NjlmZDAiLCJpYXQiOjE2NzE0NjE1NDUsImV4cCI6MTcwMzg2OTIwMCwic3ViIjoiYWNjZXNzIn0.T695EtN1GoOpEhbBp06Nxo4be8yHKdNtzs0g1fnu_30
+
 	- phantrungtin01@gmail.com (member) - Access token:
-	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MzcyNWE0ZmI1YmZjNDQ4YmM5MTkxMzciLCJpYXQiOjE2Njg3MDAyNDEsImV4cCI6MTY3MDg1NDkxNiwic3ViIjoiYWNjZXNzIn0.Xa0sL5BM0_pFcPB9QSf8rns82JaN8ygvJLsawswxIX8
+	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MzhkOWMzMmQ3MDk1YTE0NmMzZGFlNmIiLCJpYXQiOjE2NzE0NjE3MTgsImV4cCI6MTcwMzg2OTIwMCwic3ViIjoiYWNjZXNzIn0.Mbna-V4cPefhGKgNyZ7iQUY_LHfm1MguDLWDRLZllOo
+
 	- salesman01 (employee) - Access token:
-	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MzdmODhkZDZkOGI2Yjg3ZDFhZmYwYzAiLCJyb2xlIjoic2FsZXNwZXJzb24iLCJzdG9yZSI6IjYzNjI5OThiZmI5MDJlZmQ4MTRlYTFkNyIsImlhdCI6MTY2OTQzNzc2MiwiZXhwIjoxNjcyMzMzMjAwLCJzdWIiOiJhY2Nlc3MifQ.4WfmVwQ6GiSnAgFAKmjF-FjCkKI5lCL5fyeXimBtuVA
+	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2MzdmODhkZDZkOGI2Yjg3ZDFhZmYwYzAiLCJyb2xlIjoic2FsZXNwZXJzb24iLCJzdG9yZSI6IjYzNjI5OThiZmI5MDJlZmQ4MTRlYTFkNyIsImlhdCI6MTY3MTQ2MTg5MSwiZXhwIjoxNzAzODY5MjAwLCJzdWIiOiJhY2Nlc3MifQ.uKejD-odriC8uHVpd9CHWPI6xu2NvZG11BMNMYuIgbk
+
+	- admin01 (admin) - Access token:
+	eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI2M2EwN2JiZjQ3ODU0ZGQ2M2U0MGFiOGQiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2NzE0NjE5NjksImV4cCI6MTcwMzg2OTIwMCwic3ViIjoiYWNjZXNzIn0.tH0-Nn2Mu-anu7bLKuA6AOmuVrkhN8mdgZS4R1euszw
 		`
 		)
 		.setVersion('1.0')

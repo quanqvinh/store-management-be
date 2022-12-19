@@ -9,4 +9,5 @@ export class CouponItemForAdmin extends OmitType(Coupon, [
 	'applyHour',
 ]) {
 	usedTime: number
+	ownedAmount: number
 }

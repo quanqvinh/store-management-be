@@ -21,6 +21,7 @@ import {
 	NotFoundDataException,
 	NotModifiedDataException,
 } from '@/common/exceptions/http'
+import { Member, MemberDocument } from '../member/schemas/member.schema'
 
 @Injectable()
 export class CouponService {
@@ -29,6 +30,8 @@ export class CouponService {
 		private readonly couponModel: Model<CouponDocument>,
 		@InjectModel(Order.name, DatabaseConnectionName.DATA)
 		private readonly orderModel: Model<OrderDocument>,
+		@InjectModel(Member.name, DatabaseConnectionName.DATA)
+		private readonly memberModel: Model<MemberDocument>,
 		@InjectModel(CouponActionTimer.name, DatabaseConnectionName.DATA)
 		private readonly couponActionTimerModel: Model<CouponActionTimerDocument>
 	) {}
@@ -91,8 +94,12 @@ export class CouponService {
 		}
 
 		type CouponWithUsedTime = Pick<CouponItemForAdmin, 'code' | 'usedTime'>
+		type CouponOwnedAmount = {
+			_id: Types.ObjectId
+			ownedAmount: number
+		}
 
-		const [coupons, couponUsedTime] = await Promise.all([
+		const [coupons, couponUsedTime, couponOwnedAmount] = await Promise.all([
 			this.couponModel
 				.find(filter)
 				.select([
@@ -132,10 +139,28 @@ export class CouponService {
 					},
 				])
 				.exec(),
+			this.memberModel
+				.aggregate<CouponOwnedAmount>([
+					{
+						$unwind: '$coupons',
+					},
+					{
+						$group: {
+							_id: '$coupons.coupon',
+							ownedAmount: {
+								$sum: 1,
+							},
+						},
+					},
+				])
+				.exec(),
 		])
 
 		const defaultUsedTime: Omit<CouponWithUsedTime, 'code'> = {
 			usedTime: 0,
+		}
+		const defaultOwnedAmount: Omit<CouponOwnedAmount, '_id'> = {
+			ownedAmount: 0,
 		}
 
 		const couponUsedTimeMap = couponUsedTime.reduce((res, coupon) => {
@@ -144,10 +169,17 @@ export class CouponService {
 				[code]: others,
 			})
 		}, {})
+		const couponOwnedAmountMap = couponOwnedAmount.reduce((res, coupon) => {
+			const { _id, ...others } = coupon
+			return Object.assign(res, {
+				[_id.toString()]: others,
+			})
+		}, {})
 
 		const res = coupons.map(coupon => ({
-			...(coupon as Omit<CouponItemForAdmin, 'usedTime'>),
+			...(coupon as Omit<CouponItemForAdmin, 'usedTime' | 'ownedAmount'>),
 			...(couponUsedTimeMap[coupon.code] ?? defaultUsedTime),
+			...(couponOwnedAmountMap[coupon._id.toString()] ?? defaultOwnedAmount),
 		}))
 
 		return res

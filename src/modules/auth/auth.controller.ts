@@ -83,28 +83,21 @@ export class AuthController {
 
 		const otpExpireTime = this.configService.get<string>('otp.expire')
 
-		const status = await this.transactionService.execute({
-			writeCb: async session => {
-				const otp = await this.otpService.generate(loginDto.email, session)
-				if (!otp) throw new NotCreatedDataException()
+		const otp = await this.otpService.generate(loginDto.email)
+		if (!otp) throw new NotCreatedDataException()
 
-				const mailTemplateData = await this.mailTemplateService.getOtpMailData()
-				Object.assign(mailTemplateData.data, {
-					otpValue: otp.value,
-					otpTime: expireTimeFormats(otpExpireTime).text,
-				})
-
-				const mailRes = await this.mailService.sendMail({
-					recipient: loginDto.email,
-					content: mailTemplateData,
-				})
-
-				return mailRes
-			},
+		const mailTemplateData = await this.mailTemplateService.getOtpMailData()
+		Object.assign(mailTemplateData.data, {
+			otpValue: otp.value,
+			otpTime: expireTimeFormats(otpExpireTime).text,
 		})
 
-		if (status.error) throw status.error
-		return status.result
+		const mailRes = await this.mailService.sendMail({
+			recipient: loginDto.email,
+			content: mailTemplateData,
+		})
+
+		return mailRes
 	}
 
 	@Post('member/sign-up')
@@ -121,31 +114,21 @@ export class AuthController {
 
 		const otpExpireTime = this.configService.get<string>('otp.expire')
 
-		const status = await this.transactionService.execute({
-			writeCb: async session => {
-				const otp = await this.otpService.generate(
-					createMemberDto.email,
-					session
-				)
-				if (!otp) throw new NotCreatedDataException()
+		const otp = await this.otpService.generate(createMemberDto.email)
+		if (!otp) throw new NotCreatedDataException()
 
-				const mailTemplateData = await this.mailTemplateService.getOtpMailData()
-				Object.assign(mailTemplateData.data, {
-					otpValue: otp.value,
-					otpTime: expireTimeFormats(otpExpireTime).text,
-				})
-
-				const mailRes = await this.mailService.sendMail({
-					recipient: createMemberDto.email,
-					content: mailTemplateData,
-				})
-
-				return mailRes
-			},
+		const mailTemplateData = await this.mailTemplateService.getOtpMailData()
+		Object.assign(mailTemplateData.data, {
+			otpValue: otp.value,
+			otpTime: expireTimeFormats(otpExpireTime).text,
 		})
 
-		if (status.error) throw status.error
-		return status.result
+		const mailRes = await this.mailService.sendMail({
+			recipient: createMemberDto.email,
+			content: mailTemplateData,
+		})
+
+		return mailRes
 	}
 
 	@Post('member/otp-verify')
