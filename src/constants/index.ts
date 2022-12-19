@@ -46,6 +46,7 @@ export enum CouponSource {
 	PROMOTION = 'promotion',
 	ACHIEVEMENT = 'achievement',
 	AUTO_SYSTEM = 'auto_system',
+	MANUAL = 'manual',
 }
 
 export enum OrderType {

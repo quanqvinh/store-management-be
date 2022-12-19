@@ -11,6 +11,7 @@ import {
 	CouponActionTimer,
 	CouponActionTimerSchema,
 } from './schemas/coupon-action-timer.schema'
+import { Member, MemberSchema } from '../member/schemas/member.schema'
 
 @Module({
 	imports: [
@@ -18,6 +19,7 @@ import {
 			[
 				{ name: Coupon.name, schema: CouponSchema },
 				{ name: Order.name, schema: OrderSchema },
+				{ name: Member.name, schema: MemberSchema },
 				{ name: CouponActionTimer.name, schema: CouponActionTimerSchema },
 			],
 			DatabaseConnectionName.DATA

@@ -6,7 +6,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types } from 'mongoose'
 import { Member, MemberDocument } from '../member/schemas/member.schema'
-import { CreateAppliedCouponDto } from './dto/create-applied-coupon.dto'
+import { CreateAppliedCouponDto } from './dto/request/create-applied-coupon.dto'
 import { AppliedCoupon } from './schemas/applied-coupon.schema'
 import { UpdateResult } from 'mongodb'
 import { CustomOwnCoupon } from './dto/response/own-coupon.dto'
@@ -24,7 +24,9 @@ export class AppliedCouponService {
 
 		dto.startTime = +dto.startTime
 
-		if (dto.startTime === 0) dto.startTime = Date.now()
+		const now = Date.now()
+
+		if (dto.startTime < now) dto.startTime = now
 
 		const appliedCoupon: AppliedCoupon = {
 			coupon: new Types.ObjectId(dto.couponId),
@@ -36,8 +38,15 @@ export class AppliedCouponService {
 			source: dto.source,
 		}
 
+		const listIds = dto.applyTo.map(id => new Types.ObjectId(id))
+
 		return await this.memberModel.updateMany(
-			{ _id: { $in: dto.memberIds } },
+			{
+				$or: [
+					{ _id: { $in: listIds } },
+					{ 'memberInfo.rank': { $in: listIds } },
+				],
+			},
 			{ $push: { coupons: appliedCoupon } }
 		)
 	}

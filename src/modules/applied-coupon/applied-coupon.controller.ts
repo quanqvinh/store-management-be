@@ -2,7 +2,7 @@ import { JoiValidatePine, ObjectIdValidatePine } from '@/common/pipes'
 import {
 	CreateAppliedCouponDto,
 	CreateAppliedCouponDtoSchema,
-} from './dto/create-applied-coupon.dto'
+} from './dto/request/create-applied-coupon.dto'
 import { Body, Controller, Get, Param, Post } from '@nestjs/common'
 import { AppliedCouponService } from './applied-coupon.service'
 import { JwtAccessTokenGuard, MemberAuth, User } from '@/common/decorators'
@@ -10,6 +10,8 @@ import { NotFoundDataException } from '@/common/exceptions/http'
 import { ApiTags } from '@nestjs/swagger'
 import { CustomOwnCoupon, OwnCouponDto } from './dto/response/own-coupon.dto'
 import { SkipThrottle } from '@nestjs/throttler'
+import { EmployeeRole } from '@/constants'
+import { Auth } from '@/common/decorators/auth.decorator'
 
 @Controller('applied-coupon')
 @ApiTags('applied-coupon')
@@ -17,15 +19,16 @@ export class AppliedCouponController {
 	constructor(private appliedCouponService: AppliedCouponService) {}
 
 	@Post('create')
-	// @JwtAccessTokenGuard()
+	@Auth(EmployeeRole.ADMIN)
 	async create(
 		@Body(new JoiValidatePine(CreateAppliedCouponDtoSchema))
-		createAppliedCouponDto: CreateAppliedCouponDto
+		body: CreateAppliedCouponDto
 	) {
-		const updateResult = await this.appliedCouponService.create(
-			createAppliedCouponDto
-		)
-		return updateResult.matchedCount === updateResult.modifiedCount
+		const updateResult = await this.appliedCouponService.create(body)
+		return {
+			matchedCount: updateResult.matchedCount,
+			modifiedCount: updateResult.modifiedCount,
+		}
 	}
 
 	@Get()

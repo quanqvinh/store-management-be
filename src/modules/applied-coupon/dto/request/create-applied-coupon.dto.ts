@@ -1,18 +1,20 @@
 import { objectIdPattern } from '@/common/validators'
 import { ApplyCouponType, CouponSource, CycleType } from '@/constants'
+import { ApiProperty } from '@nestjs/swagger'
 import * as Joi from 'joi'
 
 export class CreateAppliedCouponDto {
-	memberIds: Array<string>
+	applyTo?: Array<string>
 	couponId: string
 	type: ApplyCouponType
 	cycleType?: CycleType
+	@ApiProperty({ example: CouponSource.MANUAL })
 	source?: CouponSource
 	startTime: number
 }
 
 export const CreateAppliedCouponDtoSchema = Joi.object<CreateAppliedCouponDto>({
-	memberIds: Joi.array()
+	applyTo: Joi.array()
 		.items(Joi.string().pattern(objectIdPattern))
 		.min(1)
 		.required(),

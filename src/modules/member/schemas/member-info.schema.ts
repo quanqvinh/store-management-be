@@ -20,7 +20,7 @@ export class MemberInfo {
 	@Prop({ type: Number, default: 0 })
 	currentPoint: number
 
-	@Prop({ type: Types.ObjectId, ref: 'MemberRank' })
+	@Prop({ type: Types.ObjectId, ref: 'MemberRank', index: 1 })
 	rank: ObjectId
 }
 

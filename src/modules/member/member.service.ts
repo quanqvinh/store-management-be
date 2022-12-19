@@ -56,7 +56,7 @@ export class MemberService {
 			return await this.memberModel.create({
 				...dto,
 				dob,
-				memberInfo: { code, rank: memberRankId },
+				memberInfo: { code, rank: new Types.ObjectId(memberRankId) },
 			})
 		} catch (err) {
 			if (DuplicateKeyException.check(err)) throw new DuplicateKeyException(err)

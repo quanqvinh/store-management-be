@@ -18,15 +18,11 @@ export class OtpService {
 		}
 	}
 
-	async generate(email: string, session: ClientSession) {
+	async generate(email: string) {
 		try {
 			const secret = authenticator.generateSecret()
 			const otp = authenticator.generate(secret)
-			return (
-				await this.otpModel.create([{ email, value: otp, secret }], {
-					session,
-				})
-			)[0]
+			return await this.otpModel.create({ email, value: otp, secret })
 		} catch (err) {
 			console.log(err)
 			throw err
