@@ -44,6 +44,15 @@ export class CouponService {
 		return await this.couponModel.findById(id).lean().exec()
 	}
 
+	async getByListId(ids: string[]): Promise<Coupon[]> {
+		return await this.couponModel
+			.find({
+				_id: { $in: ids.map(id => new Types.ObjectId(id)) },
+			})
+			.lean()
+			.exec()
+	}
+
 	async checkExist(id: string): Promise<boolean> {
 		const count = await this.couponModel
 			.countDocuments({ _id: id })

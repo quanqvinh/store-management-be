@@ -54,8 +54,7 @@ export class OrderService {
 		if (dto.couponId) {
 			const result = await Promise.all([
 				this.memberOrderModel.create(memberOrder),
-				// this.memberService.deleteAppliedCoupon(memberId, dto.couponId),
-				null,
+				this.memberService.deleteAppliedCoupon(memberId, dto.couponId),
 			])
 			return result[0]
 		} else {
@@ -110,7 +109,7 @@ export class OrderService {
 			}),
 			totalPrice: null,
 			payment: dto.payment,
-			paidAmount: dto.paidAmount ?? undefined,
+			paidAmount: dto.paidAmount ?? 0,
 		}
 
 		let sumPrice = 0
@@ -152,6 +151,9 @@ export class OrderService {
 				dto.type
 			)
 			baseOrder.totalPrice -= discountAmount
+			if (baseOrder.paidAmount < baseOrder.totalPrice) {
+				baseOrder.paidAmount = baseOrder.totalPrice
+			}
 			couponInfo = {
 				id: coupon._id,
 				title: coupon.title,
@@ -160,22 +162,25 @@ export class OrderService {
 			}
 		}
 
-		const earnedPoint = await this.calculatePoint(baseOrder.totalPrice)
+		const earnedPoint = await this.calculatePoint(
+			baseOrder.totalPrice,
+			rank.coefficientPoint ?? 1
+		)
 
-		let { order: orderStatusData } =
-			dto.type === OrderType.ON_PREMISES
-				? { order: undefined }
-				: await this.memberAppService.get('order')
+		let { order: orderStatusData } = await this.memberAppService.get('order')
 
 		if (orderStatusData) {
 			orderStatusData = memberAppDefault.order
 		}
 
-		const orderStatus = (
-			dto.type === OrderType.PICKUP
-				? orderStatusData.pickupStatus
-				: orderStatusData.deliveryStatus
-		) as OrderStatusItem[]
+		let orderStatus: OrderStatusItem[]
+		if (dto.type === OrderType.ON_PREMISES) {
+			orderStatus = orderStatusData.onPremiseStatus as OrderStatusItem[]
+		} else if (dto.type === OrderType.PICKUP) {
+			orderStatus = orderStatusData.onPremiseStatus as OrderStatusItem[]
+		} else {
+			orderStatus = orderStatusData.onPremiseStatus as OrderStatusItem[]
+		}
 		orderStatus[0].checked = true
 		orderStatus[0].time = new Date(Date.now())
 
@@ -280,7 +285,7 @@ export class OrderService {
 		return discountAmount
 	}
 
-	private async calculatePoint(price: number) {
+	private async calculatePoint(price: number, coefficientPoint = 1) {
 		const { startMilestone, pointPerUnit, unitStep } = (
 			await this.memberAppService.get('point')
 		)?.point ?? {
@@ -292,7 +297,7 @@ export class OrderService {
 		if (temp < 0) {
 			return 0
 		}
-		return pointPerUnit * (Math.floor(temp / unitStep) + 1)
+		return pointPerUnit * (Math.floor(temp / unitStep) + 1) * coefficientPoint
 	}
 
 	async getOrdersOfStore(storeId: string): Promise<OrderListByStatusDto[]> {

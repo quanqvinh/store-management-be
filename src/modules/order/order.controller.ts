@@ -71,7 +71,7 @@ export class OrderController {
 				type: OrderType.ON_PREMISES,
 				couponId: createOrderBySalespersonDto.couponId,
 			}
-			return await this.orderService.createMemberOrderInfo(
+			return await this.orderService.createMemberOrder(
 				createOrderBySalespersonDto.memberId,
 				createMemberOrderDto
 			)

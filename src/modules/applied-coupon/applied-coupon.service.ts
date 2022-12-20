@@ -20,7 +20,7 @@ export class AppliedCouponService {
 	) {}
 
 	async create(dto: CreateAppliedCouponDto): Promise<UpdateResult> {
-		const coupon = await this.couponService.getById(dto.couponId)
+		const coupons = await this.couponService.getByListId(dto.couponId)
 
 		dto.startTime = +dto.startTime
 
@@ -28,15 +28,15 @@ export class AppliedCouponService {
 
 		if (dto.startTime < now) dto.startTime = now
 
-		const appliedCoupon: AppliedCoupon = {
-			coupon: new Types.ObjectId(dto.couponId),
+		const appliedCoupon: AppliedCoupon[] = coupons.map(coupon => ({
+			coupon: new Types.ObjectId(coupon._id.toString()),
 			type: dto.type,
 			cycleType:
 				dto.type === ApplyCouponType.PERIODIC ? dto.cycleType : undefined,
 			expireAt: new Date(dto.startTime + coupon.amountApplyHour * 3600000),
 			startTime: dto.startTime,
 			source: dto.source,
-		}
+		}))
 
 		const listIds = dto.applyTo.map(id => new Types.ObjectId(id))
 
@@ -47,7 +47,7 @@ export class AppliedCouponService {
 					{ 'memberInfo.rank': { $in: listIds } },
 				],
 			},
-			{ $push: { coupons: appliedCoupon } }
+			{ $push: { coupons: { $each: appliedCoupon } } }
 		)
 	}
 

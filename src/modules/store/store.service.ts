@@ -58,9 +58,6 @@ export class StoreService {
 
 		const filter = {
 			...(query.keyword ? { $text: { $search: query.keyword } } : {}),
-			...(query.category
-				? { category: new Types.ObjectId(query.category) }
-				: {}),
 		}
 
 		const [stores, storesSale] = await Promise.all([

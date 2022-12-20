@@ -109,6 +109,10 @@ export class MemberAppSetting {
 				type: [bookingOrderStatusSchema],
 				_id: false,
 			},
+			onPremiseStatus: {
+				type: [bookingOrderStatusSchema],
+				_id: false,
+			},
 		},
 		_id: false,
 		default: memberAppDefault.order,
@@ -116,6 +120,7 @@ export class MemberAppSetting {
 	order: {
 		deliveryStatus: Array<BookingOrderStatus>
 		pickupStatus: Array<BookingOrderStatus>
+		onPremiseStatus: Array<BookingOrderStatus>
 	}
 }
 

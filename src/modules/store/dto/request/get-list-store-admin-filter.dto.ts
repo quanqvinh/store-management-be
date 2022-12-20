@@ -1,5 +1,4 @@
 import * as Joi from 'joi'
-import { objectIdPattern } from '@/common/validators'
 
 enum SortBy {
 	_id = '_id',
@@ -18,7 +17,6 @@ export enum SortOrder {
 
 export class GetStoreListAdminFilterDto {
 	keyword?: string
-	category?: string
 	sortBy?: SortBy
 	sortOrder?: SortOrder
 }
@@ -26,7 +24,6 @@ export class GetStoreListAdminFilterDto {
 export const GetStoreListAdminFilterDtoSchema =
 	Joi.object<GetStoreListAdminFilterDto>({
 		keyword: Joi.string().min(1).optional(),
-		category: Joi.string().pattern(objectIdPattern).optional(),
 		sortBy: Joi.string()
 			.valid(...Object.values(SortBy))
 			.optional(),
