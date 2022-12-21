@@ -1,3 +1,4 @@
+import { Status } from '@/modules/product/dto/request/get-product-list-admin-filter.dto'
 import * as Joi from 'joi'
 
 enum SortBy {
@@ -17,6 +18,7 @@ export enum SortOrder {
 
 export class GetStoreListAdminFilterDto {
 	keyword?: string
+	status?: Status
 	sortBy?: SortBy
 	sortOrder?: SortOrder
 }
@@ -24,6 +26,9 @@ export class GetStoreListAdminFilterDto {
 export const GetStoreListAdminFilterDtoSchema =
 	Joi.object<GetStoreListAdminFilterDto>({
 		keyword: Joi.string().min(1).optional(),
+		status: Joi.string()
+			.valid(...Object.values(Status))
+			.optional(),
 		sortBy: Joi.string()
 			.valid(...Object.values(SortBy))
 			.optional(),

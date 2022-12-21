@@ -12,9 +12,9 @@ import { Size } from '@/constants'
 export class UpdateInfoCouponDto {
 	title?: string
 	code?: string
-	discount?: Partial<DiscountType>
+	discount?: DiscountType
 	description?: string
-	orderCondition?: Partial<Condition>
+	orderCondition?: Condition
 	applyTime?: number
 }
 

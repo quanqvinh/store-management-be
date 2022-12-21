@@ -26,6 +26,7 @@ import {
 	StoreItemForAdminDto,
 	StoreSaleData,
 } from './dto/response/store-sale.dto'
+import { Status } from '../product/dto/request/get-product-list-admin-filter.dto'
 
 @Injectable()
 export class StoreService {
@@ -58,12 +59,19 @@ export class StoreService {
 
 		const filter = {
 			...(query.keyword ? { $text: { $search: query.keyword } } : {}),
+			...(query.status === Status.DISABLED
+				? { deleted: true }
+				: query.status === Status.ENABLE
+				? { deleted: false }
+				: {}),
 		}
 
 		const [stores, storesSale] = await Promise.all([
 			this.storeModel
 				.find(filter)
-				.select('images mainImage fullAddress name address updatedAt')
+				.select(
+					'images mainImage fullAddress name address updatedAt deleted deletedAt'
+				)
 				.sort(sortOrder + sortBy)
 				.lean({ virtuals: true })
 				.exec(),
@@ -194,6 +202,8 @@ export class StoreService {
 			fullAddress: store['fullAddress'],
 			name: store.name,
 			updatedAt: store.updatedAt,
+			deleted: store.deleted,
+			deletedAt: store.deletedAt,
 			sale: storeSaleMap[store._id.toString()]
 				? storeSaleMap[store._id.toString()]
 				: {

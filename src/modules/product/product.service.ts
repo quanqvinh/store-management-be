@@ -20,6 +20,7 @@ import { Order } from '../order/schemas'
 import {
 	GetProductListAdminFilterDto,
 	SortOrder,
+	Status,
 } from './dto/request/get-product-list-admin-filter.dto'
 import { UpdateProductInfoDto } from './dto/request/update-product-info.dto'
 import { Option } from './schemas/option.schema'
@@ -173,12 +174,19 @@ export class ProductService {
 			...(query.category
 				? { category: new Types.ObjectId(query.category) }
 				: {}),
+			...(query.status === Status.DISABLED
+				? { deleted: true }
+				: query.status === Status.ENABLE
+				? { deleted: false }
+				: {}),
 		}
 
 		const [productList, productInOrder] = await Promise.all([
 			this.productModel
 				.find(filter)
-				.select('name originalPrice category updatedAt images')
+				.select(
+					'name originalPrice category updatedAt images deleted deletedAt'
+				)
 				.populate<{ category: Category }>('category')
 				.sort(sortOrder + sortBy)
 				.lean({ virtuals: ['mainImage'] })
@@ -255,6 +263,8 @@ export class ProductService {
 				saleOfWeek: 0,
 				changedAmount: 0,
 			}),
+			deleted: product.deleted,
+			deletedAt: product.deletedAt,
 		}))
 		return res
 	}
