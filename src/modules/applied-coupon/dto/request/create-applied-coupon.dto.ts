@@ -5,7 +5,7 @@ import * as Joi from 'joi'
 
 export class CreateAppliedCouponDto {
 	applyTo?: Array<string>
-	couponId: string
+	couponId: Array<string>
 	type: ApplyCouponType
 	cycleType?: CycleType
 	@ApiProperty({ example: CouponSource.MANUAL })
@@ -18,7 +18,10 @@ export const CreateAppliedCouponDtoSchema = Joi.object<CreateAppliedCouponDto>({
 		.items(Joi.string().pattern(objectIdPattern))
 		.min(1)
 		.required(),
-	couponId: Joi.string().pattern(objectIdPattern).required(),
+	couponId: Joi.array()
+		.items(Joi.string().pattern(objectIdPattern))
+		.min(1)
+		.required(),
 	type: Joi.string()
 		.valid(...Object.values(ApplyCouponType))
 		.required(),

@@ -1,3 +1,4 @@
+import { AppliedCouponModule } from './../applied-coupon/applied-coupon.module'
 import { Order, OrderSchema } from './schemas/order.schema'
 import { MongooseModule } from '@nestjs/mongoose'
 import { Module } from '@nestjs/common'
@@ -32,6 +33,7 @@ import { MemberRankModule } from '../member-rank/member-rank.module'
 		MemberModule,
 		SettingModule,
 		MemberRankModule,
+		AppliedCouponModule,
 	],
 	controllers: [OrderController],
 	providers: [OrderService, OrderStream],

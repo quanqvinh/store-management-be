@@ -5,9 +5,14 @@ import * as Joi from 'joi'
 
 export class CartItem {
 	itemId: string
-	@ApiProperty({ type: 'number' })
+	@ApiProperty({
+		type: 'number',
+		description: '0 is SMALL, 1 is MEDIUM,  2 is LARGE',
+		example: 0,
+	})
 	size?: Size
 	toppings?: Array<string>
+	@ApiProperty({ example: 1 })
 	amount: number
 	note?: string
 }

@@ -71,5 +71,15 @@ export const memberAppDefault: Partial<MemberAppSetting> = {
 				name: 'Đã hủy đơn',
 			},
 		],
+		onPremiseStatus: [
+			{
+				status: OrderStatus.PROCESSING,
+				name: 'Đơn đang thực hiện',
+			},
+			{
+				status: OrderStatus.DONE,
+				name: 'Hoàn tất',
+			},
+		],
 	},
 }

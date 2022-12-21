@@ -1,9 +1,20 @@
-import { DataNotChangeException } from '@/common/exceptions/http'
+import { CreateAppliedCouponDto } from './../../applied-coupon/dto/request/create-applied-coupon.dto'
+import { AppliedCouponService } from './../../applied-coupon/applied-coupon.service'
+import {
+	DataNotChangeException,
+	NotFoundDataException,
+} from '@/common/exceptions/http'
 import { MemberOrder } from './../schemas/discriminators/member-order.schema'
-import { Buyer, DatabaseConnectionName, OrderStatus } from '@/constants'
-import { Injectable } from '@nestjs/common'
+import {
+	ApplyCouponType,
+	Buyer,
+	CouponSource,
+	DatabaseConnectionName,
+	OrderStatus,
+} from '@/constants'
+import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
+import { Model, Schema } from 'mongoose'
 import {
 	ChangeStreamDocument,
 	ChangeStreamUpdateDocument,
@@ -11,6 +22,9 @@ import {
 } from 'mongodb'
 import { MemberOrderDocument, Order, OrderDocument } from '../schemas'
 import { Member, MemberDocument } from '@/modules/member/schemas/member.schema'
+import { PopulatedMemberInfo } from '@/modules/member/schemas/populate/member.populate'
+import { MemberRankService } from '@/modules/member-rank/member-rank.service'
+import { MemberRank } from '@/modules/member-rank/schemas/member-rank.schema'
 
 @Injectable()
 export class OrderStream {
@@ -20,7 +34,9 @@ export class OrderStream {
 		@InjectModel(Buyer.MEMBER, DatabaseConnectionName.DATA)
 		private readonly memberOrderModel: Model<MemberOrderDocument>,
 		@InjectModel(Member.name, DatabaseConnectionName.DATA)
-		private readonly memberModel: Model<MemberDocument>
+		private readonly memberModel: Model<MemberDocument>,
+		private memberRankService: MemberRankService,
+		private appliedCouponService: AppliedCouponService
 	) {
 		this.watchStream()
 	}
@@ -36,6 +52,14 @@ export class OrderStream {
 					) {
 						await this.accumulatePointMember(updateStream.documentKey._id)
 					}
+				}
+			} else if (data.operationType === 'insert') {
+				if ((data.fullDocument as MemberOrder)?.member.id) {
+					const insertedData = data.fullDocument as MemberOrder
+					await this.updateMemberPoint(
+						insertedData.member.id,
+						insertedData.earnedPoint
+					)
 				}
 			}
 		})
@@ -87,5 +111,77 @@ export class OrderStream {
 			.exec()
 		if (updateStatus.modifiedCount) console.log('Accumulate point successful')
 		else console.log('Accumulate point failed')
+	}
+
+	private async updateMemberPoint(
+		memberId: Schema.Types.ObjectId,
+		point: number
+	) {
+		const { memberInfo } = await this.memberModel
+			.findById(memberId)
+			.orFail(new NotFoundDataException('member'))
+			.select('memberInfo')
+			.populate<{ memberInfo: PopulatedMemberInfo }>('memberInfo.rank')
+			.lean({ virtuals: true })
+			.exec()
+		const totalPoint = memberInfo.totalPoint + point
+		let currentRank: Schema.Types.ObjectId
+
+		try {
+			const nextRank = await this.memberRankService.getOne({
+				rank: memberInfo.rank.rank + 1,
+			})
+			if (totalPoint >= nextRank.condition) {
+				currentRank = nextRank._id
+				this.rankUpMember(memberId, nextRank)
+			}
+		} catch {
+			currentRank = memberInfo.rank._id
+		}
+
+		const updatedMember = await this.memberModel.updateOne(
+			{ _id: memberId },
+			{
+				'memberInfo.currentPoint': memberInfo.currentPoint + point,
+				'memberInfo.rank': currentRank,
+			}
+		)
+
+		if (updatedMember) {
+			Logger.verbose(
+				`Accumulate ${point} points to ${memberId} successful`,
+				'OrderStream'
+			)
+		} else {
+			Logger.verbose(`Accumulate point to ${memberId} failed`, 'OrderStream')
+		}
+	}
+
+	private async rankUpMember(
+		memberId: Schema.Types.ObjectId,
+		rank: MemberRank
+	) {
+		const dto: CreateAppliedCouponDto = {
+			applyTo: [memberId.toString()],
+			couponId: rank.coupons.map(coupon => coupon.toString()),
+			type: ApplyCouponType.ONCE,
+			source: CouponSource.GIFT,
+			startTime: 0,
+		}
+		const updateResult = await this.appliedCouponService.create(dto)
+		if (updateResult.modifiedCount) {
+			const numberCoupon = rank.coupons.length
+			Logger.verbose(
+				`Send ${numberCoupon} gift${numberCoupon > 1 ? 's' : ''} of rank ${
+					rank.name
+				} to member ${memberId} successful`,
+				'OrderStream'
+			)
+		} else {
+			Logger.verbose(
+				`Send gift of rank ${rank.name} to member ${memberId} failed`,
+				'OrderStream'
+			)
+		}
 	}
 }

@@ -1,3 +1,4 @@
+import { NotFoundDataException } from '@/common/exceptions/http'
 import { DatabaseConnectionName } from '@/constants'
 import { File } from '@/types'
 import { Injectable } from '@nestjs/common'
@@ -62,6 +63,7 @@ export class MemberRankService {
 	}): Promise<MemberRank> {
 		return await this.memberRankModel
 			.findOne({ $or: [{ _id: id }, { rank }] })
+			.orFail(new NotFoundDataException('member rank'))
 			.exec()
 	}
 }
