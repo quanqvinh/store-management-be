@@ -22,6 +22,7 @@ import {
 	NotModifiedDataException,
 } from '@/common/exceptions/http'
 import { Member, MemberDocument } from '../member/schemas/member.schema'
+import { Status } from '../product/dto/request/get-product-list-admin-filter.dto'
 
 @Injectable()
 export class CouponService {
@@ -100,6 +101,11 @@ export class CouponService {
 
 		const filter = {
 			...(query.keyword ? { $text: { $search: query.keyword } } : {}),
+			...(query.status === Status.DISABLED
+				? { deleted: true }
+				: query.status === Status.ENABLE
+				? { deleted: false }
+				: {}),
 		}
 
 		type CouponWithUsedTime = Pick<CouponItemForAdmin, 'code' | 'usedTime'>

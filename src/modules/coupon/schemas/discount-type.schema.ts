@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger'
 import { Size } from '@/constants'
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Types } from 'mongoose'
@@ -9,6 +10,11 @@ export class Percentage {
 
 export class NewPriceDiscount {
 	product: Types.ObjectId
+	@ApiProperty({
+		type: 'number',
+		description: '0 is SMALL, 1 is MEDIUM,  2 is LARGE',
+		example: 0,
+	})
 	size: Size
 	amount?: number
 	newPrice: number

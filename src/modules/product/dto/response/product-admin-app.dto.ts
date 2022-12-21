@@ -7,7 +7,8 @@ export class ProductItemForAdmin extends PickType(ProductWithVirtuals, [
 	'name',
 	'originalPrice',
 	'mainImage',
-	'updatedAt',
+	'deleted',
+	'deletedAt',
 ]) {
 	saleOfWeek?: number
 	changedAmount?: number
