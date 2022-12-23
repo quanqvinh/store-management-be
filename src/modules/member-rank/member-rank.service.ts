@@ -54,6 +54,15 @@ export class MemberRankService {
 		})
 	}
 
+	async getAllShortData() {
+		return await this.memberRankModel
+			.find()
+			.select('name display rank')
+			.sort('rank')
+			.lean()
+			.exec()
+	}
+
 	async getOne({
 		id,
 		rank,

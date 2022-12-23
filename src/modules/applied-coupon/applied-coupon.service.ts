@@ -10,14 +10,29 @@ import { CreateAppliedCouponDto } from './dto/request/create-applied-coupon.dto'
 import { AppliedCoupon } from './schemas/applied-coupon.schema'
 import { UpdateResult } from 'mongodb'
 import { CustomOwnCoupon } from './dto/response/own-coupon.dto'
+import { MemberRankService } from '../member-rank/member-rank.service'
+import { DataToCreate } from './dto/response/get-data-to-create.dto'
 
 @Injectable()
 export class AppliedCouponService {
 	constructor(
 		@InjectModel(Member.name, DatabaseConnectionName.DATA)
 		private readonly memberModel: Model<MemberDocument>,
-		private couponService: CouponService
+		private couponService: CouponService,
+		private memberRankService: MemberRankService
 	) {}
+
+	async getDataToCreate(): Promise<DataToCreate> {
+		const [memberRanks, coupons] = await Promise.all([
+			this.memberRankService.getAllShortData(),
+			this.couponService.getAllShortData(),
+		])
+
+		return {
+			memberRanks,
+			coupons,
+		}
+	}
 
 	async create(dto: CreateAppliedCouponDto): Promise<UpdateResult> {
 		const coupons = await this.couponService.getByListId(dto.couponId)

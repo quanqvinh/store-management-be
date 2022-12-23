@@ -3,6 +3,12 @@ import { ObjectId, Document, Types } from 'mongoose'
 
 export type MemberRankDocument = MemberRank & Document
 
+export class MemberRankDisplay {
+	icon: string
+	color: string
+	background: string
+}
+
 @Schema({ versionKey: false, collection: 'member_ranks' })
 export class MemberRank {
 	_id: ObjectId
@@ -22,11 +28,7 @@ export class MemberRank {
 		required: true,
 		_id: false,
 	})
-	display: {
-		icon: string
-		color: string
-		background: string
-	}
+	display: MemberRankDisplay
 
 	@Prop({ type: Number, required: true, min: 0, default: 0 })
 	condition: number

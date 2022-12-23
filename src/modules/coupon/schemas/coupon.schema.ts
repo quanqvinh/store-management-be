@@ -1,5 +1,5 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose'
-import { ObjectId, Document, Types } from 'mongoose'
+import { ObjectId, Document } from 'mongoose'
 import { DiscountType, DiscountTypeSchema } from './discount-type.schema'
 import { Condition, ConditionSchema } from './condition.schema'
 import {
@@ -19,14 +19,14 @@ export type CouponDocument = Coupon & Document
 export class Coupon {
 	_id: ObjectId
 
-	@Prop({ type: String, required: true })
+	@Prop({ type: String, required: true, index: 'text' })
 	title: string
 
 	@Prop({
 		type: String,
 		required: true,
 		unique: true,
-		index: 1,
+		index: 'text',
 		set: (v: string) => v.toUpperCase(),
 	})
 	code: string

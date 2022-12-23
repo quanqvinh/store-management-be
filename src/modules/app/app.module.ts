@@ -28,6 +28,7 @@ import { CouponModule } from '../coupon/coupon.module'
 import { AppliedCouponModule } from '../applied-coupon/applied-coupon.module'
 import { CartModule } from '../cart/cart.module'
 import { OrderModule } from '../order/order.module'
+import { PromotionModule } from '../promotion/promotion.module'
 
 const THROTTLER_TTL = 60
 const THROTTLER_LIMIT = 10
@@ -73,6 +74,7 @@ const THROTTLER_LIMIT = 10
 		AppliedCouponModule,
 		CartModule,
 		OrderModule,
+		PromotionModule,
 		ThrottlerModule.forRoot({
 			ttl: THROTTLER_TTL,
 			limit: THROTTLER_LIMIT,

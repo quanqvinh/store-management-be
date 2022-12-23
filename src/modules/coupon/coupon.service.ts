@@ -41,6 +41,14 @@ export class CouponService {
 		return await this.couponModel.find().lean().exec()
 	}
 
+	async getAllShortData() {
+		return await this.couponModel
+			.find()
+			.select('title code image')
+			.lean()
+			.exec()
+	}
+
 	async getById(id: string): Promise<Coupon> {
 		return await this.couponModel.findById(id).lean().exec()
 	}

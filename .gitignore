@@ -34,3 +34,5 @@ lerna-debug.log*
 .development.env
 
 /data
+
+/.vscode/settings.json

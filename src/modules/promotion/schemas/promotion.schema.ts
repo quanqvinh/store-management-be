@@ -1,51 +1,68 @@
-// import {
-// 	Category,
-// 	CategorySchema,
-// } from '@/modules/product/schemas/category.schema'
-// import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-// import { Types, ObjectId, Document } from 'mongoose'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { Types, ObjectId, Document } from 'mongoose'
+import mongooseDelete from 'mongoose-delete'
 
-// export type PromotionDocument = Document & Promotion
+export type PromotionDocument = Document & Promotion
 
-// @Schema({ versionKey: false, timestamps: true })
-// export class Promotion {
-// 	_id: ObjectId
+export class PromotionPrivilege {
+	applyTo: ObjectId
+	beginTime: Date
+	endTime?: Date
+	limit?: number
+	sold?: number
+}
 
-// 	@Prop({ type: String, required: true })
-// 	title: string
+@Schema({ versionKey: false, timestamps: true })
+export class Promotion {
+	_id?: ObjectId
 
-// 	@Prop({ type: Types.ObjectId, ref: 'Coupon', required: true })
-// 	reward: ObjectId
+	@Prop({ type: String, required: true, index: 'text' })
+	title: string
 
-// 	@Prop({ type: Number, required: true })
-// 	cost: number
+	@Prop({ type: String })
+	description?: string
 
-// 	@Prop({
-// 		type: {
-// 			applyTo: { type: Types.ObjectId, required: true, ref: 'MemberRank' },
-// 			beginDay: { type: Date, required: true },
-// 			endDay: { type: Date },
-// 			limit: { type: Number },
-// 			inStock: { type: Number },
-// 		},
-// 		required: true,
-// 	})
-// 	privilege: Array<{
-// 		applyTo: ObjectId
-// 		beginDay: Date
-// 		endDay: Date
-// 		limit: number
-// 		inStock: number
-// 	}>
+	@Prop({
+		type: Types.ObjectId,
+		ref: 'Coupon',
+		required: true,
+	})
+	coupon: ObjectId
 
-// 	@Prop({ type: Types.ObjectId, ref: 'Partner' })
-// 	partner: ObjectId
+	@Prop({ type: Number, required: true })
+	cost: number
 
-// 	@Prop({ type: CategorySchema, required: true })
-// 	category: Category
+	@Prop({
+		type: [
+			{
+				applyTo: { type: Types.ObjectId, required: true, ref: 'MemberRank' },
+				beginTime: { type: Date, required: true },
+				endTime: { type: Date },
+				limit: { type: Number, default: 0 },
+				sold: { type: Number, default: 0 },
+			},
+		],
+		required: true,
+		_id: false,
+	})
+	privilege: Array<PromotionPrivilege>
 
-// 	createAt: Date
-// 	updatedAt: Date
-// }
+	@Prop({
+		type: [{ type: Types.ObjectId, ref: 'Member' }],
+		_id: false,
+		default: [],
+	})
+	ignoreMembers: ObjectId[]
 
-// export const PromotionSchema = SchemaFactory.createForClass(Promotion)
+	@Prop({ type: Boolean, default: false })
+	opening: boolean
+
+	createAt?: Date
+	updatedAt?: Date
+	deleted?: boolean
+	deletedAt?: Date
+}
+
+export const PromotionSchema = SchemaFactory.createForClass(Promotion)
+
+PromotionSchema.plugin(mongooseDelete, { deletedAt: true })

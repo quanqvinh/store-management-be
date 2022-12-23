@@ -3,10 +3,11 @@ import * as Joi from 'joi'
 
 enum SortBy {
 	_id = '_id',
-	name = 'name',
-	fullAddress = 'fullAddress',
-	sale = 'sale',
-	updatedAt = 'updatedAt',
+	title = 'title',
+	cost = 'cost',
+	opening = 'opening',
+	deleted = 'deleted',
+	coupon = 'coupon',
 }
 
 export enum SortOrder {
@@ -14,15 +15,15 @@ export enum SortOrder {
 	DESC = 'desc',
 }
 
-export class GetStoreListAdminFilterDto {
+export class GetPromotionListAdminFilterDto {
 	keyword?: string
 	status?: Status
 	sortBy?: SortBy
 	sortOrder?: SortOrder
 }
 
-export const GetStoreListAdminFilterDtoSchema =
-	Joi.object<GetStoreListAdminFilterDto>({
+export const GetPromotionListAdminFilterDtoSchema =
+	Joi.object<GetPromotionListAdminFilterDto>({
 		keyword: Joi.string().min(1).optional(),
 		status: Joi.string()
 			.valid(...Object.values(Status))
