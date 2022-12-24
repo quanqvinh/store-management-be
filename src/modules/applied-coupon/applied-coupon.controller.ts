@@ -18,10 +18,10 @@ import { Auth } from '@/common/decorators/auth.decorator'
 export class AppliedCouponController {
 	constructor(private appliedCouponService: AppliedCouponService) {}
 
-	@Get('data')
+	@Get('relation-data')
 	@SkipThrottle()
-	async getDataToCreate() {
-		return await this.appliedCouponService.getDataToCreate()
+	async getRelationData() {
+		return await this.appliedCouponService.getRelationData()
 	}
 
 	@Post('create')

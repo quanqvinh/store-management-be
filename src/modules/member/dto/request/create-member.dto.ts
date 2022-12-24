@@ -19,7 +19,7 @@ export const CreateMemberDtoSchema = Joi.object({
 	mobile: Joi.string().required().pattern(mobilePattern),
 	firstName: Joi.string().required().pattern(namePattern),
 	lastName: Joi.string().required().pattern(namePattern),
-	dob: Joi.date().max('now').format('DD-MM-YYYY').required(),
+	dob: Joi.date().max('now').format('YYYY-MM-DD').required(),
 	gender: Joi.string()
 		.valid(...Object.values(Gender))
 		.required(),

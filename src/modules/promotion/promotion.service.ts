@@ -15,14 +15,35 @@ import {
 	PromotionItemAdminDto,
 	ShortCoupon,
 } from './dto/response/promotion-item-admin.dto'
+import { UpdatePromotionDto } from './dto/request/update-promotion.đto'
+import {
+	NotFoundDataException,
+	NotModifiedDataException,
+} from '@/common/exceptions/http'
+import {
+	PromotionActionTimer,
+	PromotionActionTimerDocument,
+} from './schemas/promotion-action-timer.schema'
+import { MemberRankService } from '../member-rank/member-rank.service'
+import { GetRelationDataDto } from './dto/response/get-relation-data.dto'
 
 @Injectable()
 export class PromotionService {
 	constructor(
 		@InjectModel(Promotion.name, DatabaseConnectionName.DATA)
 		private readonly promotionModel: Model<PromotionDocument>,
-		private memberService: MemberService
+		@InjectModel(PromotionActionTimer.name, DatabaseConnectionName.DATA)
+		private readonly promotionActionTimerModel: Model<PromotionActionTimerDocument>,
+		private memberService: MemberService,
+		private memberRankService: MemberRankService
 	) {}
+
+	async getRelationData(): Promise<GetRelationDataDto> {
+		const memberRanks = await this.memberRankService.getAllShortData()
+		return {
+			memberRanks,
+		}
+	}
 
 	async create(data: CreatePromotionDto) {
 		return await this.promotionModel.create({
@@ -146,9 +167,75 @@ export class PromotionService {
 		})
 	}
 
-	async update() {}
+	async update(id: string, body: UpdatePromotionDto) {
+		for (const key in body) {
+			if (body[key]) continue
+			delete body[key]
+		}
 
-	async disable() {}
+		const updateResult = await this.promotionModel
+			.updateOne(
+				{ _id: id },
+				{
+					...body,
+				}
+			)
+			.exec()
+		return updateResult.matchedCount === 1
+	}
 
-	async enable() {}
+	async disable(id: string, isFlag = false): Promise<boolean> {
+		const updateResult = await this.promotionModel
+			.updateOne(
+				{
+					...(isFlag ? { disableFlag: new Types.ObjectId(id) } : { _id: id }),
+				},
+				{
+					deleted: true,
+					deletedAt: new Date(),
+					$unset: { disableFlag: 1 },
+				}
+			)
+			.orFail(new NotModifiedDataException())
+			.exec()
+		return updateResult.modifiedCount === 1
+	}
+
+	async addDisableFlag(couponId: string, timer: number) {
+		await this.promotionModel
+			.findOne({ _id: couponId })
+			.orFail(new NotFoundDataException('promotion'))
+			.exec()
+		const flagId = new Types.ObjectId()
+		const [flag, couponUpdateStatus] = await Promise.all([
+			this.promotionActionTimerModel.create({
+				_id: flagId,
+				expireAt: timer,
+			}),
+			this.promotionModel
+				.updateOne(
+					{ _id: couponId },
+					{
+						disableFlag: flagId,
+					}
+				)
+				.orFail(new NotModifiedDataException())
+				.exec(),
+		])
+		return !!flag && couponUpdateStatus.modifiedCount === 1
+	}
+
+	async enable(couponId: string): Promise<boolean> {
+		const updateResult = await this.promotionModel
+			.updateOne(
+				{ _id: couponId },
+				{
+					$set: { deleted: false },
+					$unset: { deletedAt: 1, disableFlag: 1 },
+				}
+			)
+			.orFail(new NotModifiedDataException())
+			.exec()
+		return updateResult.modifiedCount === 1
+	}
 }

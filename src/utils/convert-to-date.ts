@@ -3,7 +3,7 @@
  * @param {string} s date text in the right format
  * @param {string} format format of day, month and year
  */
-export const stringToDate = (s: string, format = 'DD-MM-YYYY') => {
+export const stringToDate = (s: string, format = 'YYYY-MM-DD') => {
 	const iYear = format.search('YYYY') ?? format.search('yyyy')
 	const iMonth = format.search('MM') ?? format.search('mm')
 	const iDay = format.search('DD') ?? format.search('dd')

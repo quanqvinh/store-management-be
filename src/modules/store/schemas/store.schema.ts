@@ -83,7 +83,7 @@ export class Store {
 	openedStatus: boolean
 
 	@Prop({ type: Types.ObjectId })
-	disableFlag: ObjectId | string
+	disableFlag?: ObjectId | string
 
 	// @Prop([
 	// 	{
