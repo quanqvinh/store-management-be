@@ -22,7 +22,7 @@ export class AppliedCouponService {
 		private memberRankService: MemberRankService
 	) {}
 
-	async getDataToCreate(): Promise<DataToCreate> {
+	async getRelationData(): Promise<DataToCreate> {
 		const [memberRanks, coupons] = await Promise.all([
 			this.memberRankService.getAllShortData(),
 			this.couponService.getAllShortData(),

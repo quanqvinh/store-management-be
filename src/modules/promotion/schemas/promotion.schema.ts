@@ -57,6 +57,9 @@ export class Promotion {
 	@Prop({ type: Boolean, default: false })
 	opening: boolean
 
+	@Prop({ type: Types.ObjectId })
+	disableFlag?: ObjectId | string
+
 	createAt?: Date
 	updatedAt?: Date
 	deleted?: boolean
