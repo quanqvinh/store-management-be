@@ -2,10 +2,11 @@ import { objectIdPattern } from '@/common/validators'
 import { ApplyCouponType, CouponSource, CycleType } from '@/constants'
 import { ApiProperty } from '@nestjs/swagger'
 import * as Joi from 'joi'
+import { Types } from 'mongoose'
 
 export class CreateAppliedCouponDto {
-	applyTo?: Array<string>
-	couponId: Array<string>
+	applyTo?: Array<string | Types.ObjectId>
+	couponId: Array<string | Types.ObjectId>
 	type: ApplyCouponType
 	cycleType?: CycleType
 	@ApiProperty({ example: CouponSource.MANUAL })

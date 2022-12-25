@@ -1,8 +1,12 @@
 import { InjectModel } from '@nestjs/mongoose'
 import { CreatePromotionDto } from './dto/request/create-promotion.dto'
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { Promotion, PromotionDocument } from './schemas/promotion.schema'
-import { DatabaseConnectionName } from '@/constants'
+import {
+	ApplyCouponType,
+	CouponSource,
+	DatabaseConnectionName,
+} from '@/constants'
 import { Model, Types } from 'mongoose'
 import { MemberService } from '../member/member.service'
 import {
@@ -26,6 +30,10 @@ import {
 } from './schemas/promotion-action-timer.schema'
 import { MemberRankService } from '../member-rank/member-rank.service'
 import { GetRelationDataDto } from './dto/response/get-relation-data.dto'
+import { AppliedCouponService } from '../applied-coupon/applied-coupon.service'
+import { CreateAppliedCouponDto } from '../applied-coupon/dto/request/create-applied-coupon.dto'
+import { Member, MemberDocument } from '../member/schemas/member.schema'
+import { MemberInfo } from '../member/schemas/member-info.schema'
 
 @Injectable()
 export class PromotionService {
@@ -34,8 +42,11 @@ export class PromotionService {
 		private readonly promotionModel: Model<PromotionDocument>,
 		@InjectModel(PromotionActionTimer.name, DatabaseConnectionName.DATA)
 		private readonly promotionActionTimerModel: Model<PromotionActionTimerDocument>,
+		@InjectModel(Member.name, DatabaseConnectionName.DATA)
+		private readonly memberModel: Model<MemberDocument>,
 		private memberService: MemberService,
-		private memberRankService: MemberRankService
+		private memberRankService: MemberRankService,
+		private appliedCouponService: AppliedCouponService
 	) {}
 
 	async getRelationData(): Promise<GetRelationDataDto> {
@@ -237,5 +248,119 @@ export class PromotionService {
 			.orFail(new NotModifiedDataException())
 			.exec()
 		return updateResult.modifiedCount === 1
+	}
+
+	async exchangeCoupon(memberId: string, promotionId: string) {
+		const [member, promotion] = await Promise.all([
+			this.memberModel
+				.findById(memberId)
+				.orFail(new NotFoundDataException('member'))
+				.exec(),
+			this.promotionModel
+				.findById(promotionId)
+				.orFail(new NotFoundDataException('promotion'))
+				.exec(),
+		])
+		if (!this.checkValid(memberId, member.memberInfo, promotion as Promotion)) {
+			throw new BadRequestException('Validate member failed')
+		}
+
+		const appliedCouponData: CreateAppliedCouponDto = {
+			applyTo: [new Types.ObjectId(memberId)],
+			couponId: [new Types.ObjectId(promotion.coupon.toString())],
+			type: ApplyCouponType.ONCE,
+			source: CouponSource.PROMOTION,
+			startTime: 0,
+		}
+
+		const appliedCoupon = (
+			await this.appliedCouponService.createAppliedCoupon(appliedCouponData)
+		)[0]
+
+		Object.assign(member.memberInfo, {
+			currentPoint: member.memberInfo.currentPoint - promotion.cost,
+			usedPoint: member.memberInfo.usedPoint + promotion.cost,
+		})
+
+		member.coupons.push(appliedCoupon)
+
+		promotion.ignoreMembers.push(new Types.ObjectId(memberId))
+		const privilegeIndex = promotion.privilege.findIndex(
+			p => p.applyTo.toString() === member.memberInfo.rank.toString()
+		)
+		promotion.privilege[privilegeIndex].sold++
+
+		// return {
+		// 	member,
+		// 	promotion,
+		// }
+
+		const [savedMember, savedPromotion] = await Promise.all([
+			member.save(),
+			promotion.save(),
+		])
+
+		return savedMember === member && savedPromotion === promotion
+
+		// const [updateMemberStatus, updatePromotionStatus] = await Promise.all([
+		// 	this.appliedCouponService.create(appliedCouponData),
+		// 	this.promotionModel.updateOne(
+		// 		{ _id: promotionId },
+		// 		{
+		// 			$push: { ignoreMembers: new Types.ObjectId(memberId) },
+		// 		}
+		// 	),
+		// ])
+
+		// if (updateMemberStatus.modifiedCount === 0) {
+		// 	console.log('Coupon is not applied to member')
+		// 	return false
+		// } else if (updatePromotionStatus.modifiedCount === 0) {
+		// 	console.log('Promotion ignore member failed')
+		// 	return false
+		// }
+		// return true
+	}
+
+	private checkValid(
+		memberId: string,
+		memberInfo: MemberInfo,
+		promotion: Promotion
+	) {
+		if (
+			promotion.ignoreMembers.findIndex(id => id.toString() === memberId) >= 0
+		) {
+			return false
+		}
+
+		if (memberInfo.currentPoint < promotion.cost) {
+			console.log('Not enough point')
+			return false
+		}
+
+		const privilege = promotion.privilege.find(
+			privilege => privilege.applyTo.toString() === memberInfo.rank.toString()
+		)
+		if (!privilege) {
+			console.log('Not have privilege')
+			return false
+		}
+
+		const now = Date.now()
+		if (privilege?.beginTime.getTime() > now) {
+			console.log('Not started yet')
+			return false
+		}
+		if (privilege.endTime && privilege.endTime.getTime() < now) {
+			console.log('Been end')
+			return false
+		}
+
+		if (privilege.limit && privilege.sold >= privilege.limit) {
+			console.log('Sold out')
+			return false
+		}
+
+		return true
 	}
 }

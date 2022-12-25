@@ -16,13 +16,13 @@ export class AppliedCoupon {
 	@Prop({ type: Types.ObjectId, required: true, ref: 'Coupon' })
 	coupon: Types.ObjectId | string
 
-	@Prop({ type: String, enum: Object.keys(ApplyCouponType), required: true })
+	@Prop({ type: String, enum: Object.values(ApplyCouponType), required: true })
 	type: ApplyCouponType
 
 	@Prop({ type: String, enum: Object.values(CycleType) })
 	cycleType?: CycleType
 
-	@Prop({ type: Date, index: { expireAfterSeconds: 0, index: true } })
+	@Prop({ type: Date })
 	expireAt: Date
 
 	@Prop({ type: Number, required: true })
@@ -34,6 +34,9 @@ export class AppliedCoupon {
 		default: CouponSource.AUTO_SYSTEM,
 	})
 	source: CouponSource
+
+	@Prop({ type: Types.ObjectId })
+	expireFlagId?: Types.ObjectId
 
 	createdAt?: Date
 }

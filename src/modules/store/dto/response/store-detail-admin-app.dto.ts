@@ -1,4 +1,4 @@
-import { PickType } from '@nestjs/swagger'
+import { OmitType, PickType } from '@nestjs/swagger'
 import { Store } from '../../schemas/store.schema'
 import { Product } from '@/modules/product/schemas/product.schema'
 
@@ -10,7 +10,9 @@ class ProductInShort extends PickType(Product, [
 	mainImage: string
 }
 
+class StoreAdminDto extends OmitType(Store, ['disableFlag', 'slug']) {}
+
 export class StoreDetailForAdminDto {
-	storeDetail: Store
+	storeDetail: StoreAdminDto
 	allProductsInShort: ProductInShort[]
 }
