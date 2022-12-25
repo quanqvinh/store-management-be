@@ -12,12 +12,18 @@ import { UpdateResult } from 'mongodb'
 import { CustomOwnCoupon } from './dto/response/own-coupon.dto'
 import { MemberRankService } from '../member-rank/member-rank.service'
 import { DataToCreate } from './dto/response/get-data-to-create.dto'
+import {
+	AppliedCouponActionTimer,
+	AppliedCouponActionTimerDocument,
+} from './schemas/applied-coupon-action-timer.schema'
 
 @Injectable()
 export class AppliedCouponService {
 	constructor(
 		@InjectModel(Member.name, DatabaseConnectionName.DATA)
 		private readonly memberModel: Model<MemberDocument>,
+		@InjectModel(AppliedCouponActionTimer.name, DatabaseConnectionName.DATA)
+		private readonly appliedCouponActionTimerModel: Model<AppliedCouponActionTimerDocument>,
 		private couponService: CouponService,
 		private memberRankService: MemberRankService
 	) {}
@@ -34,8 +40,10 @@ export class AppliedCouponService {
 		}
 	}
 
-	async create(dto: CreateAppliedCouponDto): Promise<UpdateResult> {
-		const coupons = await this.couponService.getByListId(dto.couponId)
+	async createAppliedCoupon(dto: CreateAppliedCouponDto) {
+		const coupons = await this.couponService.getByListId(
+			dto.couponId.map(id => id.toString())
+		)
 
 		dto.startTime = +dto.startTime
 
@@ -43,27 +51,51 @@ export class AppliedCouponService {
 
 		if (dto.startTime < now) dto.startTime = now
 
-		const appliedCoupon: AppliedCoupon[] = coupons.map(coupon => ({
-			coupon: new Types.ObjectId(coupon._id.toString()),
-			type: dto.type,
-			cycleType:
-				dto.type === ApplyCouponType.PERIODIC ? dto.cycleType : undefined,
-			expireAt: new Date(dto.startTime + coupon.amountApplyHour * 3600000),
-			startTime: dto.startTime,
-			source: dto.source,
-		}))
+		const flagList: AppliedCouponActionTimer[] = []
+
+		const appliedCoupons: AppliedCoupon[] = coupons.map(coupon => {
+			const flagId = new Types.ObjectId()
+			const expireAt = new Date(
+				dto.startTime + coupon.amountApplyHour * 3600000
+			)
+			flagList.push({
+				_id: flagId,
+				expireAt: expireAt,
+			})
+			return {
+				coupon: new Types.ObjectId(coupon._id.toString()),
+				type: dto.type,
+				cycleType:
+					dto.type === ApplyCouponType.PERIODIC ? dto.cycleType : undefined,
+				expireAt: expireAt,
+				startTime: dto.startTime,
+				source: dto.source,
+				expireFlagId: flagId,
+			}
+		})
+
+		return { appliedCoupons, flagList }
+	}
+
+	async create(dto: CreateAppliedCouponDto): Promise<UpdateResult> {
+		const { appliedCoupons, flagList } = await this.createAppliedCoupon(dto)
 
 		const listIds = dto.applyTo.map(id => new Types.ObjectId(id))
 
-		return await this.memberModel.updateMany(
-			{
-				$or: [
-					{ _id: { $in: listIds } },
-					{ 'memberInfo.rank': { $in: listIds } },
-				],
-			},
-			{ $push: { coupons: { $each: appliedCoupon } } }
-		)
+		const [updateMemberResult, _createdFlags] = await Promise.all([
+			this.memberModel.updateMany(
+				{
+					$or: [
+						{ _id: { $in: listIds } },
+						{ 'memberInfo.rank': { $in: listIds } },
+					],
+				},
+				{ $push: { coupons: { $each: appliedCoupons } } }
+			),
+			this.appliedCouponActionTimerModel.create([...flagList]),
+		])
+
+		return updateMemberResult
 	}
 
 	async getAllOfOne(memberId: string) {

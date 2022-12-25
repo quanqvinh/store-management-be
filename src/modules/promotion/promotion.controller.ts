@@ -87,4 +87,13 @@ export class PromotionController {
 	async enableProduct(@Param('id', ObjectIdValidatePine) productId: string) {
 		return await this.promotionService.enable(productId)
 	}
+
+	@Post('apply/:id')
+	@JwtAccessTokenGuard()
+	async exchangeCoupon(
+		@User() member: MemberAuth,
+		@Param('id', ObjectIdValidatePine) promotionId: string
+	) {
+		return await this.promotionService.exchangeCoupon(member.id, promotionId)
+	}
 }

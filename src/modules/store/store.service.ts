@@ -216,7 +216,11 @@ export class StoreService {
 	}
 
 	async getDetailForAdmin(storeId: string): Promise<StoreDetailForAdminDto> {
-		const storeDetail = await this.storeModel.findById(storeId).lean().exec()
+		const storeDetail = await this.storeModel
+			.findById(storeId)
+			.select('-slug -disableFlag')
+			.lean()
+			.exec()
 		const allProductsInShort = await this.productModel
 			.find()
 			.select('name images mainImage originalPrice')

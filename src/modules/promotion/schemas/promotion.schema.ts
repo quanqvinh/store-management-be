@@ -52,7 +52,7 @@ export class Promotion {
 		_id: false,
 		default: [],
 	})
-	ignoreMembers: ObjectId[]
+	ignoreMembers: Types.ObjectId[]
 
 	@Prop({ type: Boolean, default: false })
 	opening: boolean
