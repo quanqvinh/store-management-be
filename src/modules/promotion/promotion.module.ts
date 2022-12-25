@@ -11,6 +11,7 @@ import {
 	PromotionActionTimerSchema,
 } from './schemas/promotion-action-timer.schema'
 import { MemberRankModule } from '../member-rank/member-rank.module'
+import { AppliedCouponModule } from '../applied-coupon/applied-coupon.module'
 
 @Module({
 	imports: [
@@ -24,6 +25,7 @@ import { MemberRankModule } from '../member-rank/member-rank.module'
 		CouponModule,
 		MemberModule,
 		MemberRankModule,
+		AppliedCouponModule,
 	],
 	controllers: [PromotionController],
 	providers: [PromotionService],

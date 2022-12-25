@@ -120,6 +120,24 @@ export class StoreController {
 		)
 	}
 
+	@Post(':id/update-image')
+	// @Auth(EmployeeRole.ADMIN)
+	@UseInterceptors(FilesInterceptor('newImages'))
+	@ApiConsumes('multipart/form-data')
+	async updateStoreImage_test(
+		@Param('id', ObjectIdValidatePine) storeId: string,
+		@UploadedFiles() newImages: Array<File>,
+		@Body(new JoiValidatePine(UpdateStoreImageDtoSchema))
+		body: UpdateStoreImageDto
+	) {
+		const newImageIds = newImages.map(file => '' + file.id.toString())
+		return await this.storeService.updateStoreImage(
+			storeId,
+			newImageIds,
+			body.deletedImages
+		)
+	}
+
 	@Patch(':id/disable')
 	// @Auth(EmployeeRole.ADMIN)
 	async disableProduct(
