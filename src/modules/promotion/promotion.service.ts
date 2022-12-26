@@ -124,6 +124,7 @@ export class PromotionService {
 						applyTo: 0,
 						privilege: 0,
 						coupon: 0,
+						ignoreMembers: 0,
 					},
 				},
 				{
