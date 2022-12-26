@@ -101,21 +101,34 @@ export class PromotionService {
 					},
 				},
 				{
-					$project: {
-						applyTo: 0,
-						privilege: 0,
+					$lookup: {
+						from: 'coupons',
+						localField: 'coupon',
+						foreignField: '_id',
+						as: 'coupon',
 					},
 				},
 				{
-					$match: {
-						$or: [{ $expr: { $lt: ['$sold', '$limit'] } }, { limit: 0 }],
-					},
+					$unwind: '$coupon',
 				},
 				{
 					$addFields: {
 						limit: {
 							$ifNull: ['$limit', 0],
 						},
+						image: '$coupon.image',
+					},
+				},
+				{
+					$project: {
+						applyTo: 0,
+						privilege: 0,
+						coupon: 0,
+					},
+				},
+				{
+					$match: {
+						$or: [{ $expr: { $lt: ['$sold', '$limit'] } }, { limit: 0 }],
 					},
 				},
 			])
